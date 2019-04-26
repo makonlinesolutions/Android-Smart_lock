@@ -1,0 +1,1 @@
+include ':app', ':ttlock-gateway-sdk-2.0', ':ttlock-sdk-2.0'
