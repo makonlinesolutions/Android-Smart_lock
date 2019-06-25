@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@color/white">
 
 
@@ -10,75 +10,85 @@
         android:id="@+id/iv_lock_name"
         android:layout_width="40dp"
         android:layout_height="40dp"
-        android:src="@drawable/ic_edit"
+        android:layout_alignParentRight="true"
         android:padding="10dp"
-        android:layout_alignParentRight="true"/>
+        android:src="@drawable/ic_edit" />
+
     <TextView
         android:id="@+id/tvLockName"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textStyle="bold|italic"
         android:gravity="center_horizontal"
         android:padding="10dp"
-        android:textSize="16dp"
+        android:text="CONNECTION WITH : lOCK NAME"
         android:textColor="@color/cpv_default_color"
-        android:text="CONNECTION WITH : lOCK NAME"/>
-<RelativeLayout
-    android:id="@+id/rl_lock"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_marginTop="70dp">
-    <ImageView
-        android:id="@+id/img_circular"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_centerInParent="true"
-        android:background="@drawable/circular_shape"
-        />
-    <com.github.rahatarmanahmed.cpv.CircularProgressView
-       android:visibility="gone"
-       android:id="@+id/progress_view"
-       android:layout_width="144dp"
-       android:layout_height="144dp"
-       app:cpv_animAutostart="true"
-       app:cpv_indeterminate="true"
-       android:layout_centerHorizontal="true"
-       android:layout_centerInParent="true"
-       app:cpv_color="#FF4A96E7"
-       app:cpv_thickness="2dp"
-       />
+        android:textSize="16dp" />
+
+    <View
+        android:id="@+id/view1"
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:layout_below="@id/tvLockName"
+        android:background="@color/black" />
+
     <RelativeLayout
-        android:id="@+id/rlUnlockDoor"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        android:layout_centerHorizontal="true"
-        android:layout_centerInParent="true">
+        android:id="@+id/rl_lock"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/view1"
+        android:layout_marginTop="70dp">
 
         <ImageView
-            android:id="@+id/img_lock"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
+            android:id="@+id/img_circular"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_centerInParent="true"
-            android:backgroundTint="@color/light_gray"
-            android:background="@drawable/ic_lock_black_24dp"/>
+            android:layout_centerHorizontal="true"
+            android:background="@drawable/circular_shape" />
+
+        <com.github.rahatarmanahmed.cpv.CircularProgressView
+            android:id="@+id/progress_view"
+            android:layout_width="144dp"
+            android:layout_height="144dp"
+            android:layout_centerInParent="true"
+            android:layout_centerHorizontal="true"
+            android:visibility="gone"
+            app:cpv_animAutostart="true"
+            app:cpv_color="#FF4A96E7"
+            app:cpv_indeterminate="true"
+            app:cpv_thickness="2dp" />
+
+        <RelativeLayout
+            android:id="@+id/rlUnlockDoor"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_centerInParent="true"
+            android:layout_centerHorizontal="true">
+
+            <ImageView
+                android:id="@+id/img_lock"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:layout_centerInParent="true"
+                android:background="@drawable/ic_lock_black_24dp"
+                android:backgroundTint="@color/light_gray" />
+        </RelativeLayout>
     </RelativeLayout>
-</RelativeLayout>
 
     <View
         android:id="@+id/view"
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:layout_below="@+id/rl_lock"
         android:layout_marginTop="70dp"
-        android:background="@color/dark_gray"/>
+        android:layout_below="@+id/rl_lock"
+        android:background="@color/dark_gray" />
 
     <LinearLayout
         android:id="@+id/linearlayout"
-        android:layout_below="@+id/view"
-        android:layout_marginTop="10dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_below="@+id/view"
+        android:layout_marginTop="10dp"
         android:orientation="horizontal"
         android:weightSum="1">
 
@@ -86,20 +96,21 @@
             android:id="@+id/ll_send_key"
             android:layout_width="0dp"
             android:layout_height="80dp"
-            android:layout_weight="0.25"
-            android:orientation="vertical"
             android:layout_gravity="center"
-            android:gravity="center">
+            android:layout_weight="0.25"
+            android:gravity="center"
+            android:orientation="vertical">
 
             <ImageView
                 android:layout_width="25dp"
                 android:layout_height="25dp"
-                android:background="@drawable/ic_vpn_key_black_24dp"/>
+                android:background="@drawable/ic_vpn_key_black_24dp" />
+
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Send eKey"
-                android:textColor="@color/colorAccent"/>
+                android:textColor="@color/colorAccent" />
 
         </LinearLayout>
 
@@ -107,88 +118,91 @@
             android:id="@+id/ll_generate_passcode"
             android:layout_width="0dp"
             android:layout_height="80dp"
-            android:layout_weight="0.25"
             android:layout_gravity="center"
+            android:layout_weight="0.25"
             android:gravity="center"
+            android:visibility="gone"
             android:orientation="vertical">
+
             <ImageView
                 android:layout_width="25dp"
                 android:layout_height="25dp"
-                android:background="@drawable/passcode"/>
+                android:background="@drawable/passcode" />
+
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Generate \n passcode"
                 android:textAlignment="center"
-                android:textColor="@color/colorAccent"/>
+                android:textColor="@color/colorAccent" />
         </LinearLayout>
+
         <LinearLayout
             android:id="@+id/ll_ekeys"
             android:layout_width="0dp"
             android:layout_height="80dp"
-            android:layout_weight="0.25"
             android:layout_gravity="center"
+            android:layout_weight="0.25"
             android:gravity="center"
+            android:visibility="gone"
             android:orientation="vertical">
+
             <ImageView
                 android:layout_width="25dp"
                 android:layout_height="25dp"
-                android:background="@drawable/ekeys"/>
+                android:background="@drawable/ekeys" />
+
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="eKeys"
                 android:textAlignment="center"
-                android:textColor="@color/colorAccent"/>
+                android:textColor="@color/colorAccent" />
 
         </LinearLayout>
+
         <LinearLayout
             android:id="@+id/ll_passcode"
             android:layout_width="0dp"
             android:layout_height="80dp"
-            android:layout_weight="0.25"
             android:layout_gravity="center"
+            android:layout_weight="0.25"
+            android:visibility="gone"
             android:gravity="center"
             android:orientation="vertical">
+
             <ImageView
                 android:layout_width="25dp"
                 android:layout_height="25dp"
-                android:background="@drawable/passcodes_list"/>
+                android:background="@drawable/passcodes_list" />
+
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Passcodes"
                 android:textAlignment="center"
-                android:textColor="@color/colorAccent"/>
+                android:textColor="@color/colorAccent" />
         </LinearLayout>
-    </LinearLayout>
-
-
-    <LinearLayout
-        android:layout_below="@+id/linearlayout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:weightSum="1">
 
         <LinearLayout
             android:id="@+id/ll_records"
             android:layout_width="0dp"
             android:layout_height="80dp"
-            android:layout_weight="0.25"
-            android:orientation="vertical"
             android:layout_gravity="center"
-            android:gravity="center">
+            android:layout_weight="0.25"
+            android:gravity="center"
+            android:orientation="vertical">
 
             <ImageView
                 android:layout_width="25dp"
                 android:layout_height="25dp"
-                android:background="@drawable/ic_history_black_24dp"/>
+                android:background="@drawable/ic_history_black_24dp" />
+
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Records"
-                android:textColor="@color/colorAccent"/>
+                android:textColor="@color/colorAccent" />
 
         </LinearLayout>
 
@@ -196,21 +210,37 @@
             android:id="@+id/ll_settings"
             android:layout_width="0dp"
             android:layout_height="80dp"
-            android:layout_weight="0.25"
             android:layout_gravity="center"
+            android:layout_weight="0.25"
             android:gravity="center"
             android:orientation="vertical">
+
             <ImageView
                 android:layout_width="25dp"
                 android:layout_height="25dp"
-                android:background="@drawable/ic_settings_black_24dp"/>
+                android:background="@drawable/ic_settings_black_24dp" />
+
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Settings"
                 android:textAlignment="center"
-                android:textColor="@color/colorAccent"/>
+                android:textColor="@color/colorAccent" />
         </LinearLayout>
+
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/linearlayout"
+        android:orientation="horizontal"
+        android:weightSum="1">
+
+
+
+
 
     </LinearLayout>
 </RelativeLayout>

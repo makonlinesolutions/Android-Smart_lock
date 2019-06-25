@@ -91,10 +91,6 @@ public class MainActivity extends BaseActivity implements DrawerAdapter.OnItemSe
         DrawerAdapter adapter = new DrawerAdapter(Arrays.asList(
                 createItemFor(POS_DASHBOARD).setChecked(true),
                 createItemFor(POS_ADDLOCK).setChecked(true),
-                createItemFor(POS_MESSAGES).setChecked(true),
-                createItemFor(POS_CUSTOMER_SERVICE).setChecked(true),
-                createItemFor(POS_SETTINGS).setChecked(true),
-                new SpaceItem(48),
                 createItemFor(POS_LOGOUT).setChecked(true)));
         adapter.setListener(this);
 
@@ -173,7 +169,6 @@ public class MainActivity extends BaseActivity implements DrawerAdapter.OnItemSe
                 try {
                     JSONObject jsonObject = new JSONObject(json);
                     if (jsonObject.has("errcode")) {
-                        toast(jsonObject.getString("description"));
                         Intent intent = new Intent(MainActivity.this, LoginActivity.class);
                         startActivity(intent);
                         return json;

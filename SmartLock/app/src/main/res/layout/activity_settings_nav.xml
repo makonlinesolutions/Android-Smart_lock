@@ -1,13 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#1E747373"
     android:orientation="vertical"
-    tools:context=".activity.SettingsNavActivity"
-    android:background="#1E747373">
+    tools:context=".activity.SettingsNavActivity">
 
     <android.support.design.widget.AppBarLayout
         android:id="@+id/appbar"
@@ -267,7 +266,7 @@
             </RelativeLayout>
 
             <Button
-                android:id="@+id/btn_delete"
+                android:id="@+id/btn_logout"
                 android:layout_width="match_parent"
                 android:layout_height="55dp"
                 android:layout_marginLeft="15dp"
@@ -282,13 +281,14 @@
     </ScrollView>
 
     <TextView
-        android:layout_alignParentBottom="true"
         style="@style/settings_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="5dp"
-        android:text="Delete Account"
-        android:layout_marginBottom="55dp"
         android:layout_alignParentRight="true"
-        android:layout_marginRight="30dp"/>
+        android:layout_alignParentBottom="true"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="30dp"
+        android:layout_marginBottom="55dp"
+        android:text="Delete Account"
+        android:visibility="gone" />
 </RelativeLayout>

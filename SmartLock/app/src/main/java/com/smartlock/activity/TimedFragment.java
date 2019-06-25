@@ -157,7 +157,7 @@ public class TimedFragment extends Fragment {
 
                         @Override
                         protected void onPostExecute(String json) {
-                            String msg = getString(R.string.words_authorize_successed);
+                            String msg = getContext().getString(R.string.words_authorize_successed);
                             try {
                                 JSONObject jsonObject = new JSONObject(json);
                                 if (jsonObject.has("errcode")) {
