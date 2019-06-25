@@ -49,8 +49,8 @@
             android:gravity="center_horizontal">
 
             <ImageView
-                android:layout_width="35dp"
-                android:layout_height="35dp"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
                 android:layout_marginRight="5dp"
                 android:background="@drawable/ic_help_black_24dp" />
 
@@ -86,8 +86,8 @@
             android:gravity="center_horizontal">
 
             <ImageView
-                android:layout_width="35dp"
-                android:layout_height="35dp"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
                 android:layout_marginRight="5dp"
                 android:background="@drawable/ic_feedback_black_24dp" />
 

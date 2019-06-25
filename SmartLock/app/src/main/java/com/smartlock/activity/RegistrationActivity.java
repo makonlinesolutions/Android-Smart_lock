@@ -21,6 +21,8 @@ import org.json.JSONObject;
 public class RegistrationActivity extends AppCompatActivity implements View.OnClickListener {
     EditText mEtLoginId, mEtPassword;
     Button btn_login;
+    TextView txt_label;
+
     String a;
     int keyDel;
     private Context mContext;
@@ -30,8 +32,12 @@ public class RegistrationActivity extends AppCompatActivity implements View.OnCl
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
         btn_login = findViewById(R.id.btn_login);
         mContext = RegistrationActivity.this;
+
+        txt_label = findViewById(R.id.text_label);
+        txt_label.setText("REGISTRATION");
 
         mEtLoginId = findViewById(R.id.edt_mobile_num);
         mEtPassword = findViewById(R.id.edt_password);

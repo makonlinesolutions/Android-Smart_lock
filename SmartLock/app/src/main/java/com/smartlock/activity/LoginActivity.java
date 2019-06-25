@@ -21,6 +21,7 @@ import org.json.JSONObject;
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener {
     EditText mEtLoginId, mEtPassword;
     Button btn_login;
+    TextView txt_label;
     String a;
     int keyDel;
     private Context mContext;
@@ -30,12 +31,16 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
         btn_login = findViewById(R.id.btn_login);
         mContext = LoginActivity.this;
 
         mEtLoginId = findViewById(R.id.edt_mobile_num);
         mEtPassword = findViewById(R.id.edt_password);
         btn_login.setOnClickListener(this);
+
+        txt_label = findViewById(R.id.text_label);
+        txt_label.setText("LOGIN");
 
         Intent intent = getIntent();
         if (intent != null && intent.hasExtra("user_id")) {

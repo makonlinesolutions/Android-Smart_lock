@@ -6,12 +6,33 @@
     android:background="@color/colorAccent"
     tools:context=".activity.LoginActivity">
 
+    <TextView
+        android:id="@+id/text_label"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="LOGIN"
+        android:textStyle="bold"
+        android:textColor="@color/white"
+        android:textSize="20dp"
+        android:textAlignment="center"
+        android:layout_marginTop="10dp"
+        android:padding="10dp"/>
+
+    <ImageView
+        android:id="@+id/iv_logo"
+        android:layout_width="match_parent"
+        android:layout_height="120dp"
+        android:src="@drawable/log_mast_lock"
+        android:layout_marginTop="10dp"
+        android:layout_below="@id/text_label"/>
+
 
     <RelativeLayout
         android:id="@+id/rlLogin"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="200dp">
+        android:layout_below="@id/iv_logo"
+        android:layout_marginTop="50dp">
 
         <TextView
             android:id="@+id/text_mobile"
@@ -73,7 +94,7 @@
                 android:layout_marginRight="10dp"
                 android:layout_toRightOf="@+id/view"
                 android:backgroundTint="@android:color/transparent"
-                android:hint="Enter email id"
+                android:hint="Enter mobile number"
                 android:inputType="textEmailAddress"
                 android:padding="15dp"
                 android:text="novatest_123456"
@@ -96,13 +117,24 @@
                  android:backgroundTint="@android:color/transparent"/>-->
         </RelativeLayout>
 
+        <TextView
+            android:id="@+id/text_password"
+            android:layout_width="320dp"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:padding="10dp"
+            android:layout_below="@id/rl_mobile_num"
+            android:text="Please enter password"
+            android:textColor="@color/primaryTextColor"
+            android:textSize="16dp" />
+
         <RelativeLayout
             android:id="@+id/rl_password"
             android:layout_width="320dp"
             android:layout_height="50dp"
-            android:layout_below="@+id/rl_mobile_num"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="10dp"
+            android:layout_below="@id/text_password"
             android:background="@drawable/round_drawable">
 
             <TextView
@@ -135,6 +167,7 @@
                   android:layout_centerVertical="true"/>
 
   -->
+
             <EditText
                 android:id="@+id/edt_password"
                 android:layout_width="match_parent"
@@ -174,7 +207,7 @@
             android:layout_centerHorizontal="true"
             android:layout_marginTop="50dp"
             android:background="@drawable/button_bg"
-            android:text="Request Verification code" />
+            android:text="LOGIN" />
 
         <Button
             android:id="@+id/btn_sign_up"
@@ -184,7 +217,7 @@
             android:layout_centerHorizontal="true"
             android:layout_marginTop="50dp"
             android:background="@drawable/button_bg"
-            android:text="Sign up" />
+            android:text="REGISTER" />
 
 
     </RelativeLayout>
@@ -195,7 +228,8 @@
         android:layout_width="match_parent"
         android:layout_height="48dp"
         android:layout_marginLeft="10dp"
-        android:layout_below="@id/rlLogin">
+        android:layout_below="@id/rlLogin"
+        android:visibility="gone">
 
         <TextView
             android:layout_width="wrap_content"
@@ -222,7 +256,8 @@
         android:layout_width="match_parent"
         android:layout_height="48dp"
         android:layout_marginLeft="10dp"
-        android:layout_below="@id/LL1">
+        android:layout_below="@id/LL1"
+        android:visibility="gone">
 
         <TextView
             android:layout_width="wrap_content"

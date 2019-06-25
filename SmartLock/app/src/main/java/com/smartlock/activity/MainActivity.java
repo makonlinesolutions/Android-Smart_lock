@@ -107,7 +107,6 @@ public class MainActivity extends BaseActivity implements DrawerAdapter.OnItemSe
             }
         });
 
-
         String token = MyPreference.getStr(mContext, MyPreference.ACCESS_TOKEN);
 
         if (token.isEmpty() || token.equals("")) {
