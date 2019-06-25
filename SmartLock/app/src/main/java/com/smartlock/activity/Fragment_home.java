@@ -63,22 +63,22 @@ public class Fragment_home extends Fragment implements View.OnClickListener {
         ll_passcode = view.findViewById(R.id.ll_passcode);
         ll_ekeys = view.findViewById(R.id.ll_ekeys);
         mIvLockName = view.findViewById(R.id.iv_lock_name);
+
+        ll_ekeys.setVisibility(View.GONE);
+        ll_passcode.setVisibility(View.GONE);
+        ll_generate_passcode.setVisibility(View.GONE);
         mKey = (Key) SharePreferenceUtility.getPreferences(getContext(), KEY_VALUE, SharePreferenceUtility.PREFTYPE_OBJECT);
         if (mKey != null) {
             curKey = mKey;
             mTvLockName.setText("CONNECTION WITH : " + mKey.getLockAlias());
+        } else {
+            startActivity(new Intent(getContext(), NearbyLockActivity.class));
         }
 
         if (mKey != null && mKey.isAdmin()) {
-            ll_generate_passcode.setVisibility(View.VISIBLE);
-            ll_ekeys.setVisibility(View.VISIBLE);
             ll_send_key.setVisibility(View.VISIBLE);
-            ll_passcode.setVisibility(View.VISIBLE);
         } else {
-            ll_generate_passcode.setVisibility(View.GONE);
-            ll_ekeys.setVisibility(View.GONE);
             ll_send_key.setVisibility(View.GONE);
-            ll_passcode.setVisibility(View.GONE);
         }
         openid = MyPreference.getOpenid(getActivity(), MyPreference.OPEN_ID);
         img_lock.setOnClickListener(this);
