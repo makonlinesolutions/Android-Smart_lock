@@ -27,7 +27,7 @@ public class AddLockActivity extends AppCompatActivity {
         btn_next.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent=new Intent(AddLockActivity.this,NearbyLockActivity.class);
+                Intent intent=new Intent(AddLockActivity.this,FoundDeviceActivity.class);
                 startActivity(intent);
             }
         });

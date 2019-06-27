@@ -6,25 +6,44 @@
     android:background="@color/colorAccent"
     tools:context=".activity.LoginActivity">
 
-    <TextView
-        android:id="@+id/text_label"
+    <RelativeLayout
+        android:id="@+id/rl_login"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="LOGIN"
-        android:textStyle="bold"
-        android:textColor="@color/white"
-        android:textSize="20dp"
-        android:textAlignment="center"
-        android:layout_marginTop="10dp"
-        android:padding="10dp"/>
+        android:background="@color/colorPrimaryDark">
+
+        <TextView
+            android:id="@+id/text_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="10dp"
+            android:padding="10dp"
+            android:text="LOGIN"
+            android:textColor="@color/white"
+            android:textSize="20dp" />
+
+        <TextView
+            android:id="@+id/tv_register"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_marginTop="15dp"
+            android:padding="10dp"
+            android:text="Register"
+            android:textAllCaps="true"
+            android:textColor="@color/white"
+            android:textSize="14dp" />
+    </RelativeLayout>
 
     <ImageView
         android:id="@+id/iv_logo"
         android:layout_width="match_parent"
         android:layout_height="120dp"
-        android:src="@drawable/log_mast_lock"
+        android:layout_below="@id/rl_login"
         android:layout_marginTop="10dp"
-        android:layout_below="@id/text_label"/>
+        android:src="@drawable/log_mast_lock" />
 
 
     <RelativeLayout
@@ -42,7 +61,8 @@
             android:padding="10dp"
             android:text="Please enter mobile number"
             android:textColor="@color/primaryTextColor"
-            android:textSize="16dp" />
+            android:textSize="16dp"
+            android:visibility="gone" />
 
         <RelativeLayout
             android:id="@+id/rl_mobile_num"
@@ -97,7 +117,6 @@
                 android:hint="Enter mobile number"
                 android:inputType="textEmailAddress"
                 android:padding="15dp"
-                android:text="novatest_123456"
                 android:textColor="@color/light_white"
                 android:textColorHint="@color/dark_gray" />
             <!-- <br.com.sapereaude.maskedEditText.MaskedEditText
@@ -121,20 +140,21 @@
             android:id="@+id/text_password"
             android:layout_width="320dp"
             android:layout_height="wrap_content"
+            android:layout_below="@id/rl_mobile_num"
             android:layout_centerHorizontal="true"
             android:padding="10dp"
-            android:layout_below="@id/rl_mobile_num"
             android:text="Please enter password"
             android:textColor="@color/primaryTextColor"
-            android:textSize="16dp" />
+            android:textSize="16dp"
+            android:visibility="gone" />
 
         <RelativeLayout
             android:id="@+id/rl_password"
             android:layout_width="320dp"
             android:layout_height="50dp"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="10dp"
             android:layout_below="@id/text_password"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="30dp"
             android:background="@drawable/round_drawable">
 
             <TextView
@@ -178,7 +198,6 @@
                 android:hint="Enter password"
                 android:inputType="textPassword"
                 android:padding="15dp"
-                android:text="123456"
                 android:textColor="@color/light_white"
                 android:textColorHint="@color/dark_gray" />
             <!-- <br.com.sapereaude.maskedEditText.MaskedEditText
@@ -201,23 +220,15 @@
 
         <Button
             android:id="@+id/btn_login"
-            android:layout_width="290dp"
-            android:layout_height="50dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:layout_below="@+id/rl_password"
             android:layout_centerHorizontal="true"
-            android:layout_marginTop="50dp"
+            android:layout_marginLeft="90dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginRight="90dp"
             android:background="@drawable/button_bg"
             android:text="LOGIN" />
-
-        <Button
-            android:id="@+id/btn_sign_up"
-            android:layout_width="290dp"
-            android:layout_height="50dp"
-            android:layout_below="@+id/btn_login"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="50dp"
-            android:background="@drawable/button_bg"
-            android:text="REGISTER" />
 
 
     </RelativeLayout>
@@ -227,8 +238,8 @@
         android:id="@+id/LL1"
         android:layout_width="match_parent"
         android:layout_height="48dp"
-        android:layout_marginLeft="10dp"
         android:layout_below="@id/rlLogin"
+        android:layout_marginLeft="10dp"
         android:visibility="gone">
 
         <TextView
@@ -255,8 +266,8 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="48dp"
-        android:layout_marginLeft="10dp"
         android:layout_below="@id/LL1"
+        android:layout_marginLeft="10dp"
         android:visibility="gone">
 
         <TextView

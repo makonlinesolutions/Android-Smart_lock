@@ -1,93 +1,107 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    android:orientation="vertical"
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context=".activity.AddLockActivity">
 
     <android.support.design.widget.AppBarLayout
+        android:id="@+id/appbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/appbar"
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
         app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+
         <android.support.v7.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
+
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
+
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
                     android:text="Add Door Lock"
                     android:textColor="@color/white"
-                    android:textSize="16dp"
-                    android:layout_centerVertical="true"/>
+                    android:textSize="16dp" />
             </RelativeLayout>
         </android.support.v7.widget.Toolbar>
     </android.support.design.widget.AppBarLayout>
 
-<TextView
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:textSize="18dp"
-    android:text="Touch any key to Activate the Keypad"
-    android:gravity="center_horizontal"
-    android:layout_marginLeft="15dp"
-    android:layout_marginRight="15dp"
-    android:layout_marginTop="20dp"
-    android:textColor="@color/colorPrimary"/>
-
-    <RelativeLayout
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="50dp"
-        android:layout_gravity="center_horizontal">
-        <ImageView
-            android:layout_width="200dp"
-            android:layout_height="250dp"
-            android:layout_centerInParent="true"
-            android:background="@drawable/coloredlock"/>
+        android:layout_height="match_parent">
 
-        <ImageView
-            android:layout_width="80dp"
-            android:layout_height="90dp"
-            android:background="@drawable/selecthand"
-            android:rotation="330"
-            android:layout_marginTop="50dp"
-            android:layout_marginLeft="180dp"/>
-    </RelativeLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textSize="18dp"
-        android:text="Please touch any key to Activate the lock and put in PAIRING Mode.Press Next"
-        android:gravity="center_horizontal"
-        android:layout_marginLeft="15dp"
-        android:layout_marginRight="15dp"
-        android:layout_marginTop="50dp"
-        android:textColor="@color/colorPrimary"/>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="15dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginRight="15dp"
+                android:gravity="center_horizontal"
+                android:text="Touch any key to Activate the Keypad"
+                android:textColor="@color/colorPrimary"
+                android:textSize="18dp" />
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="50dp">
+
+                <ImageView
+                    android:layout_width="200dp"
+                    android:layout_height="250dp"
+                    android:layout_centerInParent="true"
+                    android:background="@drawable/coloredlock" />
+
+                <ImageView
+                    android:layout_width="80dp"
+                    android:layout_height="90dp"
+                    android:layout_marginLeft="180dp"
+                    android:layout_marginTop="50dp"
+                    android:background="@drawable/selecthand"
+                    android:rotation="330" />
+            </RelativeLayout>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="15dp"
+                android:layout_marginTop="50dp"
+                android:layout_marginRight="15dp"
+                android:gravity="center_horizontal"
+                android:text="Please touch any key to Activate the lock and put in PAIRING Mode.Press Next"
+                android:textColor="@color/colorPrimary"
+                android:textSize="18dp" />
 
 
-    <Button
-        android:id="@+id/btn_next"
-        android:layout_width="match_parent"
-        android:layout_height="55dp"
-        android:layout_below="@+id/rl_mobile_num"
-        android:background="@drawable/button_bg"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="50dp"
-        android:text="Next"
-        android:textColor="@color/white"
-        android:textSize="17dp"
-        android:textAllCaps="false"
-        android:layout_marginRight="25dp"
-        android:layout_marginLeft="25dp"
-        android:backgroundTint="@color/colorPrimary" />
+            <Button
+                android:id="@+id/btn_next"
+                android:layout_width="match_parent"
+                android:layout_height="55dp"
+                android:layout_below="@+id/rl_mobile_num"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginLeft="25dp"
+                android:layout_marginTop="50dp"
+                android:layout_marginRight="25dp"
+                android:background="@drawable/button_bg"
+                android:backgroundTint="@color/colorPrimary"
+                android:text="Next"
+                android:textAllCaps="false"
+                android:textColor="@color/white"
+                android:textSize="17dp" />
+        </LinearLayout>
+    </ScrollView>
 </LinearLayout>

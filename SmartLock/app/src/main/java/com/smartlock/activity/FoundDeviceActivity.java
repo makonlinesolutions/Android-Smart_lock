@@ -5,8 +5,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.ImageView;
 import android.widget.ListView;
 
 import com.smartlock.R;
@@ -31,21 +34,19 @@ public class FoundDeviceActivity extends BaseActivity implements AdapterView.OnI
     private List<Key> keys;
     private Context mContext;
     public static Key curKey;
-    ExtendedBluetoothDevice device;
+    private ExtendedBluetoothDevice device;
+    private Toolbar toolbar;
 
     private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             final String action = intent.getAction();
 
-             if (action.equals(BleConstant.ACTION_BLE_DEVICE)) {
+            if (action.equals(BleConstant.ACTION_BLE_DEVICE)) {
                 Bundle bundle = intent.getExtras();
-                 device = bundle.getParcelable(BleConstant.DEVICE);
-                 foundDeviceAdapter.updateDevice(device);
+                device = bundle.getParcelable(BleConstant.DEVICE);
+                foundDeviceAdapter.updateDevice(device);
             }
-//            else if(action.equals(BleConstant.ACTION_BLE_DISCONNECTED)) {
-//                cancelProgressDialog();
-//            }
         }
     };
 
@@ -53,6 +54,11 @@ public class FoundDeviceActivity extends BaseActivity implements AdapterView.OnI
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_found_device);
+        toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        mContext = FoundDeviceActivity.this;
         init();
     }
 
@@ -97,5 +103,16 @@ public class FoundDeviceActivity extends BaseActivity implements AdapterView.OnI
     protected void onDestroy() {
         super.onDestroy();
         unregisterReceiver(mReceiver);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                finish();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 }

@@ -1,8 +1,10 @@
 package com.smartlock.activity;
 
+import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
@@ -25,9 +27,11 @@ import com.dd.processbutton.FlatButton;
 import com.github.rahatarmanahmed.cpv.CircularProgressView;
 import com.smartlock.R;
 import com.smartlock.enumtype.Operation;
+import com.smartlock.interfaces.ShowCustomDialog;
 import com.smartlock.model.Key;
 import com.smartlock.net.ResponseService;
 import com.smartlock.sp.MyPreference;
+import com.smartlock.utils.DisplayUtil;
 import com.smartlock.utils.SharePreferenceUtility;
 
 import org.json.JSONException;
@@ -47,11 +51,14 @@ public class Fragment_home extends Fragment implements View.OnClickListener {
     private TextView mTvLockName;
     private int openid;
     String name_lock;
+    Dialog dialog;
+    private static Fragment_home instance;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_home, container, false);
+        instance = this;
         img_lock = view.findViewById(R.id.img_lock);
         img_circular = view.findViewById(R.id.img_circular);
         mTvLockName = view.findViewById(R.id.tvLockName);
@@ -72,7 +79,8 @@ public class Fragment_home extends Fragment implements View.OnClickListener {
             curKey = mKey;
             mTvLockName.setText("CONNECTION WITH : " + mKey.getLockAlias());
         } else {
-            startActivity(new Intent(getContext(), NearbyLockActivity.class));
+//            startActivity(new Intent(getContext(), NearbyLockActivity.class));
+//            ((Activity)getContext()).finish();
         }
 
         if (mKey != null && mKey.isAdmin()) {
@@ -88,6 +96,7 @@ public class Fragment_home extends Fragment implements View.OnClickListener {
             public void onClick(View v) {
                 Intent intent = new Intent(getActivity(), RecordsActivity.class);
                 startActivity(intent);
+                ((Activity) getContext()).overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
             }
         });
 
@@ -96,6 +105,7 @@ public class Fragment_home extends Fragment implements View.OnClickListener {
             public void onClick(View v) {
                 Intent intent = new Intent(getActivity(), SettingsActivity.class);
                 startActivity(intent);
+                ((Activity) getContext()).overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
             }
         });
 
@@ -104,6 +114,7 @@ public class Fragment_home extends Fragment implements View.OnClickListener {
             public void onClick(View v) {
                 Intent intent = new Intent(getActivity(), SendeKeyActivity.class);
                 startActivity(intent);
+                ((Activity) getContext()).overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
             }
         });
 
@@ -120,6 +131,7 @@ public class Fragment_home extends Fragment implements View.OnClickListener {
             public void onClick(View v) {
                 Intent intent = new Intent(getActivity(), EkeysActivity.class);
                 startActivity(intent);
+                ((Activity) getContext()).overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
             }
         });
 
@@ -128,6 +140,7 @@ public class Fragment_home extends Fragment implements View.OnClickListener {
             public void onClick(View v) {
                 Intent intent = new Intent(getActivity(), PasscodesActivity.class);
                 startActivity(intent);
+                ((Activity) getContext()).overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
             }
         });
 
@@ -138,6 +151,10 @@ public class Fragment_home extends Fragment implements View.OnClickListener {
             }
         });
         return view;
+    }
+
+    public static Fragment_home getInstance() {
+        return instance;
     }
 
     private void openDialogForChangeKeyName() {
@@ -196,7 +213,7 @@ public class Fragment_home extends Fragment implements View.OnClickListener {
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-                Toast.makeText(getContext(), msg, Toast.LENGTH_SHORT).show();
+//                Toast.makeText(getContext(), msg, Toast.LENGTH_SHORT).show();
             }
         }.execute();
     }
@@ -230,5 +247,27 @@ public class Fragment_home extends Fragment implements View.OnClickListener {
         } else {
 
         }
+    }
+
+    public void showDialog() {
+      getActivity().runOnUiThread(new Runnable() {
+          @Override
+          public void run() {
+              DisplayUtil.showDialog(getContext());
+          }
+      });
+    }
+
+    public void showMessageDialog(final String message) {
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                DisplayUtil.showMessageDialog(getContext(),message);
+            }
+        });
+    }
+
+    public void dismissDialog() {
+        dialog.dismiss();
     }
 }

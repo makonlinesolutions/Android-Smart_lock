@@ -81,7 +81,7 @@ public class NearbyLockActivity extends BaseActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
-                finish();
+                onBackPressed();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -101,9 +101,11 @@ public class NearbyLockActivity extends BaseActivity {
                 try {
                     JSONObject jsonObject = new JSONObject(json);
                     if (jsonObject.has("errcode")) {
-                        toast(jsonObject.getString("description"));
+//                        toast(jsonObject.getString("description"));
                         Intent intent = new Intent(NearbyLockActivity.this, LoginActivity.class);
                         startActivity(intent);
+                        overridePendingTransition(R.anim.fade_out, R.anim.fade_in);
+                        finish();
                         return json;
                     }
                     //use lastUpdateDate you can get the newly added key and data after the time
@@ -128,7 +130,7 @@ public class NearbyLockActivity extends BaseActivity {
             protected void onPostExecute(String s) {
                 super.onPostExecute(s);
                 progressDialog.cancel();
-                adapter = new Nearby_Adapter(NearbyLockActivity.this,keys);
+                adapter = new Nearby_Adapter(NearbyLockActivity.this, keys);
 //                keyAdapter = new KeyAdapter(MainActivity.this, keys);
                 recyclerView.setAdapter(adapter);
                 recyclerView.setOnCreateContextMenuListener(NearbyLockActivity.this);
@@ -172,5 +174,11 @@ public class NearbyLockActivity extends BaseActivity {
             }
         }
         return keyList;
+    }
+
+    @Override
+    public void onBackPressed() {
+        startActivity(new Intent(NearbyLockActivity.this, MainActivity.class));
+        finish();
     }
 }

@@ -62,10 +62,14 @@ public class Nearby_Adapter extends RecyclerView.Adapter<Nearby_Adapter.Nearby_h
                         Intent intent = new Intent(activity, MainActivity.class);
                         intent.putExtra("isAdmin", true);
                         activity.startActivity(intent);
+                        activity.overridePendingTransition(R.anim.fade_out, R.anim.fade_in);
+                        activity.finish();
                     } else {
                         Intent intent = new Intent(activity, MainActivity.class);
                         intent.putExtra("isAdmin", false);
                         activity.startActivity(intent);
+                        activity.overridePendingTransition(R.anim.fade_out, R.anim.fade_in);
+                        activity.finish();
                         Toast.makeText(activity, activity.getString(R.string.words_not_admin), Toast.LENGTH_SHORT).show();
                     }
                 }

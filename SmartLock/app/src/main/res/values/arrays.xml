@@ -4,13 +4,19 @@
     <string-array name="ld_activityScreenTitles">
         <item>Dashboard</item>
         <item>Add Door Lock</item>
+        <item>Log Out</item>
+    </string-array>
+
+    <!--<string-array name="ld_activityScreenTitles">
+        <item>Dashboard</item>
+        <item>Add Door Lock</item>
         <item>Messages</item>
         <item>Customer Service</item>
         <item>Settings</item>
         <item />
         <item>Log Out</item>
         <item>Add Lock</item>
-    </string-array>
+    </string-array>-->
 
     <array name="ld_activityScreenIcons">
         <item>@drawable/ic_home_black_24dp</item>

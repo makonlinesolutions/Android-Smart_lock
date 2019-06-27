@@ -52,10 +52,9 @@ import static com.smartlock.utils.Const.KEY_VALUE;
 public class MainActivity extends BaseActivity implements DrawerAdapter.OnItemSelectedListener {
     private static final int POS_DASHBOARD = 0;
     private static final int POS_ADDLOCK = 1;
-    private static final int POS_MESSAGES = 2;
     private static final int POS_CUSTOMER_SERVICE = 3;
     private static final int POS_SETTINGS = 4;
-    private static final int POS_LOGOUT = 6;
+    private static final int POS_LOGOUT = 2;
     private static final int ADD_LOCK = 6;
     private String[] screenTitles;
     private Drawable[] screenIcons;
@@ -104,6 +103,7 @@ public class MainActivity extends BaseActivity implements DrawerAdapter.OnItemSe
             @Override
             public void onClick(View v) {
                 startActivity(new Intent(MainActivity.this, NearbyLockActivity.class));
+                overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
             }
         });
 
@@ -111,6 +111,8 @@ public class MainActivity extends BaseActivity implements DrawerAdapter.OnItemSe
 
         if (token.isEmpty() || token.equals("")) {
             startActivity(new Intent(MainActivity.this, LoginActivity.class));
+            overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+            finish();
             return;
         }
         init();
@@ -170,6 +172,8 @@ public class MainActivity extends BaseActivity implements DrawerAdapter.OnItemSe
                     if (jsonObject.has("errcode")) {
                         Intent intent = new Intent(MainActivity.this, LoginActivity.class);
                         startActivity(intent);
+                        overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+                        finish();
                         return json;
                     }
                     //use lastUpdateDate you can get the newly added key and data after the time
@@ -277,11 +281,13 @@ public class MainActivity extends BaseActivity implements DrawerAdapter.OnItemSe
             SharePreferenceUtility.saveObjectPreferences(mContext, KEY_VALUE, null);
             Intent intent = new Intent(MainActivity.this, SplashScreenActivity.class);
             startActivity(intent);
+            overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
             finish();
         }
         if (position == POS_ADDLOCK) {
-            Intent intent = new Intent(MainActivity.this, FoundDeviceActivity.class);
+            Intent intent = new Intent(MainActivity.this, AddLockActivity.class);
             startActivity(intent);
+            overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
         }
         if (position == POS_DASHBOARD) {
             Fragment home_fragment = new Fragment_home();
@@ -294,14 +300,16 @@ public class MainActivity extends BaseActivity implements DrawerAdapter.OnItemSe
         if (position == POS_SETTINGS) {
             Intent intent = new Intent(MainActivity.this, SettingsNavActivity.class);
             startActivity(intent);
+            overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
         }
-        if (position == POS_MESSAGES) {
+        /*if (position == POS_MESSAGES) {
             Intent intent = new Intent(MainActivity.this, MessagesActivity.class);
             startActivity(intent);
-        }
+        }*/
         if (position == POS_CUSTOMER_SERVICE) {
             Intent intent = new Intent(MainActivity.this, CustomerServiceActivity.class);
             startActivity(intent);
+            overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
         }
 
         slidingRootNav.closeMenu();

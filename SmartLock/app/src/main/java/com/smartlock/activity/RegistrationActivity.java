@@ -6,6 +6,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -31,27 +32,31 @@ public class RegistrationActivity extends AppCompatActivity implements View.OnCl
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login);
-
+        setContentView(R.layout.activity_registration);
+        getWindow().setSoftInputMode(
+                WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
         btn_login = findViewById(R.id.btn_login);
         mContext = RegistrationActivity.this;
 
         txt_label = findViewById(R.id.text_label);
-        txt_label.setText("REGISTRATION");
 
         mEtLoginId = findViewById(R.id.edt_mobile_num);
         mEtPassword = findViewById(R.id.edt_password);
         btn_login.setOnClickListener(this);
+
+        ((TextView) findViewById(R.id.text_label)).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+//                startActivity(new Intent(RegistrationActivity.this,LoginActivity.class));
+                finish();
+            }
+        });
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-//        String access_token = MyPreference.getStr(mContext, MyPreference.ACCESS_TOKEN);
-//        String openid = MyPreference.getStr(mContext, MyPreference.OPEN_ID);
-        ((TextView) findViewById(R.id.auth_access_token)).setVisibility(View.GONE);
-        ((TextView) findViewById(R.id.auth_openid)).setVisibility(View.GONE);
-        ((Button) findViewById(R.id.btn_sign_up)).setVisibility(View.GONE);
+
     }
 
     @Override
@@ -75,8 +80,9 @@ public class RegistrationActivity extends AppCompatActivity implements View.OnCl
                         msg = "Something went wrong";
                     } else {
                         Intent intent = new Intent(mContext, LoginActivity.class);
-                        intent.putExtra("user_id",jsonObject.getString("username"));
+                        intent.putExtra("user_id", jsonObject.getString("username"));
                         startActivity(intent);
+                        overridePendingTransition(R.anim.fade_out, R.anim.fade_in);
                         onResume();
                     }
                 } catch (JSONException e) {

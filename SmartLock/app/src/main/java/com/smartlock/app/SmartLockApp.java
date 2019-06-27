@@ -13,6 +13,7 @@ import android.widget.Toast;
 
 import com.smartlock.R;
 import com.smartlock.activity.BaseActivity;
+import com.smartlock.activity.Fragment_home;
 import com.smartlock.activity.MainActivity;
 import com.smartlock.constant.BleConstant;
 import com.smartlock.dao.DbService;
@@ -20,6 +21,7 @@ import com.smartlock.dao.gen.DaoMaster;
 import com.smartlock.dao.gen.DaoSession;
 import com.smartlock.dao.gen.KeyDao;
 import com.smartlock.enumtype.Operation;
+import com.smartlock.interfaces.ShowCustomDialog;
 import com.smartlock.model.BleSession;
 import com.smartlock.model.Key;
 import com.smartlock.myInterface.OperateCallback;
@@ -124,7 +126,7 @@ public class SmartLockApp  extends Application {
                     if (localKey == null)
                         mTTLockAPI.lockInitialize(extendedBluetoothDevice);
                     else {
-                        toast(getString(R.string.words_has_exist_lock));
+                        Fragment_home.getInstance().showMessageDialog(getString(R.string.words_has_exist_lock));
                         ((BaseActivity) curActivity).cancelProgressDialog();
                     }
                     break;
@@ -210,7 +212,7 @@ public class SmartLockApp  extends Application {
             if(error == Error.SUCCESS) {
                 final String lockDataJson = lockData.toJson();
 
-                toast(getString(R.string.words_lock_add_successed_and_init));
+//                toast(getString(R.string.words_lock_add_successed_and_init));
                 mTTLockAPI.unlockByAdministrator(null, 0, lockData.lockVersion, lockData.adminPwd, lockData.lockKey, lockData.lockFlagPos, System.currentTimeMillis(), lockData.aesKeyStr, lockData.timezoneRawOffset);
                 new AsyncTask<Void, String, Boolean>() {
 
@@ -222,18 +224,18 @@ public class SmartLockApp  extends Application {
                             JSONObject jsonObject = new JSONObject(json);
                             if(jsonObject.has("errcode")) {
                                 String errmsg = jsonObject.getString("description");
-                                toast(errmsg);
+//                                toast(errmsg);
                             } else {
                                 Intent intent = new Intent(mContext,MainActivity.class);
                                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                                 startActivity(intent);
 
                                 flag = true;
-                                toast(getString(R.string.words_lock_init_successed));
+//                                toast(getString(R.string.words_lock_init_successed));
                             }
                         } catch (JSONException e) {
                             e.printStackTrace();
-                            toast(getString(R.string.words_lock_init_failed) + e.getMessage());
+//                            toast(getString(R.string.words_lock_init_failed) + e.getMessage());
                         }
                         return flag;
                     }
@@ -244,7 +246,7 @@ public class SmartLockApp  extends Application {
                     }
                 }.execute();
             } else {//failure
-                toast(error.getErrorMsg());
+//                toast(error.getErrorMsg());
             }
         }
 
@@ -285,7 +287,7 @@ public class SmartLockApp  extends Application {
 //                operateSuccess = true;
                 curKey.setLockFlagPos(lockFlagPos);
                 DbService.updateKey(curKey);
-                toast(getString(R.string.words_lock_flag_pos) + lockFlagPos);
+                Fragment_home.getInstance().showMessageDialog(getString(R.string.words_lock_flag_pos) + lockFlagPos);
                 new AsyncTask<Void, Void, String>() {
 
                     @Override
@@ -296,18 +298,20 @@ public class SmartLockApp  extends Application {
                             int errorCode = jsonObject.getInt("errcode");
                             if(errorCode != 0) {
                                 String errmsg = jsonObject.getString("description");
-                                toast(errmsg);
+//                                toast(errmsg);
                             } else {
-                                toast(getString(R.string.words_lock_flag_upload_successed));
+//                                toast(getString(R.string.words_lock_flag_upload_successed));
                             }
                         } catch (JSONException e) {
                             e.printStackTrace();
-                            toast(getString(R.string.words_lock_flag_upload_failed) + e.getMessage());
+//                            toast(getString(R.string.words_lock_flag_upload_failed) + e.getMessage());
                         }
                         return json;
                     }
                 }.execute();
-            } else toast(error.getErrorMsg());
+            } else {
+//                toast(error.getErrorMsg());
+            }
             ((BaseActivity)curActivity).cancelProgressDialog();
         }
 
@@ -341,7 +345,8 @@ public class SmartLockApp  extends Application {
         @Override
         public void onUnlock(ExtendedBluetoothDevice extendedBluetoothDevice, int uid, int uniqueid, long lockTime, Error error) {
             if(error == Error.SUCCESS) {
-                toast(getString(R.string.words_unlock_successed));
+                Fragment_home.getInstance().showDialog();
+//                toast(getString(R.string.words_unlock_successed));
             } else toast(error.getErrorMsg());
             ((BaseActivity)curActivity).cancelProgressDialog();
         }

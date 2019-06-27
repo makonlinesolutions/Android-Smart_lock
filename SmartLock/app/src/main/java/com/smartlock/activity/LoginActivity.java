@@ -47,10 +47,11 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             user_name = intent.getStringExtra("user_id");
         }
         mEtLoginId.setText(user_name);
-        ((Button) findViewById(R.id.btn_sign_up)).setOnClickListener(new View.OnClickListener() {
+        ((TextView) findViewById(R.id.tv_register)).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 startActivity(new Intent(LoginActivity.this, RegistrationActivity.class));
+                overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
             }
         });
     }
@@ -82,7 +83,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 try {
                     JSONObject jsonObject = new JSONObject(json);
                     if (jsonObject.has("errcode")) {
-                        msg = "Invalid client, client_id or client_secret error";
+                        msg = "Invalid credentials";
                     } else {
                         String access_token = jsonObject.getString("access_token");
                         String openid = jsonObject.getString("openid");
@@ -90,6 +91,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                         MyPreference.putStr(mContext, MyPreference.OPEN_ID, openid);
                         Intent intent = new Intent(mContext, MainActivity.class);
                         startActivity(intent);
+                        overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
                         onResume();
                     }
                 } catch (JSONException e) {
@@ -98,5 +100,10 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 Toast.makeText(mContext, msg, Toast.LENGTH_SHORT).show();
             }
         }.execute();
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
     }
 }
