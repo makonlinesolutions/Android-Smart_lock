@@ -1,5 +1,6 @@
 package com.smartlock.activity;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.support.annotation.NonNull;
@@ -12,6 +13,7 @@ import android.widget.Toast;
 
 import com.smartlock.R;
 import com.smartlock.model.Key;
+import com.smartlock.utils.DisplayUtil;
 import com.smartlock.utils.SharePreferenceUtility;
 
 import java.util.List;
@@ -54,6 +56,7 @@ public class Nearby_Adapter extends RecyclerView.Adapter<Nearby_Adapter.Nearby_h
             name = itemView.findViewById(R.id.tv_name);
 
             itemView.setOnClickListener(new View.OnClickListener() {
+                @SuppressLint("NewApi")
                 @Override
                 public void onClick(View v) {
                     curKey = nearby_models.get(getAdapterPosition());
@@ -70,7 +73,8 @@ public class Nearby_Adapter extends RecyclerView.Adapter<Nearby_Adapter.Nearby_h
                         activity.startActivity(intent);
                         activity.overridePendingTransition(R.anim.fade_out, R.anim.fade_in);
                         activity.finish();
-                        Toast.makeText(activity, activity.getString(R.string.words_not_admin), Toast.LENGTH_SHORT).show();
+                        DisplayUtil.showMessageDialog(activity, activity.getString(R.string.words_not_admin), activity.getDrawable(R.drawable.ic_iconfinder_143_attention_183267));
+                        //Toast.makeText(activity, activity.getString(R.string.words_not_admin), Toast.LENGTH_SHORT).show();
                     }
                 }
             });

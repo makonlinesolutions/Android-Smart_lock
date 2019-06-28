@@ -1,5 +1,6 @@
 package com.smartlock.activity;
 
+import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
@@ -22,6 +23,7 @@ import com.smartlock.R;
 import com.smartlock.model.Key;
 import com.smartlock.net.ResponseService;
 import com.smartlock.sp.MyPreference;
+import com.smartlock.utils.DisplayUtil;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -160,11 +162,13 @@ public class SettingsActivity extends AppCompatActivity {
 
         final Dialog dialog = builder.create();
         button.setOnClickListener(new View.OnClickListener() {
+            @SuppressLint("NewApi")
             @Override
             public void onClick(View v) {
                 name_lock = edt_lock_name.getText().toString().trim();
                 if (TextUtils.isEmpty(name_lock)) {
-                    Toast.makeText(mContext, "Please enter name", Toast.LENGTH_SHORT).show();
+                    DisplayUtil.showMessageDialog(SettingsActivity.this, "Please enter name", getDrawable(R.drawable.ic_iconfinder_143_attention_183267));
+                    //Toast.makeText(mContext, "Please enter name", Toast.LENGTH_SHORT).show();
                 } else {
                     getRequestToChangeName(name_lock);
                     dialog.dismiss();
@@ -186,6 +190,7 @@ public class SettingsActivity extends AppCompatActivity {
                 return ResponseService.uploadLockName(name, token, lock_id);
             }
 
+            @SuppressLint("NewApi")
             @Override
             protected void onPostExecute(String json) {
                 String msg = getString(R.string.words_authorize_successed);
@@ -196,14 +201,15 @@ public class SettingsActivity extends AppCompatActivity {
                             msg = "Lock Name changed successfully";
                             mTvLockName.setText(name_lock);
                         } else {
-                            msg = "Something went wrong";
+                            msg = "Error while changing lock name!";
                         }
                     } else {
-                        msg = "Something went wrong";
+                        msg = "Error while changing lock name!";
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
+                DisplayUtil.showMessageDialog(SettingsActivity.this, msg, getDrawable(R.drawable.ic_iconfinder_ic_cancel_48px_352263));
                 Toast.makeText(mContext, msg, Toast.LENGTH_SHORT).show();
             }
         }.execute();
@@ -238,14 +244,16 @@ public class SettingsActivity extends AppCompatActivity {
                     return ResponseService.lockDetails(token, lock_id);
                 }
 
+                @SuppressLint("NewApi")
                 @Override
                 protected void onPostExecute(String json) {
                     String msg = getString(R.string.words_authorize_successed);
                     try {
                         JSONObject jsonObject = new JSONObject(json);
                         if (jsonObject.has("errcode")) {
-                            msg = "Something went wrong";
-                            Toast.makeText(mContext, msg, Toast.LENGTH_SHORT).show();
+                            msg = "Couldn't get lock details!";
+                            DisplayUtil.showMessageDialog(SettingsActivity.this, msg, getDrawable(R.drawable.ic_iconfinder_ic_cancel_48px_352263));
+                            //Toast.makeText(mContext, msg, Toast.LENGTH_SHORT).show();
                         } else {
                             mTvLockNumber.setText(jsonObject.getString("lockName"));
                             mTvMacId.setText(jsonObject.getString("lockMac"));

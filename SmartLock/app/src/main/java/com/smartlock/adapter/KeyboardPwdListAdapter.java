@@ -1,5 +1,6 @@
 package com.smartlock.adapter;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.databinding.DataBindingUtil;
 import android.os.AsyncTask;
@@ -55,6 +56,7 @@ public class KeyboardPwdListAdapter extends RecyclerView.Adapter<KeyboardPwdList
         return new KeyboardPwdHolder(itemView);
     }
 
+    //ToDo confirm messages
     @Override
     public void onBindViewHolder(KeyboardPwdHolder holder, final int position) {
         final KeyboardPwd keyboardPwd = keyboardPwds.get(position);
@@ -64,6 +66,7 @@ public class KeyboardPwdListAdapter extends RecyclerView.Adapter<KeyboardPwdList
             public void onClick(View v) {
                 new AsyncTask<Void, Void, String>() {
 
+                    @SuppressLint("NewApi")
                     @Override
                     protected void onPostExecute(String json) {
                         super.onPostExecute(json);
@@ -74,13 +77,14 @@ public class KeyboardPwdListAdapter extends RecyclerView.Adapter<KeyboardPwdList
                             int errcode = jsonObject.getInt("errcode");
                             String msg;
                             if(errcode != 0) {
-                                msg = jsonObject.getString("errmsg");
+                                msg = "Error in deleting passcode by gateway!";//jsonObject.getString("errmsg");
+                                ((BaseActivity)mContext).showMessageDialog(msg, mContext.getDrawable(R.drawable.ic_iconfinder_143_attention_183267));
                             } else {
-                                msg = "delete successed by gateway";
+                                msg = "Deleted passcode by gateway";
                                 keyboardPwds.remove(position);
                                 notifyDataSetChanged();
+                                ((BaseActivity)mContext).showMessageDialog(msg, mContext.getDrawable(R.drawable.ic_iconfinder_ok_2639876));
                             }
-                            ((BaseActivity)mContext).toast(msg);
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
@@ -103,6 +107,7 @@ public class KeyboardPwdListAdapter extends RecyclerView.Adapter<KeyboardPwdList
                     public void onSuccess() {
                         new AsyncTask<Void, Void, String>() {
 
+                            @SuppressLint("NewApi")
                             @Override
                             protected void onPostExecute(String json) {
                                 super.onPostExecute(json);
@@ -113,13 +118,14 @@ public class KeyboardPwdListAdapter extends RecyclerView.Adapter<KeyboardPwdList
                                     int errcode = jsonObject.getInt("errcode");
                                     String msg;
                                     if(errcode != 0) {
-                                        msg = jsonObject.getString("errmsg");
+                                        msg = "Error in deleting passcode by server!"; //jsonObject.getString("errmsg");
+                                        ((BaseActivity)mContext).showMessageDialog(msg, mContext.getDrawable(R.drawable.ic_iconfinder_143_attention_183267));
                                     } else {
-                                        msg = "delete passcode successed by server";
+                                        msg = "Deleted passcode by server";
                                         keyboardPwds.remove(position);
                                         notifyDataSetChanged();
+                                        ((BaseActivity)mContext).showMessageDialog(msg, mContext.getDrawable(R.drawable.ic_iconfinder_ok_2639876));
                                     }
-                                    ((BaseActivity)mContext).toast(msg);
                                 } catch (JSONException e) {
                                     e.printStackTrace();
                                 }

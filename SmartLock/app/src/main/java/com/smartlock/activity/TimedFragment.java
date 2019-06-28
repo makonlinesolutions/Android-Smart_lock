@@ -1,5 +1,6 @@
 package com.smartlock.activity;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -23,6 +24,7 @@ import com.smartlock.R;
 import com.smartlock.model.Key;
 import com.smartlock.net.ResponseService;
 import com.smartlock.sp.MyPreference;
+import com.smartlock.utils.DisplayUtil;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -141,6 +143,7 @@ public class TimedFragment extends Fragment {
         });
 
         mBtSend.setOnClickListener(new View.OnClickListener() {
+            @SuppressLint("NewApi")
             @Override
             public void onClick(View v) {
 
@@ -155,17 +158,20 @@ public class TimedFragment extends Fragment {
                             return ResponseService.sendEKey(mKey, user_name, start_time_millisecond, end_time_millisecond);
                         }
 
+                        @SuppressLint("NewApi")
                         @Override
                         protected void onPostExecute(String json) {
                             String msg = getContext().getString(R.string.words_authorize_successed);
                             try {
                                 JSONObject jsonObject = new JSONObject(json);
                                 if (jsonObject.has("errcode")) {
-                                    msg = "Invalid client, client_id or client_secret error";
+                                    msg = "Authentication failed!";
                                     if (jsonObject.getInt("errcode") == 0) {
-                                        Toast.makeText(mContext, "Now you can the credentials", Toast.LENGTH_SHORT).show();
+                                        DisplayUtil.showMessageDialog(getContext(), msg, getActivity().getDrawable(R.drawable.ic_iconfinder_143_attention_183267)); //ToDo change mesage
+                                        //Toast.makeText(mContext, "Now you can the credentials", Toast.LENGTH_SHORT).show();
                                     }else {
-                                        Toast.makeText(mContext, "something went wong", Toast.LENGTH_SHORT).show();
+                                        DisplayUtil.showMessageDialog(getContext(), msg, getActivity().getDrawable(R.drawable.ic_iconfinder_143_attention_183267)); //ToDo change mesage
+                                        //Toast.makeText(mContext, "Now you can the credentials", Toast.LENGTH_SHORT).show();
                                     }
                                 } else {
                                     String access_token = jsonObject.getString("access_token");
@@ -175,7 +181,8 @@ public class TimedFragment extends Fragment {
                                     /*Intent intent = new Intent(mContext, MainActivity.class);
                                     startActivity(intent);
                                     onResume();*/
-                                    Toast.makeText(mContext, "Key send successfully", Toast.LENGTH_SHORT).show();
+                                    DisplayUtil.showMessageDialog(getContext(), "E-Key sent successfully", getActivity().getDrawable(R.drawable.ic_iconfinder_ok_2639876));
+                                    //Toast.makeText(mContext, "E-Key sent successfully", Toast.LENGTH_SHORT).show();
                                 }
                             } catch (JSONException e) {
                                 e.printStackTrace();
@@ -183,7 +190,8 @@ public class TimedFragment extends Fragment {
                         }
                     }.execute();
                 } else {
-                    Toast.makeText(mContext, "Please enter user name", Toast.LENGTH_SHORT).show();
+                    DisplayUtil.showMessageDialog(getContext(), "Please enter user name", getActivity().getDrawable(R.drawable.ic_iconfinder_143_attention_183267));
+                    //Toast.makeText(mContext, "Please enter user name", Toast.LENGTH_SHORT).show();
                 }
 
             }

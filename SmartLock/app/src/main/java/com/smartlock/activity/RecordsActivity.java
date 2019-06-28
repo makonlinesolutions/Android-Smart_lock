@@ -1,5 +1,6 @@
 package com.smartlock.activity;
 
+import android.annotation.SuppressLint;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -16,6 +17,7 @@ import com.smartlock.model.Key;
 import com.smartlock.model.RecordListItems;
 import com.smartlock.model.RecordListResponse;
 import com.smartlock.net.ResponseService;
+import com.smartlock.utils.DisplayUtil;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -82,6 +84,7 @@ public class RecordsActivity extends AppCompatActivity {
 
         new AsyncTask<Void, String, String>() {
 
+            @SuppressLint("NewApi")
             @Override
             protected String doInBackground(Void... params) {
                 //you can synchronizes all key datas when lastUpdateDate is 0
@@ -89,7 +92,8 @@ public class RecordsActivity extends AppCompatActivity {
                 try {
                     jsonObject = new JSONObject(json);
                     if (jsonObject.has("errcode")) {
-                        Toast.makeText(RecordsActivity.this, "Something went wrong", Toast.LENGTH_SHORT).show();
+                        DisplayUtil.showMessageDialog(RecordsActivity.this, "Couldn't get records!", getDrawable(R.drawable.ic_iconfinder_143_attention_183267));
+                        //Toast.makeText(RecordsActivity.this, "Something went wrong", Toast.LENGTH_SHORT).show();
                         return json;
                     } else {
                         return json;

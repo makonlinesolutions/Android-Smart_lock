@@ -1,5 +1,6 @@
 package com.smartlock.adapter;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.databinding.DataBindingUtil;
 import android.os.AsyncTask;
@@ -60,6 +61,7 @@ public class UnderGatewayLockAdapter extends RecyclerView.Adapter<UnderGatewayLo
             public void onClick(View v) {
                 new AsyncTask<Void, Void, String>() {
 
+                    @SuppressLint("NewApi")
                     @Override
                     protected void onPostExecute(String json) {
                         super.onPostExecute(json);
@@ -69,12 +71,14 @@ public class UnderGatewayLockAdapter extends RecyclerView.Adapter<UnderGatewayLo
                             JSONObject jsonObject = new JSONObject(json);
                             String msg;
                             if(jsonObject.has("errcode")) {
-                                msg = jsonObject.getString("errmsg");
+                                msg = "Error in resetting time!"; //jsonObject.getString("errmsg");
+                                ((BaseActivity) mContext).showMessageDialog(msg, mContext.getDrawable(R.drawable.ic_iconfinder_143_attention_183267));
                             } else {
                                 long date = jsonObject.getLong("date");
-                                msg = "set time:" + DateUitl.getTime(date, "yyyy-MM-dd HH:mm");
+                                msg = "Lock time reset to " + DateUitl.getTime(date, "yyyy-MM-dd HH:mm");
+                                ((BaseActivity) mContext).showMessageDialog(msg, mContext.getDrawable(R.drawable.ic_iconfinder_ok_2639876));
                             }
-                            ((BaseActivity)mContext).toast(msg);
+                            //((BaseActivity)mContext).toast(msg);
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
@@ -93,6 +97,7 @@ public class UnderGatewayLockAdapter extends RecyclerView.Adapter<UnderGatewayLo
             public void onClick(View v) {
                 new AsyncTask<Void, Void, String>() {
 
+                    @SuppressLint("NewApi")
                     @Override
                     protected void onPostExecute(String json) {
                         super.onPostExecute(json);
@@ -102,12 +107,14 @@ public class UnderGatewayLockAdapter extends RecyclerView.Adapter<UnderGatewayLo
                             JSONObject jsonObject = new JSONObject(json);
                             String msg;
                             if(jsonObject.has("errcode")) {
-                                msg = jsonObject.getString("errmsg");
+                                msg = "Error in setting lock time!"; //jsonObject.getString("errmsg");
+                                ((BaseActivity) mContext).showMessageDialog(msg, mContext.getDrawable(R.drawable.ic_iconfinder_143_attention_183267));
                             } else {
                                 long date = jsonObject.getLong("date");
-                                msg = "lock time:" + DateUitl.getTime(date, "yyyy-MM-dd HH:mm");
+                                msg = "Lock time set to " + DateUitl.getTime(date, "yyyy-MM-dd HH:mm");
+                                ((BaseActivity) mContext).showMessageDialog(msg, mContext.getDrawable(R.drawable.ic_iconfinder_ok_2639876));
                             }
-                            ((BaseActivity)mContext).toast(msg);
+                            //((BaseActivity)mContext).toast(msg);
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }

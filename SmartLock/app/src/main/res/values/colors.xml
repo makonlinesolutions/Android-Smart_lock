@@ -14,6 +14,9 @@
     <color name="gray">#808080</color>
     <color name="line">#dbdbdb</color>
 
+    <color name="red">#F84545</color>
+    <color name="green">#3CDD4A</color>
+
     <color name="textColor3">#333333</color>
     <color name="textBlue">#00bfff</color>
 </resources>

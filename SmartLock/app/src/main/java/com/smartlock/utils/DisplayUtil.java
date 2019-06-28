@@ -2,6 +2,7 @@ package com.smartlock.utils;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.support.v7.app.AlertDialog;
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
@@ -125,7 +126,7 @@ public class DisplayUtil {
         dialog.show();
     }
 
-    public static void showMessageDialog(Context context, String message) {
+    public static void showMessageDialog(Context context, String message, Drawable drawable) {
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         LayoutInflater layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View view = layoutInflater.inflate(R.layout.custom_unlock_dialog, null, false);
@@ -135,7 +136,7 @@ public class DisplayUtil {
         TextView tv_message = view.findViewById(R.id.tv_message);
         ImageView imageView = view.findViewById(R.id.iv_lock);
         tv_message.setText(message);
-        imageView.setVisibility(View.GONE);
+        imageView.setBackground(drawable);
         textView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

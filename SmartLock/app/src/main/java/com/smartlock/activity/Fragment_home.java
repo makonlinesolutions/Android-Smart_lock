@@ -1,10 +1,12 @@
 package com.smartlock.activity;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
@@ -45,12 +47,13 @@ import static com.smartlock.utils.Const.KEY_VALUE;
 public class Fragment_home extends Fragment implements View.OnClickListener {
     ImageView img_lock, img_circular, mIvLockName;
     CircularProgressView progressView;
-    LinearLayout ll_records, ll_settings, ll_send_key, ll_generate_passcode, ll_ekeys, ll_passcode;
+    LinearLayout ll_records, ll_settings, ll_send_key, ll_generate_passcode, ll_ekeys, ll_passcode, ll_options;
     RelativeLayout mRlUnLock;
     private Key mKey;
-    private TextView mTvLockName;
+    private TextView mTvLockName, mTvNoLockFound;
     private int openid;
     String name_lock;
+    private View viewLine;
     Dialog dialog;
     private static Fragment_home instance;
 
@@ -70,15 +73,30 @@ public class Fragment_home extends Fragment implements View.OnClickListener {
         ll_passcode = view.findViewById(R.id.ll_passcode);
         ll_ekeys = view.findViewById(R.id.ll_ekeys);
         mIvLockName = view.findViewById(R.id.iv_lock_name);
+        ll_options = view.findViewById(R.id.linearlayout);
+        mTvNoLockFound = view.findViewById(R.id.tv_no_lock_found);
+        viewLine = view.findViewById(R.id.view1);
 
         ll_ekeys.setVisibility(View.GONE);
         ll_passcode.setVisibility(View.GONE);
         ll_generate_passcode.setVisibility(View.GONE);
         mKey = (Key) SharePreferenceUtility.getPreferences(getContext(), KEY_VALUE, SharePreferenceUtility.PREFTYPE_OBJECT);
         if (mKey != null) {
+            img_lock.setBackgroundResource(R.drawable.ic_lock_black_24dp);
             curKey = mKey;
             mTvLockName.setText("CONNECTION WITH : " + mKey.getLockAlias());
+            mTvLockName.setVisibility(View.VISIBLE);
+            mIvLockName.setVisibility(View.VISIBLE);
+            ll_options.setVisibility(View.VISIBLE);
+            mTvNoLockFound.setVisibility(View.INVISIBLE);
+            viewLine.setVisibility(View.VISIBLE);
         } else {
+            img_lock.setBackgroundResource(R.drawable.ic_add_black_24dp);
+            mTvLockName.setVisibility(View.INVISIBLE);
+            mIvLockName.setVisibility(View.INVISIBLE);
+            ll_options.setVisibility(View.INVISIBLE);
+            mTvNoLockFound.setVisibility(View.VISIBLE);
+            viewLine.setVisibility(View.INVISIBLE);
 //            startActivity(new Intent(getContext(), NearbyLockActivity.class));
 //            ((Activity)getContext()).finish();
         }
@@ -169,11 +187,13 @@ public class Fragment_home extends Fragment implements View.OnClickListener {
 
         final Dialog dialog = builder.create();
         button.setOnClickListener(new View.OnClickListener() {
+            @SuppressLint("NewApi")
             @Override
             public void onClick(View v) {
                 name_lock = edt_lock_name.getText().toString().trim();
                 if (TextUtils.isEmpty(name_lock)) {
-                    Toast.makeText(getContext(), "Please enter name", Toast.LENGTH_SHORT).show();
+                    DisplayUtil.showMessageDialog(getContext(), "Please enter name", getActivity().getDrawable(R.drawable.ic_iconfinder_143_attention_183267));
+                    //Toast.makeText(getContext(), "Please enter name", Toast.LENGTH_SHORT).show();
                 } else {
                     getRequestToChangeName(name_lock);
                     dialog.dismiss();
@@ -221,28 +241,33 @@ public class Fragment_home extends Fragment implements View.OnClickListener {
     @Override
     public void onClick(View v) {
         if (v.getId() == R.id.img_lock) {
-            progressView.setVisibility(View.VISIBLE);
-            progressView.startAnimation();
-            new Handler().postDelayed(
-                    new Runnable() {
-                        @Override
-                        public void run() {
-                            progressView.stopAnimation();
-                            progressView.setVisibility(View.GONE);
-                        }
-                    }, 5000);
 
-            if (mKey != null && mKey.getLockMac() != null && mTTLockAPI.isConnected(mKey.getLockMac())) {//If the lock is connected, you can call interface directly
-                if (mKey.isAdmin())
-                    mTTLockAPI.unlockByAdministrator(null, openid, mKey.getLockVersion(), mKey.getAdminPwd(), mKey.getLockKey(), mKey.getLockFlagPos(), System.currentTimeMillis(), mKey.getAesKeyStr(), mKey.getTimezoneRawOffset());
-                else
-                    mTTLockAPI.unlockByUser(null, openid, mKey.getLockVersion(), mKey.getStartDate(), mKey.getEndDate(), mKey.getLockKey(), mKey.getLockFlagPos(), mKey.getAesKeyStr(), mKey.getTimezoneRawOffset());
-            } else {//to connect the lock
+            if (mKey == null){
+                startActivity(new Intent(getContext(), AddLockActivity.class));
+            }else {
                 progressView.setVisibility(View.VISIBLE);
                 progressView.startAnimation();
-                mTTLockAPI.connect(mKey.getLockMac());
-                bleSession.setOperation(Operation.CLICK_UNLOCK);
-                bleSession.setLockmac(mKey.getLockMac());
+                new Handler().postDelayed(
+                        new Runnable() {
+                            @Override
+                            public void run() {
+                                progressView.stopAnimation();
+                                progressView.setVisibility(View.GONE);
+                            }
+                        }, 5000);
+
+                if (mKey != null && mKey.getLockMac() != null && mTTLockAPI.isConnected(mKey.getLockMac())) {//If the lock is connected, you can call interface directly
+                    if (mKey.isAdmin())
+                        mTTLockAPI.unlockByAdministrator(null, openid, mKey.getLockVersion(), mKey.getAdminPwd(), mKey.getLockKey(), mKey.getLockFlagPos(), System.currentTimeMillis(), mKey.getAesKeyStr(), mKey.getTimezoneRawOffset());
+                    else
+                        mTTLockAPI.unlockByUser(null, openid, mKey.getLockVersion(), mKey.getStartDate(), mKey.getEndDate(), mKey.getLockKey(), mKey.getLockFlagPos(), mKey.getAesKeyStr(), mKey.getTimezoneRawOffset());
+                } else {//to connect the lock
+                    progressView.setVisibility(View.VISIBLE);
+                    progressView.startAnimation();
+                    mTTLockAPI.connect(mKey.getLockMac());
+                    bleSession.setOperation(Operation.CLICK_UNLOCK);
+                    bleSession.setLockmac(mKey.getLockMac());
+                }
             }
         } else {
 
@@ -258,11 +283,11 @@ public class Fragment_home extends Fragment implements View.OnClickListener {
       });
     }
 
-    public void showMessageDialog(final String message) {
+    public void showMessageDialog(final String message, final Drawable drawable) {
         getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                DisplayUtil.showMessageDialog(getContext(),message);
+                DisplayUtil.showMessageDialog(getContext(),message, drawable);
             }
         });
     }

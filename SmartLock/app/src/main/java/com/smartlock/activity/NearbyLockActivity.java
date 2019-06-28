@@ -9,6 +9,8 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.TextView;
 
 import com.google.gson.reflect.TypeToken;
 import com.smartlock.R;
@@ -32,6 +34,7 @@ public class NearbyLockActivity extends BaseActivity {
     RecyclerView recyclerView;
     RecyclerView.Adapter adapter;
     RecyclerView.LayoutManager layoutManager;
+    TextView tv_no_locks;
     List<Nearby_model> nearby_models;
 
     private List<Key> keys;
@@ -44,6 +47,7 @@ public class NearbyLockActivity extends BaseActivity {
         setContentView(R.layout.activity_nearby_lock);
         toolbar = findViewById(R.id.toolbar);
         recyclerView = findViewById(R.id.recylerview);
+        tv_no_locks = findViewById(R.id.tv_no_locks);
 
         mContext = NearbyLockActivity.this;
         layoutManager = new LinearLayoutManager(mContext);
@@ -130,10 +134,16 @@ public class NearbyLockActivity extends BaseActivity {
             protected void onPostExecute(String s) {
                 super.onPostExecute(s);
                 progressDialog.cancel();
-                adapter = new Nearby_Adapter(NearbyLockActivity.this, keys);
+
+                if (keys.size() == 0){
+                    tv_no_locks.setVisibility(View.VISIBLE);
+                }else {
+                    tv_no_locks.setVisibility(View.INVISIBLE);
+                    adapter = new Nearby_Adapter(NearbyLockActivity.this, keys);
 //                keyAdapter = new KeyAdapter(MainActivity.this, keys);
-                recyclerView.setAdapter(adapter);
-                recyclerView.setOnCreateContextMenuListener(NearbyLockActivity.this);
+                    recyclerView.setAdapter(adapter);
+                    recyclerView.setOnCreateContextMenuListener(NearbyLockActivity.this);
+                }
             }
         }.execute();
     }

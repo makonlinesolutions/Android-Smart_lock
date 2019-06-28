@@ -5,6 +5,7 @@ import android.annotation.TargetApi;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -17,6 +18,7 @@ import android.widget.Toast;
 
 import com.smartlock.R;
 import com.smartlock.app.SmartLockApp;
+import com.smartlock.utils.DisplayUtil;
 import com.ttlock.bl.sdk.util.LogUtil;
 
 public class BaseActivity extends AppCompatActivity {
@@ -96,6 +98,15 @@ public class BaseActivity extends AppCompatActivity {
                 }
             });
         }
+    }
+
+    public void showMessageDialog(final String message, final Drawable drawable) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                DisplayUtil.showMessageDialog(BaseActivity.this,message, drawable);
+            }
+        });
     }
 
     /**

@@ -24,10 +24,9 @@
 
                 <ImageView
                     android:id="@+id/iv_lock"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_centerHorizontal="true"
-                    android:src="@drawable/ic_unlock" />
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:layout_centerHorizontal="true" />
 
                 <TextView
                     android:id="@+id/tv_message"
