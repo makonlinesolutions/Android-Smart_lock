@@ -136,9 +136,9 @@ public class NearbyLockActivity extends BaseActivity {
                 super.onPostExecute(s);
                 progressDialog.cancel();
 
-                if (keys.size() == 0){
+                if (keys.size() == 0) {
                     tv_no_locks.setVisibility(View.VISIBLE);
-                }else {
+                } else {
                     tv_no_locks.setVisibility(View.INVISIBLE);
                     adapter = new Nearby_Adapter(NearbyLockActivity.this, keys);
 //                keyAdapter = new KeyAdapter(MainActivity.this, keys);
@@ -189,7 +189,7 @@ public class NearbyLockActivity extends BaseActivity {
 
     @Override
     public void onBackPressed() {
-        startActivity(new Intent(NearbyLockActivity.this, MainActivity.class));
+        startActivity(new Intent(NearbyLockActivity.this, MainActivity.class).putExtra("from_near_by_activity", true));
         finish();
     }
 }

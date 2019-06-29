@@ -46,7 +46,7 @@ import java.util.TimeZone;
 /**
  * Created by Administrator on 2016/9/5 0005.
  */
-public class SmartLockApp  extends Application {
+public class SmartLockApp extends Application {
 
     private static boolean DBG = true;
 
@@ -68,7 +68,7 @@ public class SmartLockApp  extends Application {
     private Key curKey;
 
     /**
-     *  bluetooth operation
+     * bluetooth operation
      */
     public static BleSession bleSession = BleSession.getInstance(Operation.UNLOCK, null);
 
@@ -90,7 +90,7 @@ public class SmartLockApp  extends Application {
             broadcastUpdate(BleConstant.ACTION_BLE_DEVICE, BleConstant.DEVICE, extendedBluetoothDevice);
             String accessToken = MyPreference.getStr(mContext, MyPreference.ACCESS_TOKEN);
             Key localKey = DbService.getKeyByLockmac(extendedBluetoothDevice.getAddress());
-            if(localKey != null) {
+            if (localKey != null) {
 //                operateSuccess = false;
                 switch (bleSession.getOperation()) {
 //                    case UNLOCK:
@@ -106,7 +106,7 @@ public class SmartLockApp  extends Application {
                     case GET_LOCK_TIME:
                     case GET_OPERATE_LOG:
                     case ADD_PASSCODE:
-                        if(extendedBluetoothDevice.getAddress().equals(bleSession.getLockmac()))
+                        if (extendedBluetoothDevice.getAddress().equals(bleSession.getLockmac()))
                             mTTLockAPI.connect(extendedBluetoothDevice);
                         break;
                 }
@@ -128,14 +128,14 @@ public class SmartLockApp  extends Application {
                     if (localKey == null)
                         mTTLockAPI.lockInitialize(extendedBluetoothDevice);
                     else {
-                        Fragment_home.getInstance().showMessageDialog(getString(R.string.words_has_exist_lock),null);
+                        Fragment_home.getInstance().showMessageDialog(getString(R.string.words_has_exist_lock), null);
                         ((BaseActivity) curActivity).cancelProgressDialog();
                     }
                     break;
                 case UNLOCK:
                 case CLICK_UNLOCK:
-                    if(localKey != null) {
-                        if(localKey.isAdmin())
+                    if (localKey != null) {
+                        if (localKey.isAdmin())
                             mTTLockAPI.unlockByAdministrator(extendedBluetoothDevice, uid, localKey.getLockVersion(), localKey.getAdminPwd(), localKey.getLockKey(), localKey.getLockFlagPos(), System.currentTimeMillis(), localKey.getAesKeyStr(), localKey.getTimezoneRawOffset());
                         else
                             mTTLockAPI.unlockByUser(extendedBluetoothDevice, uid, localKey.getLockVersion(), localKey.getStartDate(), localKey.getEndDate(), localKey.getLockKey(), localKey.getLockFlagPos(), localKey.getAesKeyStr(), localKey.getTimezoneRawOffset());
@@ -167,14 +167,14 @@ public class SmartLockApp  extends Application {
                     mTTLockAPI.getLockTime(extendedBluetoothDevice, curKey.getLockVersion(), curKey.getAesKeyStr(), localKey.getTimezoneRawOffset());
                     break;
                 case LOCKCAR_UP:
-                    if(localKey.isAdmin())
+                    if (localKey.isAdmin())
                         mTTLockAPI.lockByAdministrator(extendedBluetoothDevice, uid, localKey.getLockVersion(), localKey.getAdminPwd(), localKey.getLockKey(), localKey.getLockFlagPos(), localKey.getAesKeyStr());
                     else
                         mTTLockAPI.lockByUser(extendedBluetoothDevice, uid, localKey.getLockVersion(), localKey.getStartDate(), localKey.getEndDate(), localKey.getLockKey(), localKey.getLockFlagPos(), localKey.getAesKeyStr(), localKey.getTimezoneRawOffset());
 //                    mTTLockAPI.lockByUser(extendedBluetoothDevice, 0, localKey.getLockVersion(), 1489990922165l, 1490077322165l, localKey.getUnlockKey(), localKey.getLockFlagPos(), localKey.getAesKeystr(), localKey.getTimezoneRawOffset());
                     break;
                 case LOCKCAR_DOWN:
-                    if(localKey.isAdmin())
+                    if (localKey.isAdmin())
                         mTTLockAPI.unlockByAdministrator(extendedBluetoothDevice, uid, localKey.getLockVersion(), localKey.getAdminPwd(), localKey.getLockKey(), localKey.getLockFlagPos(), System.currentTimeMillis(), localKey.getAesKeyStr(), localKey.getTimezoneRawOffset());
                     else
                         mTTLockAPI.unlockByUser(extendedBluetoothDevice, uid, localKey.getLockVersion(), localKey.getStartDate(), localKey.getEndDate(), localKey.getLockKey(), localKey.getLockFlagPos(), localKey.getAesKeyStr(), localKey.getTimezoneRawOffset());
@@ -201,7 +201,7 @@ public class SmartLockApp  extends Application {
 //                toast("disconnected");
 //            }
             LogUtil.d("disconnected", DBG);
-            ((BaseActivity)curActivity).cancelProgressDialog();
+            ((BaseActivity) curActivity).cancelProgressDialog();
         }
 
         @Override
@@ -211,7 +211,7 @@ public class SmartLockApp  extends Application {
 
         @Override
         public void onLockInitialize(ExtendedBluetoothDevice extendedBluetoothDevice, final LockData lockData, Error error) {
-            if(error == Error.SUCCESS) {
+            if (error == Error.SUCCESS) {
                 final String lockDataJson = lockData.toJson();
 
 //                toast(getString(R.string.words_lock_add_successed_and_init));
@@ -219,16 +219,16 @@ public class SmartLockApp  extends Application {
                 new AsyncTask<Void, String, Boolean>() {
 
                     @Override
-                    protected Boolean  doInBackground(Void... params) {
+                    protected Boolean doInBackground(Void... params) {
                         Boolean flag = false;
                         String json = ResponseService.lockInit(lockDataJson, lockData.getLockName());
                         try {
                             JSONObject jsonObject = new JSONObject(json);
-                            if(jsonObject.has("errcode")) {
+                            if (jsonObject.has("errcode")) {
                                 String errmsg = jsonObject.getString("description");
 //                                toast(errmsg);
                             } else {
-                                Intent intent = new Intent(mContext,MainActivity.class);
+                                Intent intent = new Intent(mContext, MainActivity.class);
                                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                                 startActivity(intent);
 
@@ -286,7 +286,7 @@ public class SmartLockApp  extends Application {
         @SuppressLint("NewApi")
         @Override
         public void onResetEKey(ExtendedBluetoothDevice extendedBluetoothDevice, final int lockFlagPos, Error error) {
-            if(error == Error.SUCCESS) {
+            if (error == Error.SUCCESS) {
 //                operateSuccess = true;
                 curKey.setLockFlagPos(lockFlagPos);
                 DbService.updateKey(curKey);
@@ -299,7 +299,7 @@ public class SmartLockApp  extends Application {
                         try {
                             JSONObject jsonObject = new JSONObject(json);
                             int errorCode = jsonObject.getInt("errcode");
-                            if(errorCode != 0) {
+                            if (errorCode != 0) {
                                 String errmsg = jsonObject.getString("description");
 //                                toast(errmsg);
                             } else {
@@ -315,7 +315,7 @@ public class SmartLockApp  extends Application {
             } else {
 //                toast(error.getErrorMsg());
             }
-            ((BaseActivity)curActivity).cancelProgressDialog();
+            ((BaseActivity) curActivity).cancelProgressDialog();
         }
 
         @Override
@@ -326,72 +326,77 @@ public class SmartLockApp  extends Application {
         @SuppressLint("NewApi")
         @Override
         public void onSetAdminKeyboardPassword(ExtendedBluetoothDevice extendedBluetoothDevice, String adminCode, Error error) {
-            if(error == Error.SUCCESS) {
+            if (error == Error.SUCCESS) {
 //                operateSuccess = true;
                 curKey.setNoKeyPwd(adminCode);
                 DbService.updateKey(curKey);
                 Fragment_home.getInstance().showMessageDialog(getString(R.string.words_set_admin_code_successed), getDrawable(R.drawable.ic_iconfinder_ok_2639876)); // + adminCode
                 //toast(getString(R.string.words_set_admin_code_successed) + adminCode);
-            } else Fragment_home.getInstance().showMessageDialog(getString(R.string.words_error_set_admin_code), getDrawable(R.drawable.ic_iconfinder_143_attention_183267));
+            } else
+                Fragment_home.getInstance().showMessageDialog(getString(R.string.words_error_set_admin_code), getDrawable(R.drawable.ic_iconfinder_143_attention_183267));
             //toast(error.getErrorMsg());
-            ((BaseActivity)curActivity).cancelProgressDialog();
+            ((BaseActivity) curActivity).cancelProgressDialog();
         }
 
         @SuppressLint("NewApi")
         @Override
         public void onSetDeletePassword(ExtendedBluetoothDevice extendedBluetoothDevice, String deleteCode, Error error) {
-            if(error == Error.SUCCESS) {
+            if (error == Error.SUCCESS) {
 //                operateSuccess = true;
                 curKey.setDeletePwd(deleteCode);
                 DbService.updateKey(curKey);
                 Fragment_home.getInstance().showMessageDialog(getString(R.string.words_set_delete_code_successed), getDrawable(R.drawable.ic_iconfinder_ok_2639876));// + deleteCode
                 //toast(getString(R.string.words_set_delete_code_successed) + deleteCode);
-            } else Fragment_home.getInstance().showMessageDialog(getString(R.string.words_error_set_delete_code), getDrawable(R.drawable.ic_iconfinder_143_attention_183267));
+            } else
+                Fragment_home.getInstance().showMessageDialog(getString(R.string.words_error_set_delete_code), getDrawable(R.drawable.ic_iconfinder_143_attention_183267));
             //toast(error.getErrorMsg());
-            ((BaseActivity)curActivity).cancelProgressDialog();
+            ((BaseActivity) curActivity).cancelProgressDialog();
         }
 
         @SuppressLint("NewApi")
         @Override
         public void onUnlock(ExtendedBluetoothDevice extendedBluetoothDevice, int uid, int uniqueid, long lockTime, Error error) {
-            if(error == Error.SUCCESS) {
-                Fragment_home.getInstance().showDialog();
+            if (error == Error.SUCCESS) {
+                Fragment_home.getInstance().showMessageDialog(getString(R.string.words_unlock_successed),getDrawable(R.drawable.ic_unlock));
 //                toast(getString(R.string.words_unlock_successed));
-            } else Fragment_home.getInstance().showMessageDialog(getString(R.string.words_error_unlock), getDrawable(R.drawable.ic_iconfinder_ic_cancel_48px_352263));
+            } else
+                Fragment_home.getInstance().showMessageDialog(getString(R.string.words_error_unlock), getDrawable(R.drawable.ic_iconfinder_ic_cancel_48px_352263));
             //toast(error.getErrorMsg());
-            ((BaseActivity)curActivity).cancelProgressDialog();
+            ((BaseActivity) curActivity).cancelProgressDialog();
         }
 
 
         @SuppressLint("NewApi")
         @Override
         public void onSetLockTime(ExtendedBluetoothDevice extendedBluetoothDevice, Error error) {
-            if(error == Error.SUCCESS) {
+            if (error == Error.SUCCESS) {
                 Fragment_home.getInstance().showMessageDialog(getString(R.string.words_set_lock_time_successed), getDrawable(R.drawable.ic_iconfinder_ok_2639876));
                 //toast(getString(R.string.words_set_lock_time_successed));
-            } else Fragment_home.getInstance().showMessageDialog(getString(R.string.words_error_set_lock_time), getDrawable(R.drawable.ic_iconfinder_ic_cancel_48px_352263));
+            } else
+                Fragment_home.getInstance().showMessageDialog(getString(R.string.words_error_set_lock_time), getDrawable(R.drawable.ic_iconfinder_ic_cancel_48px_352263));
             //toast(error.getErrorMsg());
-            ((BaseActivity)curActivity).cancelProgressDialog();
+            ((BaseActivity) curActivity).cancelProgressDialog();
         }
 
         @SuppressLint("NewApi")
         @Override
         public void onGetLockTime(ExtendedBluetoothDevice extendedBluetoothDevice, long lockTime, Error error) {
-            if(error == Error.SUCCESS) {
+            if (error == Error.SUCCESS) {
 //                operateSuccess = true;
                 //convert the time by the lock time zone
                 String time = DateUitl.getTime(lockTime - TimeZone.getDefault().getOffset(System.currentTimeMillis()) + curKey.getTimezoneRawOffset(), "yyyy:MM:dd HH:mm");
-                Fragment_home.getInstance().showMessageDialog(String.format(getString(R.string.words_lock_time), time),getDrawable(R.drawable.ic_iconfinder_ok_2639876));
+                Fragment_home.getInstance().showMessageDialog(String.format(getString(R.string.words_lock_time), time), getDrawable(R.drawable.ic_iconfinder_ok_2639876));
                 //toast(String.format(getString(R.string.words_lock_time), time));
-            } else Fragment_home.getInstance().showMessageDialog(getString(R.string.words_error_lock_time), getDrawable(R.drawable.ic_iconfinder_143_attention_183267));
+            } else
+                Fragment_home.getInstance().showMessageDialog(getString(R.string.words_error_lock_time), getDrawable(R.drawable.ic_iconfinder_143_attention_183267));
             //toast(error.getErrorMsg());
-            ((BaseActivity)curActivity).cancelProgressDialog();
+            ((BaseActivity) curActivity).cancelProgressDialog();
         }
 
         @SuppressLint("NewApi")
         @Override
         public void onResetKeyboardPassword(ExtendedBluetoothDevice extendedBluetoothDevice, final String pwdInfo, final long timestamp, final Error error) {
-            if(error == Error.SUCCESS) {
+            if (error == Error.SUCCESS) {
 //                operateSuccess = true;
                 new AsyncTask<Void, String, String>() {
                     @Override
@@ -400,7 +405,7 @@ public class SmartLockApp  extends Application {
                         curKey.setTimestamp(timestamp);
                         DbService.updateKey(curKey);
                         String msg = error.getErrorMsg();
-                        if(error == Error.SUCCESS) {
+                        if (error == Error.SUCCESS) {
                             String json = ResponseService.resetKeyboardPwd(curKey);
                             try {
                                 JSONObject jsonObject = new JSONObject(json);
@@ -411,10 +416,11 @@ public class SmartLockApp  extends Application {
                         }
                         return msg;
                     }
+
                     @Override
                     protected void onPostExecute(String msg) {
                         super.onPostExecute(msg);
-                        ((BaseActivity)curActivity).cancelProgressDialog();
+                        ((BaseActivity) curActivity).cancelProgressDialog();
                         Fragment_home.getInstance().showMessageDialog(msg, null);
                         //toast(msg);
                     }
@@ -440,26 +446,27 @@ public class SmartLockApp  extends Application {
         @Override
         public void onResetLock(ExtendedBluetoothDevice extendedBluetoothDevice, Error error) {
             Log.d("reset", "error:" + error);
-            if(error == Error.SUCCESS) {
+            if (error == Error.SUCCESS) {
                 Fragment_home.getInstance().showMessageDialog(getString(R.string.words_lock_reset_key_invalid), getDrawable(R.drawable.ic_iconfinder_ok_2639876));
                 //toast(getString(R.string.words_lock_reset_key_invalid));
-            } else Fragment_home.getInstance().showMessageDialog(error.getErrorMsg(),null);
+            } else Fragment_home.getInstance().showMessageDialog(error.getErrorMsg(), null);
             //toast(error.getErrorMsg());
-            ((BaseActivity)curActivity).cancelProgressDialog();
+            ((BaseActivity) curActivity).cancelProgressDialog();
         }
 
         @SuppressLint("NewApi")
         @Override
         public void onAddKeyboardPassword(ExtendedBluetoothDevice extendedBluetoothDevice, int keyboardPwdType, String password, long startDate, long endDate, Error error) {
-            if(error == Error.SUCCESS) {
+            if (error == Error.SUCCESS) {
                 String msg = getString(R.string.words_password) + ":" + password + "\n"
                         + getString(R.string.words_period) + ":" + DateUitl.getTime(startDate)
                         + "-" + DateUitl.getTime(endDate);
                 Fragment_home.getInstance().showMessageDialog(getString(R.string.words_add_keyboard_password), getDrawable(R.drawable.ic_iconfinder_ok_2639876));
                 //toast(msg);
-            } else Fragment_home.getInstance().showMessageDialog(getString(R.string.words_error_add_keyboard_password), getDrawable(R.drawable.ic_iconfinder_143_attention_183267));
+            } else
+                Fragment_home.getInstance().showMessageDialog(getString(R.string.words_error_add_keyboard_password), getDrawable(R.drawable.ic_iconfinder_143_attention_183267));
             //toast(error.getErrorMsg());
-            ((BaseActivity)curActivity).cancelProgressDialog();
+            ((BaseActivity) curActivity).cancelProgressDialog();
         }
 
         @Override
@@ -470,14 +477,15 @@ public class SmartLockApp  extends Application {
         @SuppressLint("NewApi")
         @Override
         public void onDeleteOneKeyboardPassword(ExtendedBluetoothDevice extendedBluetoothDevice, int keyboardPwdType, String deletedPwd, Error error) {
-            if(error == Error.SUCCESS) {
+            if (error == Error.SUCCESS) {
                 Fragment_home.getInstance().showMessageDialog(getString(R.string.words_delete_password_successed), getDrawable(R.drawable.ic_iconfinder_ok_2639876));
                 //toast(getString(R.string.words_delete_password_successed));
-                if(operateCallback != null)
+                if (operateCallback != null)
                     operateCallback.onSuccess();
-            } else Fragment_home.getInstance().showMessageDialog(getString(R.string.words_error_delete_password), getDrawable(R.drawable.ic_iconfinder_143_attention_183267));
+            } else
+                Fragment_home.getInstance().showMessageDialog(getString(R.string.words_error_delete_password), getDrawable(R.drawable.ic_iconfinder_143_attention_183267));
             //toast(error.getErrorMsg());
-            ((BaseActivity)curActivity).cancelProgressDialog();
+            ((BaseActivity) curActivity).cancelProgressDialog();
         }
 
         @Override
@@ -489,17 +497,17 @@ public class SmartLockApp  extends Application {
         @SuppressLint("NewApi")
         @Override
         public void onGetOperateLog(ExtendedBluetoothDevice extendedBluetoothDevice, final String records, final Error error) {
-            if(error == Error.SUCCESS) {
+            if (error == Error.SUCCESS) {
                 new AsyncTask<Void, String, String>() {
                     @Override
                     protected String doInBackground(Void... params) {
                         String msg = null;
-                        if(error == Error.SUCCESS) {
+                        if (error == Error.SUCCESS) {
                             String json = ResponseService.uploadOperateLog(curKey.getLockId(), records);
                             try {
                                 JSONObject jsonObject = new JSONObject(json);
                                 int errcode = jsonObject.getInt("errcode");
-                                if(errcode == 0) {
+                                if (errcode == 0) {
                                     msg = getString(R.string.words_upload_log_successed);
                                 } else msg = jsonObject.getString("errmsg");
                             } catch (JSONException e) {
@@ -508,20 +516,22 @@ public class SmartLockApp  extends Application {
                         } else msg = error.getErrorMsg();
                         return msg;
                     }
+
                     @SuppressLint("NewApi")
                     @Override
                     protected void onPostExecute(String msg) {
                         super.onPostExecute(msg);
-                        ((BaseActivity)curActivity).cancelProgressDialog();
+                        ((BaseActivity) curActivity).cancelProgressDialog();
                         Fragment_home.getInstance().showMessageDialog(msg, getDrawable(R.drawable.ic_iconfinder_ok_2639876));
                         //toast(msg);
                     }
                 }.execute();
                 //Fragment_home.getInstance().showMessageDialog(getString(R.string.words_log) + records);
                 //toast(getString(R.string.words_log) + records);
-            } else Fragment_home.getInstance().showMessageDialog(error.getErrorMsg(), getDrawable(R.drawable.ic_iconfinder_143_attention_183267));
+            } else
+                Fragment_home.getInstance().showMessageDialog(error.getErrorMsg(), getDrawable(R.drawable.ic_iconfinder_143_attention_183267));
             //toast(error.getErrorMsg());
-            ((BaseActivity)curActivity).cancelProgressDialog();
+            ((BaseActivity) curActivity).cancelProgressDialog();
         }
 
         @Override
@@ -627,12 +637,13 @@ public class SmartLockApp  extends Application {
         @SuppressLint("NewApi")
         @Override
         public void onLock(ExtendedBluetoothDevice extendedBluetoothDevice, int battery, int uid, int uniqueid, long lockTime, Error error) {
-            if(error == Error.SUCCESS) {
+            if (error == Error.SUCCESS) {
                 Fragment_home.getInstance().showMessageDialog(getString(R.string.words_lock_successed), getDrawable(R.drawable.ic_iconfinder_ok_2639876));
                 //toast(getString(R.string.words_lock_successed));
-            } else Fragment_home.getInstance().showMessageDialog(getString(R.string.words_error_lock), getDrawable(R.drawable.ic_iconfinder_143_attention_183267));
+            } else
+                Fragment_home.getInstance().showMessageDialog(getString(R.string.words_error_lock), getDrawable(R.drawable.ic_iconfinder_143_attention_183267));
             //toast(error.getErrorMsg());
-            ((BaseActivity)curActivity).cancelProgressDialog();
+            ((BaseActivity) curActivity).cancelProgressDialog();
         }
 
         @Override
@@ -766,9 +777,9 @@ public class SmartLockApp  extends Application {
     }
 
     //TODO:
-    private <K,V extends Parcelable> void broadcastUpdate(String action, K key, V value) {
+    private <K, V extends Parcelable> void broadcastUpdate(String action, K key, V value) {
         final Intent intent = new Intent(action);
-        if(key != null) {
+        if (key != null) {
             Bundle bundle = new Bundle();
             bundle.putParcelable((String) key, value);
             intent.putExtras(bundle);

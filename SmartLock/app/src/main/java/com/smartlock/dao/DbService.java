@@ -42,6 +42,18 @@ public class DbService {
         } else return null;
     }
 
+
+    /**
+     * get key list
+     *
+     * @return list of all key
+     */
+
+    public static List<Key> getKeyListKey() {
+        queryBuilder = keyDao.queryBuilder();
+        return queryBuilder.list();
+    }
+
     /**
      * save key
      *

@@ -32,6 +32,7 @@ import com.smartlock.model.Key;
 import com.smartlock.model.KeyObj;
 import com.smartlock.net.ResponseService;
 import com.smartlock.sp.MyPreference;
+import com.smartlock.utils.Const;
 import com.smartlock.utils.SharePreferenceUtility;
 import com.ttlock.bl.sdk.api.TTLockAPI;
 import com.ttlock.bl.sdk.util.GsonUtil;
@@ -63,7 +64,9 @@ public class MainActivity extends BaseActivity implements DrawerAdapter.OnItemSe
     private List<Key> keys;
     private Context mContext;
     private boolean IS_ADMIN = false;
+    private boolean IS_FROM_NEAR_BY_ACTIVITY = false;
     public static Key curKey;
+    private Intent intent;
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
@@ -76,6 +79,14 @@ public class MainActivity extends BaseActivity implements DrawerAdapter.OnItemSe
         setSupportActionBar(toolbar);
         screenIcons = loadScreenIcons();
         screenTitles = loadScreenTitles();
+        intent = getIntent();
+        if (intent != null) {
+            if (intent.hasExtra("isAdmin")) {
+                IS_ADMIN = intent.getBooleanExtra("isAdmin", false);
+                IS_FROM_NEAR_BY_ACTIVITY = intent.getBooleanExtra("from_near_by_activity", false);
+            }
+        }
+
         mContext = MainActivity.this;
         slidingRootNav = new SlidingRootNavBuilder(this)
                 .withToolbarMenuToggle(toolbar)
@@ -97,7 +108,7 @@ public class MainActivity extends BaseActivity implements DrawerAdapter.OnItemSe
         list.setNestedScrollingEnabled(false);
         list.setLayoutManager(new LinearLayoutManager(this));
         list.setAdapter(adapter);
-        adapter.setSelected(POS_DASHBOARD);
+//        adapter.setSelected(POS_DASHBOARD);
 
         mIvLock.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -135,12 +146,6 @@ public class MainActivity extends BaseActivity implements DrawerAdapter.OnItemSe
         super.onNewIntent(intent);
         LogUtil.d("", DBG);
 //        syncData();
-
-        if (intent != null) {
-            if (intent.hasExtra("isAdmin")) {
-                IS_ADMIN = intent.getBooleanExtra("isAdmin", false);
-            }
-        }
     }
 
     @Override
@@ -187,7 +192,13 @@ public class MainActivity extends BaseActivity implements DrawerAdapter.OnItemSe
                     keys.addAll(convert2DbModel(list));
                     DbService.deleteAllKey();
                     DbService.saveKeyList(keys);
+
+
+                    Bundle bundle = new Bundle();
+                    bundle.putInt("key_data", keys.size());
+
                     Fragment fragment = new Fragment_home();
+                    fragment.setArguments(bundle);
                     FragmentManager fragmentManager = getSupportFragmentManager();
                     FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                     fragmentTransaction.replace(R.id.container, fragment);
@@ -280,6 +291,7 @@ public class MainActivity extends BaseActivity implements DrawerAdapter.OnItemSe
             MyPreference.putStr(mContext, MyPreference.ACCESS_TOKEN, "");
             MyPreference.putStr(mContext, MyPreference.OPEN_ID, "");
             SharePreferenceUtility.saveObjectPreferences(mContext, KEY_VALUE, null);
+            SharePreferenceUtility.saveBooleanPreferences(mContext, Const.IS_LOGIN, false);
             Intent intent = new Intent(MainActivity.this, SplashScreenActivity.class);
             startActivity(intent);
             overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
@@ -357,6 +369,17 @@ public class MainActivity extends BaseActivity implements DrawerAdapter.OnItemSe
 
 //        accessToken = MyPreference.getStr(this, MyPreference.ACCESS_TOKEN);
         keys = new ArrayList<>();
-//        syncData();
+        if (intent.getBooleanExtra("from_near_by_activity", false)) {
+            Bundle bundle = new Bundle();
+            bundle.putBoolean("from_near_by_activity", true);
+            Fragment home_fragment = new Fragment_home();
+            home_fragment.setArguments(bundle);
+            FragmentManager fragmentManager_home = getSupportFragmentManager();
+            FragmentTransaction fragmentTransaction = fragmentManager_home.beginTransaction();
+            fragmentTransaction.replace(R.id.container, home_fragment);
+            fragmentTransaction.commit();
+        } else {
+            syncData();
+        }
     }
 }

@@ -28,6 +28,7 @@ import android.widget.Toast;
 import com.dd.processbutton.FlatButton;
 import com.github.rahatarmanahmed.cpv.CircularProgressView;
 import com.smartlock.R;
+import com.smartlock.dao.DbService;
 import com.smartlock.enumtype.Operation;
 import com.smartlock.interfaces.ShowCustomDialog;
 import com.smartlock.model.Key;
@@ -38,6 +39,8 @@ import com.smartlock.utils.SharePreferenceUtility;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.List;
 
 import static com.smartlock.activity.NearbyLockActivity.curKey;
 import static com.smartlock.app.SmartLockApp.bleSession;
@@ -56,6 +59,7 @@ public class Fragment_home extends Fragment implements View.OnClickListener {
     private View viewLine;
     Dialog dialog;
     private static Fragment_home instance;
+    private List<Key> arrKey;
 
     @Nullable
     @Override
@@ -80,25 +84,60 @@ public class Fragment_home extends Fragment implements View.OnClickListener {
         ll_ekeys.setVisibility(View.GONE);
         ll_passcode.setVisibility(View.GONE);
         ll_generate_passcode.setVisibility(View.GONE);
-        mKey = (Key) SharePreferenceUtility.getPreferences(getContext(), KEY_VALUE, SharePreferenceUtility.PREFTYPE_OBJECT);
-        if (mKey != null) {
-            img_lock.setBackgroundResource(R.drawable.ic_lock_black_24dp);
-            curKey = mKey;
-            mTvLockName.setText("CONNECTION WITH : " + mKey.getLockAlias());
-            mTvLockName.setVisibility(View.VISIBLE);
-            mIvLockName.setVisibility(View.VISIBLE);
-            ll_options.setVisibility(View.VISIBLE);
-            mTvNoLockFound.setVisibility(View.INVISIBLE);
-            viewLine.setVisibility(View.VISIBLE);
-        } else {
-            img_lock.setBackgroundResource(R.drawable.ic_add_black_24dp);
-            mTvLockName.setVisibility(View.INVISIBLE);
-            mIvLockName.setVisibility(View.INVISIBLE);
-            ll_options.setVisibility(View.INVISIBLE);
-            mTvNoLockFound.setVisibility(View.VISIBLE);
-            viewLine.setVisibility(View.INVISIBLE);
+        arrKey = DbService.getKeyListKey();
+
+        Bundle bundle = getArguments();
+        boolean from_near_by_activity = bundle.getBoolean("from_near_by_activity", false);
+
+        if (!from_near_by_activity) {
+            if (arrKey.size() > 0) {
+                if (arrKey.size() == 1) {
+                    mKey = arrKey.get(0);
+                    img_lock.setBackgroundResource(R.drawable.ic_lock_black_24dp);
+                    curKey = mKey;
+                    mTvLockName.setText("CONNECTION WITH : " + mKey.getLockAlias());
+                    mTvLockName.setVisibility(View.VISIBLE);
+                    mIvLockName.setVisibility(View.VISIBLE);
+                    ll_options.setVisibility(View.VISIBLE);
+                    mTvNoLockFound.setVisibility(View.INVISIBLE);
+                    viewLine.setVisibility(View.VISIBLE);
+                } else {
+                    SharePreferenceUtility.saveObjectPreferences(getContext(),KEY_VALUE,null);
+                    startActivity(new Intent(getContext(), NearbyLockActivity.class));
+                    getActivity().finish();
+                }
+
+            } else {
+                img_lock.setBackgroundResource(R.drawable.ic_add_black_24dp);
+                mTvLockName.setVisibility(View.INVISIBLE);
+                mIvLockName.setVisibility(View.INVISIBLE);
+                ll_options.setVisibility(View.INVISIBLE);
+                mTvNoLockFound.setVisibility(View.VISIBLE);
+                viewLine.setVisibility(View.INVISIBLE);
 //            startActivity(new Intent(getContext(), NearbyLockActivity.class));
 //            ((Activity)getContext()).finish();
+            }
+        } else {
+            mKey = (Key) SharePreferenceUtility.getPreferences(getContext(), KEY_VALUE, SharePreferenceUtility.PREFTYPE_OBJECT);
+
+            if (mKey != null) {
+
+                img_lock.setBackgroundResource(R.drawable.ic_lock_black_24dp);
+                curKey = mKey;
+                mTvLockName.setText("CONNECTION WITH : " + mKey.getLockAlias());
+                mTvLockName.setVisibility(View.VISIBLE);
+                mIvLockName.setVisibility(View.VISIBLE);
+                ll_options.setVisibility(View.VISIBLE);
+                mTvNoLockFound.setVisibility(View.INVISIBLE);
+                viewLine.setVisibility(View.VISIBLE);
+            } else {
+                img_lock.setBackgroundResource(R.drawable.ic_add_black_24dp);
+                mTvLockName.setVisibility(View.INVISIBLE);
+                mIvLockName.setVisibility(View.INVISIBLE);
+                ll_options.setVisibility(View.INVISIBLE);
+                mTvNoLockFound.setVisibility(View.VISIBLE);
+                viewLine.setVisibility(View.INVISIBLE);
+            }
         }
 
         if (mKey != null && mKey.isAdmin()) {
@@ -242,9 +281,9 @@ public class Fragment_home extends Fragment implements View.OnClickListener {
     public void onClick(View v) {
         if (v.getId() == R.id.img_lock) {
 
-            if (mKey == null){
+            if (mKey == null) {
                 startActivity(new Intent(getContext(), AddLockActivity.class));
-            }else {
+            } else {
                 progressView.setVisibility(View.VISIBLE);
                 progressView.startAnimation();
                 new Handler().postDelayed(
@@ -272,24 +311,23 @@ public class Fragment_home extends Fragment implements View.OnClickListener {
         } else {
 
 
-
         }
     }
 
     public void showDialog() {
-      getActivity().runOnUiThread(new Runnable() {
-          @Override
-          public void run() {
-              DisplayUtil.showDialog(getContext());
-          }
-      });
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                DisplayUtil.showDialog(getContext());
+            }
+        });
     }
 
     public void showMessageDialog(final String message, final Drawable drawable) {
         getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                DisplayUtil.showMessageDialog(getContext(),message, drawable);
+                DisplayUtil.showMessageDialog(getContext(), message, drawable);
             }
         });
     }

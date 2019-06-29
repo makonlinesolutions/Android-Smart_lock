@@ -21,7 +21,9 @@ import android.widget.Toast;
 import com.smartlock.R;
 import com.smartlock.net.ResponseService;
 import com.smartlock.sp.MyPreference;
+import com.smartlock.utils.Const;
 import com.smartlock.utils.DisplayUtil;
+import com.smartlock.utils.SharePreferenceUtility;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -91,7 +93,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                     toast("Please enter password");
                     return "";
                 }else {*/
-                    return ResponseService.auth(username, password);
+                return ResponseService.auth(username, password);
                 //}
             }
 
@@ -102,20 +104,22 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 try {
                     JSONObject jsonObject = new JSONObject(json);
                     if (jsonObject.has("errmsg")) {
-                        if (TextUtils.isEmpty(username)){
+                        if (TextUtils.isEmpty(username)) {
                             toast("Please enter mobile number");
-                        }else if (TextUtils.isEmpty(password)){
+                        } else if (TextUtils.isEmpty(password)) {
                             toast("Please enter password");
-                        }else {
+                        } else {
                             msg = "Invalid login credentials!\nTry again";
                             showMessageDialog(msg, getDrawable(R.drawable.ic_iconfinder_ic_cancel_48px_352263));
                         }
                     } else {
+                        SharePreferenceUtility.saveBooleanPreferences(mContext, Const.IS_LOGIN, true);
                         showMessageDialog(msg, getDrawable(R.drawable.ic_iconfinder_ok_2639876));
                         String access_token = jsonObject.getString("access_token");
                         String openid = jsonObject.getString("openid");
                         MyPreference.putStr(mContext, MyPreference.ACCESS_TOKEN, access_token);
                         MyPreference.putStr(mContext, MyPreference.OPEN_ID, openid);
+
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -131,7 +135,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         super.onBackPressed();
     }
 
-    private void showMessageDialog(final String msg, Drawable drawable){
+    private void showMessageDialog(final String msg, Drawable drawable) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         LayoutInflater layoutInflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View view = layoutInflater.inflate(R.layout.custom_unlock_dialog, null, false);
@@ -152,7 +156,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                     startActivity(intent);
                     overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
                     onResume();
-                }else {
+                } else {
                     dialog.dismiss();
                 }
             }
@@ -161,7 +165,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         dialog.show();
     }
 
-    private void toast(final String message){
+    private void toast(final String message) {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {

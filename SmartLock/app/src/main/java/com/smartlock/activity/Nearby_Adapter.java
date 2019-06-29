@@ -64,12 +64,14 @@ public class Nearby_Adapter extends RecyclerView.Adapter<Nearby_Adapter.Nearby_h
                     if (curKey.isAdmin()) {
                         Intent intent = new Intent(activity, MainActivity.class);
                         intent.putExtra("isAdmin", true);
+                        intent.putExtra("from_near_by_activity", true);
                         activity.startActivity(intent);
                         activity.overridePendingTransition(R.anim.fade_out, R.anim.fade_in);
                         activity.finish();
                     } else {
                         Intent intent = new Intent(activity, MainActivity.class);
                         intent.putExtra("isAdmin", false);
+                        intent.putExtra("from_near_by_activity", true);
                         activity.startActivity(intent);
                         activity.overridePendingTransition(R.anim.fade_out, R.anim.fade_in);
                         activity.finish();
