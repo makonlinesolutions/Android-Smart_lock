@@ -20,6 +20,7 @@ import com.smartlock.dao.DbService;
 import com.smartlock.model.Key;
 import com.smartlock.model.KeyObj;
 import com.smartlock.net.ResponseService;
+import com.smartlock.utils.SharePreferenceUtility;
 import com.ttlock.bl.sdk.util.GsonUtil;
 import com.ttlock.bl.sdk.util.LogUtil;
 
@@ -28,6 +29,8 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.smartlock.utils.Const.KEY_VALUE;
 
 public class NearbyLockActivity extends BaseActivity {
     Toolbar toolbar;
@@ -138,6 +141,7 @@ public class NearbyLockActivity extends BaseActivity {
 
                 if (keys.size() == 0) {
                     tv_no_locks.setVisibility(View.VISIBLE);
+                    SharePreferenceUtility.saveObjectPreferences(NearbyLockActivity.this,KEY_VALUE,null);
                 } else {
                     tv_no_locks.setVisibility(View.INVISIBLE);
                     adapter = new Nearby_Adapter(NearbyLockActivity.this, keys);
