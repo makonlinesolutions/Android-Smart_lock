@@ -71,6 +71,7 @@ public class UnderGatewayLockAdapter extends RecyclerView.Adapter<UnderGatewayLo
                             JSONObject jsonObject = new JSONObject(json);
                             String msg;
                             if(jsonObject.has("errcode")) {
+
                                 msg = "Error in resetting time!"; //jsonObject.getString("errmsg");
                                 ((BaseActivity) mContext).showMessageDialog(msg, mContext.getDrawable(R.drawable.ic_iconfinder_143_attention_183267));
                             } else {

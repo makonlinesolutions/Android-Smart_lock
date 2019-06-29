@@ -35,6 +35,7 @@ public class RegistrationActivity extends AppCompatActivity implements View.OnCl
     private Context mContext;
 
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

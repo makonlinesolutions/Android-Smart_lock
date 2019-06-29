@@ -48,6 +48,7 @@ public class TimedFragment extends Fragment {
     private int openid;
     private Context mContext;
 
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {

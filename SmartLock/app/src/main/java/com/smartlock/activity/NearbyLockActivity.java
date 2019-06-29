@@ -59,6 +59,7 @@ public class NearbyLockActivity extends BaseActivity {
         recyclerView.setLayoutManager(layoutManager);
         nearby_models = new ArrayList<>();
 
+
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);

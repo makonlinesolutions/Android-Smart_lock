@@ -152,6 +152,7 @@ public class MainActivity extends BaseActivity implements DrawerAdapter.OnItemSe
                 SmartLockApp.mTTLockAPI.startBTDeviceScan();
             }
         }
+
     }
 
 

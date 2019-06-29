@@ -79,6 +79,7 @@ public class SmartLockApp  extends Application {
 
     private Handler handler = new Handler();
 
+
     /**
      * TTLock Callback
      */

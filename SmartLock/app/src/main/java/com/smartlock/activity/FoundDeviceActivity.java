@@ -97,6 +97,8 @@ public class FoundDeviceActivity extends BaseActivity implements AdapterView.OnI
         SmartLockApp.bleSession.setOperation(Operation.ADD_ADMIN);
         SmartLockApp.mTTLockAPI.connect((ExtendedBluetoothDevice) foundDeviceAdapter.getItem(position));
         showProgressDialog();
+
+
     }
 
     @Override

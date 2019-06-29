@@ -62,6 +62,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
             }
         });
+
+
     }
 
     @Override

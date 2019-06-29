@@ -70,6 +70,7 @@ public class KeyboardPwdListAdapter extends RecyclerView.Adapter<KeyboardPwdList
                     @Override
                     protected void onPostExecute(String json) {
                         super.onPostExecute(json);
+
                         ((BaseActivity)mContext).cancelProgressDialog();
                         LogUtil.d("json:" + json, true);
                         try {

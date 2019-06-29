@@ -78,6 +78,7 @@ public class Nearby_Adapter extends RecyclerView.Adapter<Nearby_Adapter.Nearby_h
                     }
                 }
             });
+
         }
     }
 }

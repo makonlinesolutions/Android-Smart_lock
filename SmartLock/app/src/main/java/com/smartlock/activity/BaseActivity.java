@@ -140,6 +140,8 @@ public class BaseActivity extends AppCompatActivity {
                 LogUtil.w("Permission denied.", DBG);
             }
         }
+
+
     }
 
     public void start_activity(Class clazz) {

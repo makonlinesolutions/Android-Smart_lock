@@ -43,7 +43,6 @@ public class SettingsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_settings);
         initUi();
 
-
         if (curKey != null) {
             mKey = curKey;
         } else {
