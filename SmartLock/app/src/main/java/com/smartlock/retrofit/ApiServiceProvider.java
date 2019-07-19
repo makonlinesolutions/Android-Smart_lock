@@ -4,9 +4,9 @@ import android.content.Context;
 
 public class ApiServiceProvider extends RetrofitBase {
     private static ApiServiceProvider apiServiceProvider;
-    private ApiServices apiServices;
+    public ApiServices apiServices;
 
-    private ApiServiceProvider(Context context) {
+    public ApiServiceProvider(Context context) {
         super(context, true);
         apiServices = retrofit.create(ApiServices.class);
     }

@@ -16,6 +16,7 @@ public class ResponseService {
     private static final String TAG = "ResponseService";
     private static String actionUrl = "https://api.ttlock.com.cn";
     private static String actionUrlV3 = actionUrl + "/v3";
+    private static String pmsServerUrl = "http://3.14.132.47/api";
 
     /**
      * authorize

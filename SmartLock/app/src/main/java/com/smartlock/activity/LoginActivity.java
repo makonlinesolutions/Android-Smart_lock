@@ -19,7 +19,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.smartlock.R;
+import com.smartlock.model.LoginResponse;
 import com.smartlock.net.ResponseService;
+import com.smartlock.retrofit.ApiServiceProvider;
+import com.smartlock.retrofit.ApiServices;
+import com.smartlock.retrofit.RetrofitBase;
 import com.smartlock.sp.MyPreference;
 import com.smartlock.utils.Const;
 import com.smartlock.utils.DisplayUtil;
@@ -27,6 +31,10 @@ import com.smartlock.utils.SharePreferenceUtility;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener {
     EditText mEtLoginId, mEtPassword;
@@ -65,7 +73,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             }
         });
 
-
     }
 
     @Override
@@ -79,7 +86,34 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
     @Override
     public void onClick(View v) {
+        final String username = mEtLoginId.getText().toString();
+        final String password = mEtPassword.getText().toString();
 
+        ApiServices services = new ApiServiceProvider(getApplicationContext()).apiServices;
+
+        Call<LoginResponse> loginResponseCall = services.LOGIN_RESPONSE_OBSERVABLE(username, password);
+        loginResponseCall.enqueue(new Callback<LoginResponse>() {
+            @Override
+            public void onResponse(Call<LoginResponse> call, Response<LoginResponse> response) {
+                LoginResponse loginResponse = response.body();
+
+                if(loginResponse.response.statusCode == 200) {
+                    Toast.makeText(mContext, ""+loginResponse.response.status, Toast.LENGTH_SHORT).show();
+                    callTTLogin();
+                }else {
+                    Toast.makeText(mContext, ""+loginResponse.response.status, Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<LoginResponse> call, Throwable t) {
+                Toast.makeText(mContext, ""+t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+
+    }
+
+    private void callTTLogin() {
         final String username = mEtLoginId.getText().toString();
         final String password = mEtPassword.getText().toString();
         new AsyncTask<Void, Integer, String>() {
@@ -124,7 +158,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-
                 //Toast.makeText(mContext, msg, Toast.LENGTH_SHORT).show();
             }
         }.execute();
@@ -164,6 +197,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         dialog.setCanceledOnTouchOutside(false);
         dialog.show();
     }
+
 
     private void toast(final String message) {
         runOnUiThread(new Runnable() {
