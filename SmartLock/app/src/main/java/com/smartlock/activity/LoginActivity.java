@@ -19,6 +19,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.smartlock.R;
+import com.smartlock.model.KeyDetails;
+import com.smartlock.model.KeyDetailsResponse;
 import com.smartlock.model.LoginResponse;
 import com.smartlock.net.ResponseService;
 import com.smartlock.retrofit.ApiServiceProvider;
@@ -32,6 +34,8 @@ import com.smartlock.utils.SharePreferenceUtility;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.List;
+
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -44,7 +48,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     int keyDel;
     private Context mContext;
     String user_name = "";
-
+    ApiServices services ;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -72,7 +76,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
             }
         });
-
+        services = new ApiServiceProvider(getApplicationContext()).apiServices;
     }
 
     @Override
@@ -88,8 +92,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     public void onClick(View v) {
         final String username = mEtLoginId.getText().toString();
         final String password = mEtPassword.getText().toString();
-
-        ApiServices services = new ApiServiceProvider(getApplicationContext()).apiServices;
 
         Call<LoginResponse> loginResponseCall = services.LOGIN_RESPONSE_OBSERVABLE(username, password);
         loginResponseCall.enqueue(new Callback<LoginResponse>() {
@@ -146,6 +148,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                             msg = "Invalid login credentials!\nTry again";
                             showMessageDialog(msg, getDrawable(R.drawable.ic_iconfinder_ic_cancel_48px_352263));
                         }
+                        getKeyDetails();
                     } else {
                         SharePreferenceUtility.saveBooleanPreferences(mContext, Const.IS_LOGIN, true);
                         showMessageDialog(msg, getDrawable(R.drawable.ic_iconfinder_ok_2639876));
@@ -153,7 +156,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                         String openid = jsonObject.getString("openid");
                         MyPreference.putStr(mContext, MyPreference.ACCESS_TOKEN, access_token);
                         MyPreference.putStr(mContext, MyPreference.OPEN_ID, openid);
-
+                        getKeyDetails();
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -161,6 +164,30 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 //Toast.makeText(mContext, msg, Toast.LENGTH_SHORT).show();
             }
         }.execute();
+    }
+
+    private void getKeyDetails() {
+        Call<KeyDetailsResponse> keyDetailsResponseCall = services.KEY_DETAILS_OBSERVABLE("1");
+        keyDetailsResponseCall.enqueue(new Callback<KeyDetailsResponse>() {
+            @Override
+            public void onResponse(Call<KeyDetailsResponse> call, Response<KeyDetailsResponse> response) {
+                KeyDetailsResponse keyDetailsResponse = response.body();
+
+                if(keyDetailsResponse.response.statusCode == 200) {
+                   List<KeyDetails> key_details = keyDetailsResponse.response.response ;
+                   if(key_details.size() > 0){
+                       Toast.makeText(mContext, ""+keyDetailsResponse.response.status, Toast.LENGTH_SHORT).show();
+                   }
+                }else if(keyDetailsResponse.response.statusCode == 400){
+                    Toast.makeText(mContext, ""+keyDetailsResponse.response.message, Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<KeyDetailsResponse> call, Throwable t) {
+                Toast.makeText(mContext, ""+t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     @Override
