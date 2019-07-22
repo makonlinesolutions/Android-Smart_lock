@@ -47,7 +47,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     String a;
     int keyDel;
     private Context mContext;
-    String user_name = "";
+//    String user_name = "";
     ApiServices services ;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,11 +64,11 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         txt_label = findViewById(R.id.text_label);
         txt_label.setText("LOGIN");
 
-        Intent intent = getIntent();
+      /*  Intent intent = getIntent();
         if (intent != null && intent.hasExtra("user_id")) {
             user_name = intent.getStringExtra("user_id");
         }
-        mEtLoginId.setText(user_name);
+        mEtLoginId.setText(user_name);*/
         ((TextView) findViewById(R.id.tv_register)).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -93,6 +93,31 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         final String username = mEtLoginId.getText().toString();
         final String password = mEtPassword.getText().toString();
 
+       validateEntries(username,password);
+
+    }
+
+    private void validateEntries(String username, String password) {
+        boolean IS_ENTRY = true;
+
+        if (TextUtils.isEmpty(username)) {
+            Toast.makeText(mContext, "Please enter user name", Toast.LENGTH_SHORT).show();
+            IS_ENTRY = false;
+            return;
+        }
+
+        if (TextUtils.isEmpty(password)) {
+            Toast.makeText(mContext, "Please enter password", Toast.LENGTH_SHORT).show();
+            IS_ENTRY = false;
+            return;
+        }
+
+        if (IS_ENTRY) {
+            getRequestPMSLogin(username,password);
+        }
+    }
+
+    private void getRequestPMSLogin(String username, String password) {
         Call<LoginResponse> loginResponseCall = services.LOGIN_RESPONSE_OBSERVABLE(username, password);
         loginResponseCall.enqueue(new Callback<LoginResponse>() {
             @Override
@@ -112,7 +137,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 Toast.makeText(mContext, ""+t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
-
     }
 
     private void callTTLogin() {
@@ -122,15 +146,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
             @Override
             protected String doInBackground(Void... params) {
-                /*if (TextUtils.isEmpty(username)){
-                   toast("Please enter username");
-                    return "";
-                }else if (TextUtils.isEmpty(password)){
-                    toast("Please enter password");
-                    return "";
-                }else {*/
-                return ResponseService.auth(username, password);
-                //}
+                return ResponseService.auth("novatest_7276469974", "123456");
             }
 
             @SuppressLint("NewApi")

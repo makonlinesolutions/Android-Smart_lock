@@ -62,7 +62,7 @@ public class RetrofitBase {
     private void addVersioningHeaders(OkHttpClient.Builder builder, Context context) {
         final String appVersion = "v.1.0.1";
         final int version = AppUtil.getApplicationVersionCode(context);
-        final String appName = "RetroKit";
+            final String appName = "RetroKit";
         final String name = "RetroKit";
         builder.interceptors().add(new Interceptor() {
             @Override

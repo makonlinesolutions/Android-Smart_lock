@@ -117,6 +117,7 @@
                 android:hint="Enter mobile number"
                 android:inputType="textEmailAddress"
                 android:padding="15dp"
+                android:text="novatest_swapnil1674"
                 android:textColor="@color/light_white"
                 android:textColorHint="@color/dark_gray" />
             <!-- <br.com.sapereaude.maskedEditText.MaskedEditText
@@ -198,6 +199,7 @@
                 android:hint="Enter password"
                 android:inputType="textPassword"
                 android:padding="15dp"
+                android:text="123456"
                 android:textColor="@color/light_white"
                 android:textColorHint="@color/dark_gray" />
             <!-- <br.com.sapereaude.maskedEditText.MaskedEditText
