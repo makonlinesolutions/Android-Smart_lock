@@ -31,7 +31,7 @@
             android:layout_alignParentRight="true"
             android:layout_marginTop="15dp"
             android:padding="10dp"
-            android:text="Register"
+            android:text="Admin"
             android:textAllCaps="true"
             android:textColor="@color/white"
             android:textSize="14dp" />

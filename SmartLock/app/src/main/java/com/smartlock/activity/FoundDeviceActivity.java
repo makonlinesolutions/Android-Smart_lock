@@ -4,27 +4,49 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.Toast;
 
+import com.google.gson.reflect.TypeToken;
 import com.smartlock.R;
 import com.smartlock.adapter.FoundDeviceAdapter;
 import com.smartlock.app.SmartLockApp;
 import com.smartlock.constant.BleConstant;
+import com.smartlock.dao.DbService;
 import com.smartlock.enumtype.Operation;
+import com.smartlock.model.AddLockResponse;
 import com.smartlock.model.Key;
+import com.smartlock.model.KeyObj;
+import com.smartlock.net.ResponseService;
+import com.smartlock.retrofit.ApiServiceProvider;
+import com.smartlock.retrofit.ApiServices;
+import com.smartlock.utils.SharePreferenceUtility;
 import com.ttlock.bl.sdk.scanner.ExtendedBluetoothDevice;
+import com.ttlock.bl.sdk.util.GsonUtil;
+import com.ttlock.bl.sdk.util.LogUtil;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
 import static com.smartlock.app.SmartLockApp.bleSession;
 import static com.smartlock.app.SmartLockApp.mTTLockAPI;
+import static com.smartlock.utils.Const.KEY_VALUE;
 
 public class FoundDeviceActivity extends BaseActivity implements AdapterView.OnItemClickListener {
 
@@ -36,7 +58,9 @@ public class FoundDeviceActivity extends BaseActivity implements AdapterView.OnI
     public static Key curKey;
     private ExtendedBluetoothDevice device;
     private Toolbar toolbar;
-
+    private ArrayList<KeyObj> list;
+    private ApiServices services;
+    private int i;
     private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -69,6 +93,7 @@ public class FoundDeviceActivity extends BaseActivity implements AdapterView.OnI
         listView.setAdapter(foundDeviceAdapter);
         listView.setOnItemClickListener(this);
         mContext = FoundDeviceActivity.this;
+        services = new ApiServiceProvider(getApplicationContext()).apiServices;
         registerReceiver(mReceiver, getIntentFilter());
     }
 
@@ -86,19 +111,77 @@ public class FoundDeviceActivity extends BaseActivity implements AdapterView.OnI
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-     /*   SmartLockApp.bleSession.setOperation(Operation.ADD_ADMIN);
-        SmartLockApp.mTTLockAPI.connect((ExtendedBluetoothDevice) foundDeviceAdapter.getItem(position));
-        mTTLockAPI.connect(device.getAddress());
-        bleSession.setOperation(Operation.CLICK_UNLOCK);
-        bleSession.setLockmac(device.getAddress());
-        showProgressDialog();
-        startActivity(new Intent(mContext, MainActivity.class));
-        finish();*/
         SmartLockApp.bleSession.setOperation(Operation.ADD_ADMIN);
         SmartLockApp.mTTLockAPI.connect((ExtendedBluetoothDevice) foundDeviceAdapter.getItem(position));
         showProgressDialog();
+        syncData(((ExtendedBluetoothDevice) foundDeviceAdapter.getItem(position)).getName());
+    }
+
+    private void getRequestToAddLockToPMSServer(KeyObj keyObj) {
+
+        Call<AddLockResponse> addLockResponseCall = services.ADD_LOCK_RESPONSE_CALL("5", keyObj.userType, keyObj.keyStatus, String.valueOf(keyObj.lockId),
+                String.valueOf(keyObj.keyId), keyObj.lockVersion.protocolVersion, keyObj.lockName, keyObj.lockAlias, keyObj.lockMac, String.valueOf(keyObj.electricQuantity),
+                String.valueOf(keyObj.lockFlagPos), keyObj.adminPwd, keyObj.lockKey, keyObj.noKeyPwd, "000", keyObj.pwdInfo, String.valueOf(keyObj.timestamp), keyObj.aesKeyStr,
+                String.valueOf(keyObj.startDate), String.valueOf(keyObj.endDate), String.valueOf(keyObj.specialValue), String.valueOf(keyObj.timezoneRawOffset),
+                String.valueOf(keyObj.keyRight), String.valueOf(keyObj.keyboardPwdVersion), String.valueOf(keyObj.remoteEnable), keyObj.remarks);
+
+        addLockResponseCall.enqueue(new Callback<AddLockResponse>() {
+            @Override
+            public void onResponse(Call<AddLockResponse> call, Response<AddLockResponse> response) {
+                if (response.isSuccessful()) {
+                    if (response.body().response.statusCode == 200) {
+                        Log.d("Lock add", "successfully");
+                    }
+                } else {
+                    Toast.makeText(mContext, "something went wrong", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<AddLockResponse> call, Throwable t) {
+                Toast.makeText(mContext, t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+
+    }
 
 
+    private void syncData(final String name) {
+        new AsyncTask<Void, String, String>() {
+
+            @Override
+            protected String doInBackground(Void... params) {
+                String json = ResponseService.syncData(0);
+                LogUtil.d("json:" + json, DBG);
+                try {
+                    JSONObject jsonObject = new JSONObject(json);
+                    if (jsonObject.has("errcode")) {
+                        return json;
+                    }
+                    long lastUpdateDate = jsonObject.getLong("lastUpdateDate");
+                    String keyList = jsonObject.getString("keyList");
+                    list = GsonUtil.toObject(keyList, new TypeToken<ArrayList<KeyObj>>() {
+                    });
+
+                    for (i = 0; i < list.size(); i++) {
+                        if (name.equals(list.get(i).lockName))
+                            getRequestToAddLockToPMSServer(list.get(i));
+
+                    }
+
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                return json;
+            }
+
+            @Override
+            protected void onPostExecute(String s) {
+                super.onPostExecute(s);
+
+            }
+        }.execute();
     }
 
     @Override

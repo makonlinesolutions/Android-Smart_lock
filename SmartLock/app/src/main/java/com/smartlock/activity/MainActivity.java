@@ -27,6 +27,7 @@ import android.widget.ImageView;
 import com.google.gson.reflect.TypeToken;
 import com.smartlock.R;
 import com.smartlock.app.SmartLockApp;
+import com.smartlock.constant.Config;
 import com.smartlock.dao.DbService;
 import com.smartlock.model.Key;
 import com.smartlock.model.KeyObj;
@@ -48,6 +49,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static com.smartlock.constant.Config.IS_ADMIN_LOGIN;
 import static com.smartlock.utils.Const.KEY_VALUE;
 
 public class MainActivity extends BaseActivity implements DrawerAdapter.OnItemSelectedListener {
@@ -85,6 +87,7 @@ public class MainActivity extends BaseActivity implements DrawerAdapter.OnItemSe
                 IS_ADMIN = intent.getBooleanExtra("isAdmin", false);
                 IS_FROM_NEAR_BY_ACTIVITY = intent.getBooleanExtra("from_near_by_activity", false);
             }
+
         }
 
         mContext = MainActivity.this;
@@ -98,12 +101,21 @@ public class MainActivity extends BaseActivity implements DrawerAdapter.OnItemSe
                 .inject();
 
         mIvLock = findViewById(R.id.ivLockLock);
-        DrawerAdapter adapter = new DrawerAdapter(Arrays.asList(
-                createItemFor(POS_DASHBOARD).setChecked(true),
-                createItemFor(POS_ADDLOCK).setChecked(true),
-                createItemFor(POS_LOGOUT).setChecked(true)));
-        adapter.setListener(this);
+        DrawerAdapter adapter;
+        boolean is_admin_login = (boolean) SharePreferenceUtility.getPreferences(mContext, Config.IS_ADMIN_LOGIN, SharePreferenceUtility.PREFTYPE_BOOLEAN);
 
+        if (is_admin_login) {
+            adapter = new DrawerAdapter(Arrays.asList(
+                    createItemFor(POS_DASHBOARD).setChecked(true),
+                    createItemFor(POS_ADDLOCK).setChecked(true),
+                    createItemFor(POS_LOGOUT).setChecked(true)));
+
+        } else {
+            adapter = new DrawerAdapter(Arrays.asList(
+                    createItemFor(POS_DASHBOARD).setChecked(true),
+                    createItemFor(POS_LOGOUT).setChecked(true)));
+        }
+        adapter.setListener(this);
         RecyclerView list = findViewById(R.id.list);
         list.setNestedScrollingEnabled(false);
         list.setLayoutManager(new LinearLayoutManager(this));
@@ -159,7 +171,6 @@ public class MainActivity extends BaseActivity implements DrawerAdapter.OnItemSe
         }
 
     }
-
 
     /**
      * synchronizes the data of key
@@ -220,7 +231,6 @@ public class MainActivity extends BaseActivity implements DrawerAdapter.OnItemSe
         }.execute();
     }
 
-
     private static ArrayList<Key> convert2DbModel(ArrayList<KeyObj> list) {
         ArrayList<Key> keyList = new ArrayList<>();
         if (list != null && list.size() > 0) {
@@ -258,7 +268,6 @@ public class MainActivity extends BaseActivity implements DrawerAdapter.OnItemSe
         return keyList;
     }
 
-
     @Override
     protected void onStop() {
         super.onStop();
@@ -284,12 +293,12 @@ public class MainActivity extends BaseActivity implements DrawerAdapter.OnItemSe
         return ContextCompat.getColor(this, res);
     }
 
-
     @Override
     public void onItemSelected(int position) {
         if (position == POS_LOGOUT) {
             MyPreference.putStr(mContext, MyPreference.ACCESS_TOKEN, "");
             MyPreference.putStr(mContext, MyPreference.OPEN_ID, "");
+            SharePreferenceUtility.saveBooleanPreferences(mContext, Config.IS_ADMIN_LOGIN, false);
             SharePreferenceUtility.saveObjectPreferences(mContext, KEY_VALUE, null);
             SharePreferenceUtility.saveBooleanPreferences(mContext, Const.IS_LOGIN, false);
             Intent intent = new Intent(MainActivity.this, SplashScreenActivity.class);
@@ -298,7 +307,22 @@ public class MainActivity extends BaseActivity implements DrawerAdapter.OnItemSe
             finish();
         }
         if (position == POS_ADDLOCK) {
-            Intent intent = new Intent(MainActivity.this, AddLockActivity.class);
+            Intent intent;
+            boolean is_admin_login = (boolean) SharePreferenceUtility.getPreferences(mContext, Config.IS_ADMIN_LOGIN, SharePreferenceUtility.PREFTYPE_BOOLEAN);
+
+            if (is_admin_login) {
+                intent = new Intent(MainActivity.this, AddLockActivity.class);
+            } else {
+                MyPreference.putStr(mContext, MyPreference.ACCESS_TOKEN, "");
+                MyPreference.putStr(mContext, MyPreference.OPEN_ID, "");
+                SharePreferenceUtility.saveBooleanPreferences(mContext, Config.IS_ADMIN_LOGIN, false);
+                SharePreferenceUtility.saveObjectPreferences(mContext, KEY_VALUE, null);
+                SharePreferenceUtility.saveBooleanPreferences(mContext, Const.IS_LOGIN, false);
+                intent = new Intent(MainActivity.this, SplashScreenActivity.class);
+                startActivity(intent);
+                overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+                finish();
+            }
             startActivity(intent);
             overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
         }

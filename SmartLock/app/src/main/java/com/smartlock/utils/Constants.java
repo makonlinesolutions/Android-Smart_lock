@@ -27,5 +27,7 @@ public class Constants {
         String IS_LOGIN = "is_login";
         String LOGIN_iTEMS = "login_items";
         String USER_NAME = "user_name";
+        String NOVA_LOCK_ADMIN_USER_ID = "novatest_7276469974";
+        String NOVA_LOCK_ADMIN_USER_PASSWORD = "123456";
     }
 }

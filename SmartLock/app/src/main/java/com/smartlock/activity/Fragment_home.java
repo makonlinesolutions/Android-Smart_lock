@@ -28,6 +28,7 @@ import android.widget.Toast;
 import com.dd.processbutton.FlatButton;
 import com.github.rahatarmanahmed.cpv.CircularProgressView;
 import com.smartlock.R;
+import com.smartlock.constant.Config;
 import com.smartlock.dao.DbService;
 import com.smartlock.enumtype.Operation;
 import com.smartlock.interfaces.ShowCustomDialog;
@@ -88,7 +89,6 @@ public class Fragment_home extends Fragment implements View.OnClickListener {
 
         Bundle bundle = getArguments();
         boolean from_near_by_activity = bundle.getBoolean("from_near_by_activity", false);
-
         if (!from_near_by_activity) {
             if (arrKey.size() > 0) {
                 if (arrKey.size() == 1) {
@@ -102,7 +102,7 @@ public class Fragment_home extends Fragment implements View.OnClickListener {
                     mTvNoLockFound.setVisibility(View.INVISIBLE);
                     viewLine.setVisibility(View.VISIBLE);
                 } else {
-                    SharePreferenceUtility.saveObjectPreferences(getContext(),KEY_VALUE,null);
+                    SharePreferenceUtility.saveObjectPreferences(getContext(), KEY_VALUE, null);
                     startActivity(new Intent(getContext(), NearbyLockActivity.class));
                     getActivity().finish();
                 }
@@ -207,6 +207,13 @@ public class Fragment_home extends Fragment implements View.OnClickListener {
                 openDialogForChangeKeyName();
             }
         });
+        boolean is_admin_login = (boolean) SharePreferenceUtility.getPreferences(getContext(), Config.IS_ADMIN_LOGIN, SharePreferenceUtility.PREFTYPE_BOOLEAN);
+
+        if (!is_admin_login) {
+            ll_send_key.setVisibility(View.GONE);
+            ll_records.setVisibility(View.GONE);
+            ll_settings.setVisibility(View.GONE);
+        }
         return view;
     }
 

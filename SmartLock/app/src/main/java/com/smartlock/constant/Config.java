@@ -8,5 +8,6 @@ public class Config {
     public static final String CLIENT_SECRET = "2e13262b6a1dee81f7b286f16b2caba0";
     //callback address
     public static final String REDIRECT_URI = "https://adjinfotech.com";
+    public static final String IS_ADMIN_LOGIN = "is_admin_login";
 
 }

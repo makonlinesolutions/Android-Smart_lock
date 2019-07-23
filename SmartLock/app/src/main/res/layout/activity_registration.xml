@@ -28,7 +28,7 @@
                     android:layout_marginLeft="20dp"
                     android:layout_marginTop="10dp"
                     android:padding="10dp"
-                    android:text="Register"
+                    android:text="Admin"
                     android:textAllCaps="true"
                     android:textColor="@color/white"
                     android:textSize="20dp" />
@@ -236,7 +236,7 @@
                     android:layout_marginTop="20dp"
                     android:layout_marginRight="90dp"
                     android:background="@drawable/button_bg"
-                    android:text="Register" />
+                    android:text="Admin Login" />
 
 
             </RelativeLayout>

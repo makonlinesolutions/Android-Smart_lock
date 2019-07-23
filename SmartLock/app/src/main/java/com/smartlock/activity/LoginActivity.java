@@ -3,6 +3,7 @@ package com.smartlock.activity;
 import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
@@ -28,6 +29,7 @@ import com.smartlock.retrofit.ApiServices;
 import com.smartlock.retrofit.RetrofitBase;
 import com.smartlock.sp.MyPreference;
 import com.smartlock.utils.Const;
+import com.smartlock.utils.Constants;
 import com.smartlock.utils.DisplayUtil;
 import com.smartlock.utils.SharePreferenceUtility;
 
@@ -40,6 +42,8 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+import static com.smartlock.constant.Config.IS_ADMIN_LOGIN;
+
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener {
     EditText mEtLoginId, mEtPassword;
     Button btn_login;
@@ -47,8 +51,9 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     String a;
     int keyDel;
     private Context mContext;
-//    String user_name = "";
-    ApiServices services ;
+    //    String user_name = "";
+    ApiServices services;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -93,7 +98,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         final String username = mEtLoginId.getText().toString();
         final String password = mEtPassword.getText().toString();
 
-       validateEntries(username,password);
+        validateEntries(username, password);
 
     }
 
@@ -113,7 +118,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         }
 
         if (IS_ENTRY) {
-            getRequestPMSLogin(username,password);
+            getRequestPMSLogin(username, password);
         }
     }
 
@@ -124,17 +129,21 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             public void onResponse(Call<LoginResponse> call, Response<LoginResponse> response) {
                 LoginResponse loginResponse = response.body();
 
-                if(loginResponse.response.statusCode == 200) {
-                    Toast.makeText(mContext, ""+loginResponse.response.status, Toast.LENGTH_SHORT).show();
-                    callTTLogin();
-                }else {
-                    Toast.makeText(mContext, ""+loginResponse.response.status, Toast.LENGTH_SHORT).show();
+                if (loginResponse != null) {
+                    if (loginResponse.response.statusCode == 200) {
+                        Toast.makeText(mContext, "" + loginResponse.response.status, Toast.LENGTH_SHORT).show();
+                        callTTLogin();
+                    } else {
+                        Toast.makeText(mContext, "" + loginResponse.response.status, Toast.LENGTH_SHORT).show();
+                    }
+                } else {
+                    Toast.makeText(mContext, "Something went wrong", Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
             public void onFailure(Call<LoginResponse> call, Throwable t) {
-                Toast.makeText(mContext, ""+t.getMessage(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(mContext, "" + t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -146,7 +155,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
             @Override
             protected String doInBackground(Void... params) {
-                return ResponseService.auth("novatest_7276469974", "123456");
+                return ResponseService.auth(Constants.AppConst.NOVA_LOCK_ADMIN_USER_ID, Constants.AppConst.NOVA_LOCK_ADMIN_USER_PASSWORD);
             }
 
             @SuppressLint("NewApi")
@@ -189,26 +198,37 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             public void onResponse(Call<KeyDetailsResponse> call, Response<KeyDetailsResponse> response) {
                 KeyDetailsResponse keyDetailsResponse = response.body();
 
-                if(keyDetailsResponse.response.statusCode == 200) {
-                   List<KeyDetails> key_details = keyDetailsResponse.response.response ;
-                   if(key_details.size() > 0){
-                       Toast.makeText(mContext, ""+keyDetailsResponse.response.status, Toast.LENGTH_SHORT).show();
-                   }
-                }else if(keyDetailsResponse.response.statusCode == 400){
-                    Toast.makeText(mContext, ""+keyDetailsResponse.response.message, Toast.LENGTH_SHORT).show();
+                if (keyDetailsResponse.response.statusCode == 200) {
+                    List<KeyDetails> key_details = keyDetailsResponse.response.response;
+                    if (key_details.size() > 0) {
+                        Toast.makeText(mContext, "" + keyDetailsResponse.response.status, Toast.LENGTH_SHORT).show();
+                    }
                 }
             }
 
             @Override
             public void onFailure(Call<KeyDetailsResponse> call, Throwable t) {
-                Toast.makeText(mContext, ""+t.getMessage(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(mContext, "" + t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
     }
 
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
+        new AlertDialog.Builder(this)
+                .setMessage("Are You Sure You Want To Exit?")
+                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        LoginActivity.this.finishAffinity();
+                    }
+                })
+                .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                }).create().show();
     }
 
     private void showMessageDialog(final String msg, Drawable drawable) {
@@ -228,6 +248,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 dialog.dismiss();
 
                 if (msg.equalsIgnoreCase(getString(R.string.words_login_successed))) {
+                    SharePreferenceUtility.saveBooleanPreferences(mContext, IS_ADMIN_LOGIN, false);
                     Intent intent = new Intent(mContext, MainActivity.class);
                     startActivity(intent);
                     overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
