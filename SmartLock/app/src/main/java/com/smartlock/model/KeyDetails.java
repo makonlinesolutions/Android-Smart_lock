@@ -4,27 +4,13 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 public class KeyDetails {
+
     @SerializedName("master_id")
     @Expose
-    public Integer masterId;
+    public int masterId;
     @SerializedName("room_id")
     @Expose
-    public Integer roomId;
-    @SerializedName("room_no")
-    @Expose
-    public String roomNo;
-    @SerializedName("room_type")
-    @Expose
-    public String roomType;
-    @SerializedName("check_in_time")
-    @Expose
-    public String checkInTime;
-    @SerializedName("check_out_time")
-    @Expose
-    public String checkOutTime;
-    @SerializedName("number_of_persons")
-    @Expose
-    public Integer numberOfPersons;
+    public int roomId;
     @SerializedName("userType")
     @Expose
     public String userType;
@@ -43,6 +29,9 @@ public class KeyDetails {
     @SerializedName("lockMac")
     @Expose
     public String lockMac;
+    @SerializedName("electricQuantity")
+    @Expose
+    public String electricQuantity;
     @SerializedName("lockFlagPos")
     @Expose
     public String lockFlagPos;
@@ -93,46 +82,49 @@ public class KeyDetails {
     public String remarks;
     @SerializedName("id")
     @Expose
-    public Integer id;
+    public int id;
     @SerializedName("floor_id")
     @Expose
-    public String floorId;
+    public Object floorId;
+    @SerializedName("room_no")
+    @Expose
+    public String roomNo;
     @SerializedName("room_type_id")
     @Expose
-    public Integer roomTypeId;
+    public int roomTypeId;
     @SerializedName("total_beds")
     @Expose
-    public String totalBeds;
+    public Object totalBeds;
     @SerializedName("housekeeping_status")
     @Expose
-    public Integer housekeepingStatus;
+    public int housekeepingStatus;
     @SerializedName("availability")
     @Expose
-    public String availability;
+    public Object availability;
     @SerializedName("fd_remark")
     @Expose
-    public String fdRemark;
+    public Object fdRemark;
     @SerializedName("hk_remark")
     @Expose
     public String hkRemark;
     @SerializedName("assigned_to")
     @Expose
-    public Integer assignedTo;
+    public Object assignedTo;
     @SerializedName("room_desc")
     @Expose
-    public String roomDesc;
+    public Object roomDesc;
     @SerializedName("minimum_stay")
     @Expose
-    public String minimumStay;
+    public Object minimumStay;
     @SerializedName("short_code")
     @Expose
     public String shortCode;
     @SerializedName("sort_key")
     @Expose
-    public Integer sortKey;
+    public Object sortKey;
     @SerializedName("bed_type_id")
     @Expose
-    public Integer bedTypeId;
+    public Object bedTypeId;
     @SerializedName("phone_extension")
     @Expose
     public String phoneExtension;
@@ -141,16 +133,16 @@ public class KeyDetails {
     public String keyCardAlias;
     @SerializedName("room_property")
     @Expose
-    public String roomProperty;
+    public Object roomProperty;
     @SerializedName("count_paymaster_room_inventory")
     @Expose
     public Object countPaymasterRoomInventory;
     @SerializedName("room_as")
     @Expose
-    public String roomAs;
+    public Object roomAs;
     @SerializedName("image")
     @Expose
-    public String image;
+    public Object image;
     @SerializedName("created_by")
     @Expose
     public String createdBy;
@@ -159,5 +151,5 @@ public class KeyDetails {
     public String modifiedBy;
     @SerializedName("status")
     @Expose
-    public Integer status;
+    public int status;
 }

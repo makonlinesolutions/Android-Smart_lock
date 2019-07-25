@@ -21,17 +21,22 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.google.gson.reflect.TypeToken;
 import com.smartlock.R;
 import com.smartlock.app.SmartLockApp;
 import com.smartlock.constant.Config;
 import com.smartlock.dao.DbService;
+import com.smartlock.model.AddLockResponse;
 import com.smartlock.model.Key;
 import com.smartlock.model.KeyObj;
 import com.smartlock.net.ResponseService;
+import com.smartlock.retrofit.ApiServiceProvider;
+import com.smartlock.retrofit.ApiServices;
 import com.smartlock.sp.MyPreference;
 import com.smartlock.utils.Const;
 import com.smartlock.utils.SharePreferenceUtility;
@@ -49,8 +54,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
 import static com.smartlock.constant.Config.IS_ADMIN_LOGIN;
 import static com.smartlock.utils.Const.KEY_VALUE;
+import static com.smartlock.utils.Const.USER_KEY_VALUE;
 
 public class MainActivity extends BaseActivity implements DrawerAdapter.OnItemSelectedListener {
     private static final int POS_DASHBOARD = 0;
@@ -203,7 +213,13 @@ public class MainActivity extends BaseActivity implements DrawerAdapter.OnItemSe
                     keys.addAll(convert2DbModel(list));
                     DbService.deleteAllKey();
                     DbService.saveKeyList(keys);
+                    boolean is_admin_login = (boolean) SharePreferenceUtility.getPreferences(mContext, Config.IS_ADMIN_LOGIN, SharePreferenceUtility.PREFTYPE_BOOLEAN);
 
+                    if (is_admin_login) {
+                        for (int i = 0; i < list.size(); i++) {
+                            getRequestToAddLockToPMSServer(list.get(i));
+                        }
+                    }
 
                     Bundle bundle = new Bundle();
                     bundle.putInt("key_data", keys.size());
@@ -300,6 +316,7 @@ public class MainActivity extends BaseActivity implements DrawerAdapter.OnItemSe
             MyPreference.putStr(mContext, MyPreference.OPEN_ID, "");
             SharePreferenceUtility.saveBooleanPreferences(mContext, Config.IS_ADMIN_LOGIN, false);
             SharePreferenceUtility.saveObjectPreferences(mContext, KEY_VALUE, null);
+            SharePreferenceUtility.saveObjectPreferences(mContext, USER_KEY_VALUE, null);
             SharePreferenceUtility.saveBooleanPreferences(mContext, Const.IS_LOGIN, false);
             Intent intent = new Intent(MainActivity.this, SplashScreenActivity.class);
             startActivity(intent);
@@ -405,5 +422,38 @@ public class MainActivity extends BaseActivity implements DrawerAdapter.OnItemSe
         } else {
             syncData();
         }
+    }
+
+
+    private ApiServices services;
+
+    private void getRequestToAddLockToPMSServer(KeyObj keyObj) {
+        services = new ApiServiceProvider(getApplicationContext()).apiServices;
+
+        Call<AddLockResponse> addLockResponseCall = services.ADD_LOCK_RESPONSE_CALL("", keyObj.userType, keyObj.keyStatus, String.valueOf(keyObj.lockId),
+                String.valueOf(keyObj.keyId), keyObj.lockVersion.protocolVersion, keyObj.lockName, keyObj.lockAlias, keyObj.lockMac, String.valueOf(keyObj.electricQuantity),
+                String.valueOf(keyObj.lockFlagPos), keyObj.adminPwd, keyObj.lockKey, keyObj.noKeyPwd, "000", keyObj.pwdInfo, String.valueOf(keyObj.timestamp), keyObj.aesKeyStr,
+                String.valueOf(keyObj.startDate), String.valueOf(keyObj.endDate), String.valueOf(keyObj.specialValue), String.valueOf(keyObj.timezoneRawOffset),
+                String.valueOf(keyObj.keyRight), String.valueOf(keyObj.keyboardPwdVersion), String.valueOf(keyObj.remoteEnable), keyObj.remarks);
+
+        addLockResponseCall.enqueue(new Callback<AddLockResponse>() {
+            @Override
+            public void onResponse(Call<AddLockResponse> call, Response<AddLockResponse> response) {
+                if (response.isSuccessful()) {
+                    if (response.body().response.statusCode == 200) {
+                        Log.d("Lock add", "successfully");
+
+                    }
+                } else {
+                    Toast.makeText(mContext, "something went wrong", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<AddLockResponse> call, Throwable t) {
+                Toast.makeText(mContext, t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+
     }
 }

@@ -5,7 +5,6 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -23,15 +22,15 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.dd.processbutton.FlatButton;
 import com.github.rahatarmanahmed.cpv.CircularProgressView;
 import com.smartlock.R;
 import com.smartlock.constant.Config;
 import com.smartlock.dao.DbService;
+import com.smartlock.db.DatabaseHelper;
+import com.smartlock.db.LockDetails;
 import com.smartlock.enumtype.Operation;
-import com.smartlock.interfaces.ShowCustomDialog;
 import com.smartlock.model.Key;
 import com.smartlock.net.ResponseService;
 import com.smartlock.sp.MyPreference;
@@ -47,6 +46,7 @@ import static com.smartlock.activity.NearbyLockActivity.curKey;
 import static com.smartlock.app.SmartLockApp.bleSession;
 import static com.smartlock.app.SmartLockApp.mTTLockAPI;
 import static com.smartlock.utils.Const.KEY_VALUE;
+import static com.smartlock.utils.Const.USER_KEY_VALUE;
 
 public class Fragment_home extends Fragment implements View.OnClickListener {
     ImageView img_lock, img_circular, mIvLockName;
@@ -61,6 +61,9 @@ public class Fragment_home extends Fragment implements View.OnClickListener {
     Dialog dialog;
     private static Fragment_home instance;
     private List<Key> arrKey;
+    private List<LockDetails> arrKeyDetails;
+    private LockDetails keyDetails;
+    private boolean from_near_by_activity = false;
 
     @Nullable
     @Override
@@ -85,60 +88,130 @@ public class Fragment_home extends Fragment implements View.OnClickListener {
         ll_ekeys.setVisibility(View.GONE);
         ll_passcode.setVisibility(View.GONE);
         ll_generate_passcode.setVisibility(View.GONE);
-        arrKey = DbService.getKeyListKey();
+        DatabaseHelper databaseHelper = new DatabaseHelper(getContext());
+        arrKeyDetails = databaseHelper.getAllLock();
 
         Bundle bundle = getArguments();
-        boolean from_near_by_activity = bundle.getBoolean("from_near_by_activity", false);
+
+        if (bundle != null) {
+            from_near_by_activity = bundle.getBoolean("from_near_by_activity", false);
+        }
         if (!from_near_by_activity) {
-            if (arrKey.size() > 0) {
-                if (arrKey.size() == 1) {
-                    mKey = arrKey.get(0);
+            boolean is_admin_login = (boolean) SharePreferenceUtility.getPreferences(getContext(), Config.IS_ADMIN_LOGIN, SharePreferenceUtility.PREFTYPE_BOOLEAN);
+            if (is_admin_login) {
+                arrKey = DbService.getKeyListKey();
+                if (arrKey.size() > 0) {
+                    if (arrKey.size() == 1) {
+                        mKey = arrKey.get(0);
+                        img_lock.setBackgroundResource(R.drawable.ic_lock_black_24dp);
+                        curKey = mKey;
+                        mTvLockName.setText(mKey.getLockAlias());
+                        mTvLockName.setVisibility(View.VISIBLE);
+                        mIvLockName.setVisibility(View.VISIBLE);
+                        ll_options.setVisibility(View.VISIBLE);
+                        mTvNoLockFound.setVisibility(View.INVISIBLE);
+                        viewLine.setVisibility(View.VISIBLE);
+                    } else {
+                        SharePreferenceUtility.saveObjectPreferences(getContext(), KEY_VALUE, null);
+                        startActivity(new Intent(getContext(), NearbyLockActivity.class));
+                        getActivity().finish();
+                    }
+
+                } else {
+                    img_lock.setBackgroundResource(R.drawable.ic_add_black_24dp);
+                    mTvLockName.setVisibility(View.INVISIBLE);
+                    mIvLockName.setVisibility(View.INVISIBLE);
+                    ll_options.setVisibility(View.INVISIBLE);
+                    mTvNoLockFound.setVisibility(View.VISIBLE);
+                    viewLine.setVisibility(View.INVISIBLE);
+//            startActivity(new Intent(getContext(), NearbyLockActivity.class));
+//            ((Activity)getContext()).finish();
+                }
+
+
+            } else {
+                if (arrKeyDetails.size() > 0) {
+                    if (arrKeyDetails.size() == 1) {
+                        keyDetails = arrKeyDetails.get(0);
+                        mKey = new Key(Long.parseLong(String.valueOf(keyDetails.getId_value())), keyDetails.getUserType_value(), String.valueOf(keyDetails.getStatus_value()), keyDetails.getId_value(), Integer.parseInt(keyDetails.getKeyId_value()), keyDetails.getLockversion_value(), keyDetails.getLockname_value(),
+                                keyDetails.getLockAlis_value(), keyDetails.getLockMac_value(), Integer.parseInt(keyDetails.getElectricQuantity_value()), Integer.parseInt(keyDetails.getLockFlagPos_value()), keyDetails.getAdminPwd_value(),
+                                keyDetails.getLockkey_value(), keyDetails.getNoKeyPwd_value(), keyDetails.getDeletePwd_value(), keyDetails.getPwdInfo_value(), Long.parseLong(keyDetails.getTimestamp_value()), keyDetails.getAesKeyStr_value(), Long.parseLong(keyDetails.getStartDate_value()), Long.parseLong(keyDetails.getStartDate_value()),
+                                Integer.parseInt(keyDetails.getSpecialValue_value()), Integer.parseInt(keyDetails.getTimezoneRawOffset_value()), Integer.parseInt(keyDetails.getKeyRight_value()), Integer.parseInt(keyDetails.getKeyboardPwdVersion_value()),
+                                Integer.parseInt(keyDetails.getRemoteEnable_value()), keyDetails.getRemarks_value(), "", "", "");
+
+
+                        img_lock.setBackgroundResource(R.drawable.ic_lock_black_24dp);
+                        curKey = mKey;
+                        mTvLockName.setText(keyDetails.getLockAlis_value());
+                        mTvLockName.setVisibility(View.VISIBLE);
+                        mIvLockName.setVisibility(View.VISIBLE);
+                        ll_options.setVisibility(View.VISIBLE);
+                        mTvNoLockFound.setVisibility(View.INVISIBLE);
+                        viewLine.setVisibility(View.VISIBLE);
+                    } else {
+                        SharePreferenceUtility.saveObjectPreferences(getContext(), KEY_VALUE, null);
+                        startActivity(new Intent(getContext(), NearbyLockActivity.class));
+                        getActivity().finish();
+                    }
+
+                } else {
+                    img_lock.setBackgroundResource(R.drawable.ic_add_black_24dp);
+                    mTvLockName.setVisibility(View.INVISIBLE);
+                    mIvLockName.setVisibility(View.INVISIBLE);
+                    ll_options.setVisibility(View.INVISIBLE);
+                    mTvNoLockFound.setVisibility(View.VISIBLE);
+                    viewLine.setVisibility(View.INVISIBLE);
+//            startActivity(new Intent(getContext(), NearbyLockActivity.class));
+//            ((Activity)getContext()).finish();
+                }
+            }
+        } else {
+            boolean is_admin_login = (boolean) SharePreferenceUtility.getPreferences(getContext(), Config.IS_ADMIN_LOGIN, SharePreferenceUtility.PREFTYPE_BOOLEAN);
+
+            if (!is_admin_login) {
+                keyDetails = (LockDetails) SharePreferenceUtility.getPreferences(getContext(), USER_KEY_VALUE, SharePreferenceUtility.PREFTYPE_USER_LOCK_OBJECT);
+                mKey = new Key(Long.parseLong(String.valueOf(keyDetails.getId_value())), keyDetails.getUserType_value(), String.valueOf(keyDetails.getStatus_value()), keyDetails.getId_value(), Integer.parseInt(keyDetails.getKeyId_value()), keyDetails.getLockversion_value(), keyDetails.getLockname_value(),
+                        keyDetails.getLockAlis_value(), keyDetails.getLockMac_value(), Integer.parseInt(keyDetails.getElectricQuantity_value()), Integer.parseInt(keyDetails.getLockFlagPos_value()), keyDetails.getAdminPwd_value(),
+                        keyDetails.getLockkey_value(), keyDetails.getNoKeyPwd_value(), keyDetails.getDeletePwd_value(), keyDetails.getPwdInfo_value(), Long.parseLong(keyDetails.getTimestamp_value()), keyDetails.getAesKeyStr_value(), Long.parseLong(keyDetails.getStartDate_value()), Long.parseLong(keyDetails.getStartDate_value()),
+                        Integer.parseInt(keyDetails.getSpecialValue_value()), Integer.parseInt(keyDetails.getTimezoneRawOffset_value()), Integer.parseInt(keyDetails.getKeyRight_value()), Integer.parseInt(keyDetails.getKeyboardPwdVersion_value()),
+                        Integer.parseInt(keyDetails.getRemoteEnable_value()), keyDetails.getRemarks_value(), "", "", "");
+
+                img_lock.setBackgroundResource(R.drawable.ic_lock_black_24dp);
+                curKey = mKey;
+                DbService.saveKey(mKey);
+                mTvLockName.setText(keyDetails.getLockAlis_value());
+                mTvLockName.setVisibility(View.VISIBLE);
+                mIvLockName.setVisibility(View.VISIBLE);
+                ll_options.setVisibility(View.VISIBLE);
+                mTvNoLockFound.setVisibility(View.INVISIBLE);
+                viewLine.setVisibility(View.VISIBLE);
+
+            } else {
+                mKey = (Key) SharePreferenceUtility.getPreferences(getContext(), KEY_VALUE, SharePreferenceUtility.PREFTYPE_OBJECT);
+
+                if (mKey != null) {
+
                     img_lock.setBackgroundResource(R.drawable.ic_lock_black_24dp);
                     curKey = mKey;
-                    mTvLockName.setText("CONNECTION WITH : " + mKey.getLockAlias());
+                    mTvLockName.setText(mKey.getLockAlias());
                     mTvLockName.setVisibility(View.VISIBLE);
                     mIvLockName.setVisibility(View.VISIBLE);
                     ll_options.setVisibility(View.VISIBLE);
                     mTvNoLockFound.setVisibility(View.INVISIBLE);
                     viewLine.setVisibility(View.VISIBLE);
                 } else {
-                    SharePreferenceUtility.saveObjectPreferences(getContext(), KEY_VALUE, null);
-                    startActivity(new Intent(getContext(), NearbyLockActivity.class));
-                    getActivity().finish();
+                    img_lock.setBackgroundResource(R.drawable.ic_add_black_24dp);
+                    mTvLockName.setVisibility(View.INVISIBLE);
+                    mIvLockName.setVisibility(View.INVISIBLE);
+                    ll_options.setVisibility(View.INVISIBLE);
+                    mTvNoLockFound.setVisibility(View.VISIBLE);
+                    viewLine.setVisibility(View.INVISIBLE);
                 }
-
-            } else {
-                img_lock.setBackgroundResource(R.drawable.ic_add_black_24dp);
-                mTvLockName.setVisibility(View.INVISIBLE);
-                mIvLockName.setVisibility(View.INVISIBLE);
-                ll_options.setVisibility(View.INVISIBLE);
-                mTvNoLockFound.setVisibility(View.VISIBLE);
-                viewLine.setVisibility(View.INVISIBLE);
-//            startActivity(new Intent(getContext(), NearbyLockActivity.class));
-//            ((Activity)getContext()).finish();
-            }
-        } else {
-            mKey = (Key) SharePreferenceUtility.getPreferences(getContext(), KEY_VALUE, SharePreferenceUtility.PREFTYPE_OBJECT);
-
-            if (mKey != null) {
-
-                img_lock.setBackgroundResource(R.drawable.ic_lock_black_24dp);
-                curKey = mKey;
-                mTvLockName.setText("CONNECTION WITH : " + mKey.getLockAlias());
-                mTvLockName.setVisibility(View.VISIBLE);
-                mIvLockName.setVisibility(View.VISIBLE);
-                ll_options.setVisibility(View.VISIBLE);
-                mTvNoLockFound.setVisibility(View.INVISIBLE);
-                viewLine.setVisibility(View.VISIBLE);
-            } else {
-                img_lock.setBackgroundResource(R.drawable.ic_add_black_24dp);
-                mTvLockName.setVisibility(View.INVISIBLE);
-                mIvLockName.setVisibility(View.INVISIBLE);
-                ll_options.setVisibility(View.INVISIBLE);
-                mTvNoLockFound.setVisibility(View.VISIBLE);
-                viewLine.setVisibility(View.INVISIBLE);
             }
         }
+
+        boolean is_admin_login = (boolean) SharePreferenceUtility.getPreferences(getContext(), Config.IS_ADMIN_LOGIN, SharePreferenceUtility.PREFTYPE_BOOLEAN);
+
 
         if (mKey != null && mKey.isAdmin()) {
             ll_send_key.setVisibility(View.VISIBLE);
@@ -207,12 +280,15 @@ public class Fragment_home extends Fragment implements View.OnClickListener {
                 openDialogForChangeKeyName();
             }
         });
-        boolean is_admin_login = (boolean) SharePreferenceUtility.getPreferences(getContext(), Config.IS_ADMIN_LOGIN, SharePreferenceUtility.PREFTYPE_BOOLEAN);
 
         if (!is_admin_login) {
             ll_send_key.setVisibility(View.GONE);
             ll_records.setVisibility(View.GONE);
             ll_settings.setVisibility(View.GONE);
+        }
+
+        if (!is_admin_login) {
+            mIvLockName.setVisibility(View.GONE);
         }
         return view;
     }
@@ -269,7 +345,7 @@ public class Fragment_home extends Fragment implements View.OnClickListener {
                     if (jsonObject.has("errcode")) {
                         if (jsonObject.getString("errcode").equals("0")) {
                             msg = "Lock Name changed successfully";
-                            mTvLockName.setText("CONNECTION WITH : " + name_lock);
+                            mTvLockName.setText(name_lock);
                         } else {
                             msg = "Something went wrong";
                         }

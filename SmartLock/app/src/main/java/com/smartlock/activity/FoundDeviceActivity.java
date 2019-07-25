@@ -119,7 +119,7 @@ public class FoundDeviceActivity extends BaseActivity implements AdapterView.OnI
 
     private void getRequestToAddLockToPMSServer(KeyObj keyObj) {
 
-        Call<AddLockResponse> addLockResponseCall = services.ADD_LOCK_RESPONSE_CALL("5", keyObj.userType, keyObj.keyStatus, String.valueOf(keyObj.lockId),
+        Call<AddLockResponse> addLockResponseCall = services.ADD_LOCK_RESPONSE_CALL("", keyObj.userType, keyObj.keyStatus, String.valueOf(keyObj.lockId),
                 String.valueOf(keyObj.keyId), keyObj.lockVersion.protocolVersion, keyObj.lockName, keyObj.lockAlias, keyObj.lockMac, String.valueOf(keyObj.electricQuantity),
                 String.valueOf(keyObj.lockFlagPos), keyObj.adminPwd, keyObj.lockKey, keyObj.noKeyPwd, "000", keyObj.pwdInfo, String.valueOf(keyObj.timestamp), keyObj.aesKeyStr,
                 String.valueOf(keyObj.startDate), String.valueOf(keyObj.endDate), String.valueOf(keyObj.specialValue), String.valueOf(keyObj.timezoneRawOffset),
@@ -131,6 +131,7 @@ public class FoundDeviceActivity extends BaseActivity implements AdapterView.OnI
                 if (response.isSuccessful()) {
                     if (response.body().response.statusCode == 200) {
                         Log.d("Lock add", "successfully");
+
                     }
                 } else {
                     Toast.makeText(mContext, "something went wrong", Toast.LENGTH_SHORT).show();

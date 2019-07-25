@@ -14,8 +14,5 @@ public class KeyDetailsResponseData {
     public List<KeyDetails> response = null;
     @SerializedName("statusCode")
     @Expose
-    public Integer statusCode;
-    @SerializedName("message")
-    @Expose
-    public String message;
+    public int statusCode;
 }

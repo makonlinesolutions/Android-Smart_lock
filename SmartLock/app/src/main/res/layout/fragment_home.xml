@@ -19,6 +19,7 @@
         android:layout_height="wrap_content"
         android:gravity="center_horizontal"
         android:padding="10dp"
+        android:fontFamily="serif"
         android:text="CONNECTION WITH : lOCK NAME"
         android:textColor="@color/cpv_default_color"
         android:textSize="16dp" />
@@ -98,6 +99,7 @@
             android:layout_height="80dp"
             android:layout_gravity="center"
             android:layout_weight="0.25"
+            android:visibility="gone"
             android:gravity="center"
             android:orientation="vertical">
 
@@ -190,6 +192,7 @@
             android:layout_height="80dp"
             android:layout_gravity="center"
             android:layout_weight="0.25"
+            android:visibility="gone"
             android:gravity="center"
             android:orientation="vertical">
 
@@ -213,6 +216,7 @@
             android:layout_gravity="center"
             android:layout_weight="0.25"
             android:gravity="center"
+            android:visibility="gone"
             android:orientation="vertical">
 
             <ImageView

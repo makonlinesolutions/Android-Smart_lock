@@ -7,7 +7,9 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.RequiresApi;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
@@ -20,6 +22,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.smartlock.R;
+import com.smartlock.dao.DbService;
+import com.smartlock.db.DatabaseHelper;
+import com.smartlock.db.LockDetails;
+import com.smartlock.model.Key;
 import com.smartlock.model.KeyDetails;
 import com.smartlock.model.KeyDetailsResponse;
 import com.smartlock.model.LoginResponse;
@@ -36,6 +42,7 @@ import com.smartlock.utils.SharePreferenceUtility;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import retrofit2.Call;
@@ -43,6 +50,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 import static com.smartlock.constant.Config.IS_ADMIN_LOGIN;
+import static com.smartlock.utils.Constants.AppConst.USER_ID;
 
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener {
     EditText mEtLoginId, mEtPassword;
@@ -131,7 +139,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
                 if (loginResponse != null) {
                     if (loginResponse.response.statusCode == 200) {
-                        Toast.makeText(mContext, "" + loginResponse.response.status, Toast.LENGTH_SHORT).show();
+                        SharePreferenceUtility.saveStringPreferences(mContext, USER_ID, loginResponse.response.smo_id);
+//                        Toast.makeText(mContext, "" + loginResponse.response.status, Toast.LENGTH_SHORT).show();
                         callTTLogin();
                     } else {
                         Toast.makeText(mContext, "" + loginResponse.response.status, Toast.LENGTH_SHORT).show();
@@ -173,10 +182,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                             msg = "Invalid login credentials!\nTry again";
                             showMessageDialog(msg, getDrawable(R.drawable.ic_iconfinder_ic_cancel_48px_352263));
                         }
-                        getKeyDetails();
                     } else {
-                        SharePreferenceUtility.saveBooleanPreferences(mContext, Const.IS_LOGIN, true);
-                        showMessageDialog(msg, getDrawable(R.drawable.ic_iconfinder_ok_2639876));
                         String access_token = jsonObject.getString("access_token");
                         String openid = jsonObject.getString("openid");
                         MyPreference.putStr(mContext, MyPreference.ACCESS_TOKEN, access_token);
@@ -192,17 +198,39 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     }
 
     private void getKeyDetails() {
-        Call<KeyDetailsResponse> keyDetailsResponseCall = services.KEY_DETAILS_OBSERVABLE("1");
+        String user_id = (String) SharePreferenceUtility.getPreferences(mContext, USER_ID, SharePreferenceUtility.PREFTYPE_STRING);
+        Call<KeyDetailsResponse> keyDetailsResponseCall = services.KEY_DETAILS_OBSERVABLE(user_id);
         keyDetailsResponseCall.enqueue(new Callback<KeyDetailsResponse>() {
+            @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
             @Override
             public void onResponse(Call<KeyDetailsResponse> call, Response<KeyDetailsResponse> response) {
                 KeyDetailsResponse keyDetailsResponse = response.body();
 
-                if (keyDetailsResponse.response.statusCode == 200) {
-                    List<KeyDetails> key_details = keyDetailsResponse.response.response;
-                    if (key_details.size() > 0) {
-                        Toast.makeText(mContext, "" + keyDetailsResponse.response.status, Toast.LENGTH_SHORT).show();
+                if (keyDetailsResponse != null) {
+                    if (keyDetailsResponse.response.statusCode == 200) {
+                        List<KeyDetails> key_details = keyDetailsResponse.response.response;
+                        if (key_details.size() > 0) {
+
+                            DatabaseHelper databaseHelper = new DatabaseHelper(mContext);
+                            databaseHelper.deleteAllData();
+
+                            for (int j = 0; j < key_details.size(); j++) {
+                                databaseHelper.insertLock(key_details.get(j));
+                            }
+                            List<LockDetails> tmp_data = databaseHelper.getAllLock();
+                            if (tmp_data.size() > 0) {
+                                SharePreferenceUtility.saveBooleanPreferences(mContext, Const.IS_LOGIN, true);
+                                showMessageDialog("Login Successfully", getDrawable(R.drawable.ic_iconfinder_ok_2639876));
+                            } else {
+                                showMessageDialog("Oops, No Any Lock assign!!!", getDrawable(R.drawable.ic_iconfinder_ok_2639876));
+                            }
+//                        Toast.makeText(mContext, "" + keyDetailsResponse.response.status, Toast.LENGTH_SHORT).show();
+                        }
+                    } else {
+                        showMessageDialog("No data found, Please contact to administrator!!!", getDrawable(R.drawable.ic_iconfinder_ok_2639876));
                     }
+                } else {
+                    showMessageDialog("No data found, Please contact to administrator!!!", getDrawable(R.drawable.ic_iconfinder_ok_2639876));
                 }
             }
 
@@ -247,7 +275,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             public void onClick(View v) {
                 dialog.dismiss();
 
-                if (msg.equalsIgnoreCase(getString(R.string.words_login_successed))) {
+                if (msg.equals("Login Successfully")) {
                     SharePreferenceUtility.saveBooleanPreferences(mContext, IS_ADMIN_LOGIN, false);
                     Intent intent = new Intent(mContext, MainActivity.class);
                     startActivity(intent);

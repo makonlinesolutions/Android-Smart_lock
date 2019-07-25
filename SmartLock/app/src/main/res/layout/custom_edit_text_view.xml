@@ -27,8 +27,9 @@
             <android.support.v7.widget.AppCompatEditText
                 android:id="@+id/edt_lockName"
                 android:layout_width="match_parent"
+                android:fontFamily="serif"
                 android:layout_height="wrap_content"
-                android:hint="Enter Name Here"
+                android:hint="Change Lock Name"
                 android:padding="15dp" />
 
         </android.support.design.widget.TextInputLayout>
@@ -40,8 +41,9 @@
             android:layout_below="@id/tilName"
             android:layout_marginTop="30dp"
             android:backgroundTint="@color/cpv_default_color"
-            android:padding="5dp"
+            android:fontFamily="serif"
             android:text="Submit"
+            android:textSize="18dp"
             android:textColor="@android:color/white"
             custom:pb_colorNormal="@android:color/holo_blue_light"
             custom:pb_colorPressed="@android:color/holo_blue_dark" />

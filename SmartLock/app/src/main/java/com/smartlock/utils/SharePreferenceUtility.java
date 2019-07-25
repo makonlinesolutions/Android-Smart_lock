@@ -6,6 +6,7 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.google.gson.Gson;
+import com.smartlock.db.LockDetails;
 import com.smartlock.model.Key;
 
 public class SharePreferenceUtility {
@@ -15,6 +16,7 @@ public class SharePreferenceUtility {
     public static final int PREFTYPE_STRING = 2;
     public static final int PREFTYPE_LONG = 3;
     public static final int PREFTYPE_OBJECT = 4;
+    public static final int PREFTYPE_USER_LOCK_OBJECT = 5;
     private static final String TAG = SharePreferenceUtility.class.getName();
 
     public static void saveStringPreferences(Context context, String strKey, String strValue) {
@@ -60,6 +62,24 @@ public class SharePreferenceUtility {
             e.printStackTrace();
         }
     }
+
+
+    public static void saveUserLock(Context context, String strKey, LockDetails lockDetails) {
+        try {
+            if (context != null) {
+                Log.d(TAG, strKey);
+                SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+                SharedPreferences.Editor prefsEditor = sharedPreferences.edit();
+                Gson gson = new Gson();
+                String json = gson.toJson(lockDetails);
+                prefsEditor.putString(strKey, json);
+                prefsEditor.commit();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
 
     public static void saveBooleanPreferences(Context context, String strKey, boolean boolValue) {
         try {
@@ -112,6 +132,11 @@ public class SharePreferenceUtility {
                     String json = sharedPreferences.getString(key, "");
                     value = gson.fromJson(json, Key.class);
                     break;
+                case PREFTYPE_USER_LOCK_OBJECT:
+                    Gson gson_user = new Gson();
+                    String json_user = sharedPreferences.getString(key, "");
+                    value = gson_user.fromJson(json_user, LockDetails.class);
+                    break;
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -129,6 +154,10 @@ public class SharePreferenceUtility {
                     value = 0L;
                     break;
                 case PREFTYPE_OBJECT:
+                    value = "";
+                    break;
+
+                case PREFTYPE_USER_LOCK_OBJECT:
                     value = "";
                     break;
             }

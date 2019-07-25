@@ -7,10 +7,13 @@ public class LoginResponseDetails {
     @SerializedName("status")
     @Expose
     public String status;
-    @SerializedName("Response")
+    @SerializedName("guest_id")//smo_id
     @Expose
-    public String response;
+    public String user_id;
     @SerializedName("statusCode")
     @Expose
     public Integer statusCode;
+    @SerializedName("smo_id")//
+    @Expose
+    public String smo_id;
 }

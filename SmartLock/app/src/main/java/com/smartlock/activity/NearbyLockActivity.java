@@ -16,7 +16,10 @@ import com.google.gson.reflect.TypeToken;
 import com.smartlock.R;
 import com.smartlock.adapter.KeyAdapter;
 import com.smartlock.app.SmartLockApp;
+import com.smartlock.constant.Config;
 import com.smartlock.dao.DbService;
+import com.smartlock.db.DatabaseHelper;
+import com.smartlock.db.LockDetails;
 import com.smartlock.model.Key;
 import com.smartlock.model.KeyObj;
 import com.smartlock.net.ResponseService;
@@ -41,6 +44,7 @@ public class NearbyLockActivity extends BaseActivity {
     List<Nearby_model> nearby_models;
 
     private List<Key> keys;
+    private List<LockDetails> arrLockDetails;
     private Context mContext;
     public static Key curKey;
 
@@ -98,59 +102,68 @@ public class NearbyLockActivity extends BaseActivity {
 
 
     private void syncData() {
-        showProgressDialog();
-        new AsyncTask<Void, String, String>() {
+        boolean is_admin_login = (boolean) SharePreferenceUtility.getPreferences(mContext, Config.IS_ADMIN_LOGIN, SharePreferenceUtility.PREFTYPE_BOOLEAN);
+        if (is_admin_login) {
+            new AsyncTask<Void, String, String>() {
 
-            @Override
-            protected String doInBackground(Void... params) {
-                //you can synchronizes all key datas when lastUpdateDate is 0
-                String json = ResponseService.syncData(0);
-                LogUtil.d("json:" + json, DBG);
-                try {
-                    JSONObject jsonObject = new JSONObject(json);
-                    if (jsonObject.has("errcode")) {
+                @Override
+                protected String doInBackground(Void... params) {
+                    //you can synchronizes all key datas when lastUpdateDate is 0
+                    String json = ResponseService.syncData(0);
+                    LogUtil.d("json:" + json, DBG);
+                    try {
+                        JSONObject jsonObject = new JSONObject(json);
+                        if (jsonObject.has("errcode")) {
 //                        toast(jsonObject.getString("description"));
-                        Intent intent = new Intent(NearbyLockActivity.this, LoginActivity.class);
-                        startActivity(intent);
-                        overridePendingTransition(R.anim.fade_out, R.anim.fade_in);
-                        finish();
-                        return json;
-                    }
-                    //use lastUpdateDate you can get the newly added key and data after the time
-                    long lastUpdateDate = jsonObject.getLong("lastUpdateDate");
-                    String keyList = jsonObject.getString("keyList");
+                            Intent intent = new Intent(NearbyLockActivity.this, LoginActivity.class);
+                            startActivity(intent);
+                            overridePendingTransition(R.anim.fade_out, R.anim.fade_in);
+                            finish();
+                            return json;
+                        }
+                        //use lastUpdateDate you can get the newly added key and data after the time
+                        long lastUpdateDate = jsonObject.getLong("lastUpdateDate");
+                        String keyList = jsonObject.getString("keyList");
 //                    JSONArray jsonArray = jsonObject.getJSONArray("keyList");
-                    keys.clear();
-                    ArrayList<KeyObj> list = GsonUtil.toObject(keyList, new TypeToken<ArrayList<KeyObj>>() {
-                    });
-                    keys.addAll(convert2DbModel(list));
-                    //clear local keys and save new keys
-                    DbService.deleteAllKey();
-                    DbService.saveKeyList(keys);
+                        keys.clear();
+                        ArrayList<KeyObj> list = GsonUtil.toObject(keyList, new TypeToken<ArrayList<KeyObj>>() {
+                        });
+                        keys.addAll(convert2DbModel(list));
+                        //clear local keys and save new keys
+//                        DbService.deleteAllKey();
+//                        DbService.saveKeyList(keys);
 
-                } catch (JSONException e) {
-                    e.printStackTrace();
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    return json;
                 }
-                return json;
-            }
 
-            @Override
-            protected void onPostExecute(String s) {
-                super.onPostExecute(s);
-                progressDialog.cancel();
+                @Override
+                protected void onPostExecute(String s) {
+                    super.onPostExecute(s);
+//                    progressDialog.cancel();
 
-                if (keys.size() == 0) {
-                    tv_no_locks.setVisibility(View.VISIBLE);
-                    SharePreferenceUtility.saveObjectPreferences(NearbyLockActivity.this,KEY_VALUE,null);
-                } else {
-                    tv_no_locks.setVisibility(View.INVISIBLE);
-                    adapter = new Nearby_Adapter(NearbyLockActivity.this, keys);
+                    if (keys.size() == 0) {
+                        tv_no_locks.setVisibility(View.VISIBLE);
+                        SharePreferenceUtility.saveObjectPreferences(NearbyLockActivity.this, KEY_VALUE, null);
+                    } else {
+                        tv_no_locks.setVisibility(View.INVISIBLE);
+                        adapter = new Nearby_Adapter(NearbyLockActivity.this, keys);
 //                keyAdapter = new KeyAdapter(MainActivity.this, keys);
-                    recyclerView.setAdapter(adapter);
-                    recyclerView.setOnCreateContextMenuListener(NearbyLockActivity.this);
+                        recyclerView.setAdapter(adapter);
+                        recyclerView.setOnCreateContextMenuListener(NearbyLockActivity.this);
+                    }
                 }
-            }
-        }.execute();
+            }.execute();
+        } else {
+            DatabaseHelper databaseHelper = new DatabaseHelper(mContext);
+            arrLockDetails = databaseHelper.getAllLock();
+            adapter = new Nearby_Adapter(NearbyLockActivity.this, arrLockDetails, true);
+//                keyAdapter = new KeyAdapter(MainActivity.this, keys);
+            recyclerView.setAdapter(adapter);
+            recyclerView.setOnCreateContextMenuListener(NearbyLockActivity.this);
+        }
     }
 
 

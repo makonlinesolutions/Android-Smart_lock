@@ -4,6 +4,7 @@ import com.smartlock.app.SmartLockApp;
 import com.smartlock.dao.gen.DaoSession;
 import com.smartlock.dao.gen.KeyDao;
 import com.smartlock.model.Key;
+import com.smartlock.model.KeyDetails;
 
 import org.greenrobot.greendao.query.QueryBuilder;
 
@@ -77,6 +78,10 @@ public class DbService {
      */
     public static void saveKeyList(List<Key> keys) {
         keyDao.saveInTx(keys);
+    }
+
+    public static void savePmsServerKeyDetails(List<Key> keyDetails) {
+        keyDao.saveInTx(keyDetails);
     }
 
     /**

@@ -117,7 +117,7 @@
                 android:hint="Enter mobile number"
                 android:inputType="textEmailAddress"
                 android:padding="15dp"
-                android:text="novatest_swapnil1674"
+                android:text="novatest_abhaynewid1808"
                 android:textColor="@color/light_white"
                 android:textColorHint="@color/dark_gray" />
             <!-- <br.com.sapereaude.maskedEditText.MaskedEditText

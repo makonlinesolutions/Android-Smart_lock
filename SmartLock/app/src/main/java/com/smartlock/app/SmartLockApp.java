@@ -21,14 +21,18 @@ import com.smartlock.dao.DbService;
 import com.smartlock.dao.gen.DaoMaster;
 import com.smartlock.dao.gen.DaoSession;
 import com.smartlock.dao.gen.KeyDao;
+import com.smartlock.db.LockDetails;
 import com.smartlock.enumtype.Operation;
 import com.smartlock.interfaces.ShowCustomDialog;
 import com.smartlock.model.BleSession;
 import com.smartlock.model.Key;
+import com.smartlock.model.KeyDetails;
 import com.smartlock.myInterface.OperateCallback;
 import com.smartlock.net.ResponseService;
 import com.smartlock.sp.MyPreference;
+import com.smartlock.utils.Const;
 import com.smartlock.utils.DateUitl;
+import com.smartlock.utils.SharePreferenceUtility;
 import com.ttlock.bl.sdk.api.TTLockAPI;
 import com.ttlock.bl.sdk.callback.TTLockCallback;
 import com.ttlock.bl.sdk.entity.DeviceInfo;
@@ -139,6 +143,9 @@ public class SmartLockApp extends Application {
                             mTTLockAPI.unlockByAdministrator(extendedBluetoothDevice, uid, localKey.getLockVersion(), localKey.getAdminPwd(), localKey.getLockKey(), localKey.getLockFlagPos(), System.currentTimeMillis(), localKey.getAesKeyStr(), localKey.getTimezoneRawOffset());
                         else
                             mTTLockAPI.unlockByUser(extendedBluetoothDevice, uid, localKey.getLockVersion(), localKey.getStartDate(), localKey.getEndDate(), localKey.getLockKey(), localKey.getLockFlagPos(), localKey.getAesKeyStr(), localKey.getTimezoneRawOffset());
+                    } else {
+                        LockDetails keyDetails = (LockDetails) SharePreferenceUtility.getPreferences(mContext, Const.USER_KEY_VALUE, SharePreferenceUtility.PREFTYPE_USER_LOCK_OBJECT);
+                        mTTLockAPI.unlockByAdministrator(extendedBluetoothDevice, uid, keyDetails.getLockversion_value(), keyDetails.getAdminPwd_value(), keyDetails.getLockkey_value(), Integer.parseInt(keyDetails.getLockFlagPos_value()), System.currentTimeMillis(), keyDetails.getAesKeyStr_value(), Integer.parseInt(keyDetails.getTimezoneRawOffset_value()));
                     }
 //                    mTTLockAPI.unlockByUser(extendedBluetoothDevice, 0, localKey.getLockVersion(), localKey.getStartDate(), localKey.getEndDate(), localKey.getUnlockKey(), 0, localKey.getAesKeystr(), localKey.getTimezoneRawOffset());
                     break;
@@ -357,7 +364,7 @@ public class SmartLockApp extends Application {
         @Override
         public void onUnlock(ExtendedBluetoothDevice extendedBluetoothDevice, int uid, int uniqueid, long lockTime, Error error) {
             if (error == Error.SUCCESS) {
-                Fragment_home.getInstance().showMessageDialog(getString(R.string.words_unlock_successed),getDrawable(R.drawable.ic_unlock));
+                Fragment_home.getInstance().showMessageDialog(getString(R.string.words_unlock_successed), getDrawable(R.drawable.ic_unlock));
 //                toast(getString(R.string.words_unlock_successed));
             } else
                 Fragment_home.getInstance().showMessageDialog(getString(R.string.words_error_unlock), getDrawable(R.drawable.ic_iconfinder_ic_cancel_48px_352263));
