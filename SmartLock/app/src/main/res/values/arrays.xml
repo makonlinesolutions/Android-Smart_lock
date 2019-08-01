@@ -20,7 +20,7 @@
 
     <array name="ld_activityScreenIcons">
         <item>@drawable/ic_home_black_24dp</item>
-        <item>@drawable/ic_vpn_key_black_24dp</item>
+        <item>@drawable/ic_add_black_24dp</item>
         <item>@drawable/ic_settings_black_24dp</item>
         <item>@drawable/ic_info_black_24dp</item>
         <item>@drawable/ic_settings_black_24dp</item>

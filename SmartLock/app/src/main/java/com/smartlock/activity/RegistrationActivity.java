@@ -24,11 +24,12 @@ import com.smartlock.R;
 import com.smartlock.net.ResponseService;
 import com.smartlock.sp.MyPreference;
 import com.smartlock.utils.Const;
-import com.smartlock.utils.DisplayUtil;
 import com.smartlock.utils.SharePreferenceUtility;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import dmax.dialog.SpotsDialog;
 
 import static com.smartlock.constant.Config.IS_ADMIN_LOGIN;
 
@@ -40,6 +41,7 @@ public class RegistrationActivity extends AppCompatActivity implements View.OnCl
     String a;
     int keyDel;
     private Context mContext;
+    private android.app.AlertDialog alertDialog;
 
 
 
@@ -51,6 +53,7 @@ public class RegistrationActivity extends AppCompatActivity implements View.OnCl
                 WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
         btn_login = findViewById(R.id.btn_login);
         mContext = RegistrationActivity.this;
+        alertDialog = new SpotsDialog.Builder().setContext(mContext).setMessage("Loading").build();
 
         txt_label = findViewById(R.id.text_label);
 
@@ -75,7 +78,7 @@ public class RegistrationActivity extends AppCompatActivity implements View.OnCl
 
     @Override
     public void onClick(View v) {
-
+        alertDialog.show();
         final String username = mEtLoginId.getText().toString();
         final String password = mEtPassword.getText().toString();
         new AsyncTask<Void, Integer, String>() {
@@ -89,7 +92,7 @@ public class RegistrationActivity extends AppCompatActivity implements View.OnCl
             @Override
             protected void onPostExecute(String json) {
 
-
+                alertDialog.dismiss();
                 String msg = getString(R.string.words_login_successed);
                 try {
                     JSONObject jsonObject = new JSONObject(json);

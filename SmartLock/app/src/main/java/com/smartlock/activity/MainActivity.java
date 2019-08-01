@@ -210,6 +210,16 @@ public class MainActivity extends BaseActivity implements DrawerAdapter.OnItemSe
                     keys.clear();
                     ArrayList<KeyObj> list = GsonUtil.toObject(keyList, new TypeToken<ArrayList<KeyObj>>() {
                     });
+                    if (list.size()>0) {
+                        // do nothing1
+                    }else {
+                       runOnUiThread(new Runnable() {
+                           @Override
+                           public void run() {
+                               mIvLock.setVisibility(View.GONE);
+                           }
+                       });
+                    }
                     keys.addAll(convert2DbModel(list));
                     DbService.deleteAllKey();
                     DbService.saveKeyList(keys);

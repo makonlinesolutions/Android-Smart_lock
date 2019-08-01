@@ -20,6 +20,7 @@
             android:layout_height="wrap_content"
             android:text="Smart Lock"
             android:textSize="35dp"
+            android:fontFamily="serif"
             android:layout_gravity="center"
             android:layout_marginLeft="15dp"
             android:textColor="@color/primaryTextColor"

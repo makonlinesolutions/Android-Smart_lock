@@ -1,19 +1,17 @@
 package com.smartlock.retrofit;
 
 import com.smartlock.model.AddLockResponse;
+import com.smartlock.model.CheckoutCheckResponse;
 import com.smartlock.model.KeyDetailsResponse;
 import com.smartlock.model.LoginResponse;
-
-import java.util.Observable;
+import com.smartlock.model.UnlockKeyNameResponse;
 
 import retrofit2.Call;
-import retrofit2.http.Body;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
 import retrofit2.http.Path;
-import retrofit2.http.Query;
 
 public interface ApiServices {
 
@@ -22,6 +20,13 @@ public interface ApiServices {
     Call<LoginResponse> LOGIN_RESPONSE_OBSERVABLE(
             @Field("username") String username,
             @Field("password") String password
+    );
+
+    @FormUrlEncoded
+    @POST("update-master-key-details")
+    Call<UnlockKeyNameResponse> UNLOCK_KEY_NAME_RESPONSE_CALL(
+            @Field("lockId") String lockId,
+            @Field("lockAlis") String lockAlis
     );
 
     @FormUrlEncoded
@@ -58,5 +63,10 @@ public interface ApiServices {
     @GET("key-details/{order_id}")
     Call<KeyDetailsResponse> KEY_DETAILS_OBSERVABLE(
             @Path("order_id") String order_id
+    );
+
+    @GET("check-is-guest-checkout/{order_id}/{guest_id}")
+    Call<CheckoutCheckResponse> CHECKOUT_CHECK_RESPONSE_CALL(
+            @Path("order_id") String order_id, @Path("guest_id") String guest_id
     );
 }

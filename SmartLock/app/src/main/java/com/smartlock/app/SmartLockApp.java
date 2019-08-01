@@ -12,6 +12,7 @@ import android.os.Parcelable;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.devs.acr.AutoErrorReporter;
 import com.smartlock.R;
 import com.smartlock.activity.BaseActivity;
 import com.smartlock.activity.Fragment_home;
@@ -23,10 +24,8 @@ import com.smartlock.dao.gen.DaoSession;
 import com.smartlock.dao.gen.KeyDao;
 import com.smartlock.db.LockDetails;
 import com.smartlock.enumtype.Operation;
-import com.smartlock.interfaces.ShowCustomDialog;
 import com.smartlock.model.BleSession;
 import com.smartlock.model.Key;
-import com.smartlock.model.KeyDetails;
 import com.smartlock.myInterface.OperateCallback;
 import com.smartlock.net.ResponseService;
 import com.smartlock.sp.MyPreference;
@@ -132,7 +131,7 @@ public class SmartLockApp extends Application {
                     if (localKey == null)
                         mTTLockAPI.lockInitialize(extendedBluetoothDevice);
                     else {
-                        Fragment_home.getInstance().showMessageDialog(getString(R.string.words_has_exist_lock), null);
+//                        Fragment_home.getInstance().showMessageDialog(getString(R.string.words_has_exist_lock), null);
                         ((BaseActivity) curActivity).cancelProgressDialog();
                     }
                     break;
@@ -749,6 +748,10 @@ public class SmartLockApp extends Application {
     public void onCreate() {
         super.onCreate();
         LogUtil.d("init application", DBG);
+      /*  AutoErrorReporter.get(this)
+                .setEmailAddresses("abhay@adjinfotech.com")
+                .setEmailSubject("Crash report of SmartLock App")
+                .start();*/
         init();
     }
 

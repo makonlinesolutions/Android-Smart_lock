@@ -49,6 +49,7 @@
                 android:layout_marginLeft="15dp"
                 android:layout_marginTop="20dp"
                 android:layout_marginRight="15dp"
+                android:fontFamily="serif"
                 android:gravity="center_horizontal"
                 android:text="Touch any key to Activate the Keypad"
                 android:textColor="@color/colorPrimary"
@@ -82,9 +83,11 @@
                 android:layout_marginTop="50dp"
                 android:layout_marginRight="15dp"
                 android:gravity="center_horizontal"
+                android:fontFamily="serif"
+                android:padding="3dp"
                 android:text="Please touch any key to Activate the lock and put in PAIRING Mode.Press Next"
                 android:textColor="@color/colorPrimary"
-                android:textSize="18dp" />
+                android:textSize="14dp" />
 
 
             <Button
@@ -96,6 +99,7 @@
                 android:layout_marginLeft="25dp"
                 android:layout_marginTop="50dp"
                 android:layout_marginRight="25dp"
+                android:fontFamily="serif"
                 android:background="@drawable/button_bg"
                 android:backgroundTint="@color/colorPrimary"
                 android:text="Next"

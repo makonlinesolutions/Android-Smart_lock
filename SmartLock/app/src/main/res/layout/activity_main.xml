@@ -13,7 +13,7 @@
        android:id="@+id/toolbar"
        android:layout_width="match_parent"
        android:layout_height="50dp"
-       android:background="@color/colorPrimary"
+       android:background="@color/colorPrimaryDark"
        android:theme="@style/toolbarbackarrowcolor"
        app:titleTextColor="@color/white" >
       <RelativeLayout
@@ -33,7 +33,7 @@
           android:layout_height="wrap_content"
           android:layout_alignParentRight="true"
           android:layout_marginRight="10dp"
-          android:background="@drawable/ic_add_black_24dp"
+          android:background="@drawable/add_lock"
           />
       </RelativeLayout>
    </android.support.v7.widget.Toolbar>

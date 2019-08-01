@@ -50,7 +50,7 @@
                     android:paddingLeft="3dp"
                     android:paddingRight="3dp"
                     android:text="S210_0d8C39"
-                    android:textColor="#E2000000"
+                    android:textColor="@color/colorPrimary"
                     android:textSize="16dp" />
                 <TextView
                     android:id="@+id/device_address"
@@ -59,7 +59,7 @@
                     android:paddingLeft="3dp"
                     android:paddingRight="3dp"
                     android:text="S210_0d8C39"
-                    android:textColor="#E2000000"
+                    android:textColor="@color/black"
                     android:textSize="12dp" />
             </LinearLayout>
 
@@ -67,8 +67,9 @@
                 android:id="@+id/device_add_able"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
-                android:background="@drawable/add"
+                android:background="@drawable/ic_add_black_24dp"
                 android:visibility="gone"
+                android:backgroundTint="@color/colorPrimary"
                 android:layout_alignParentRight="true"
                 android:layout_marginRight="15dp"
                 android:layout_centerInParent="true"/>

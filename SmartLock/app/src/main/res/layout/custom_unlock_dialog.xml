@@ -15,6 +15,7 @@
             android:layout_width="match_parent"
             android:layout_height="150dp"
             android:translationZ="20dp"
+            app:cardMaxElevation="20dp"
             app:cardBackgroundColor="@color/white"
             app:cardCornerRadius="5dp">
 
@@ -35,18 +36,36 @@
                     android:layout_height="wrap_content"
                     android:layout_centerInParent="true"
                     android:gravity="center"
+                    android:fontFamily="serif"
                     android:padding="10dp"
                     android:text="Unlock Successfully"
                     android:textColor="@color/colorPrimary" />
 
                 <TextView
+                    android:id="@+id/tv_time"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:fontFamily="serif"
+                    android:visibility="gone"
+                    android:gravity="center"
+                    android:padding="10dp"
+                    android:layout_marginTop="5dp"
+                    android:layout_above="@id/tv_unlock"
+                    android:text="27 Aug, 22:10"
+                    android:textColor="@color/gray"
+                    android:textSize="12dp" />
+
+
+                <TextView
                     android:id="@+id/tv_unlock"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:fontFamily="serif"
                     android:layout_alignParentBottom="true"
-                    android:background="@color/cpv_default_color"
+                    android:background="@drawable/button_bg"
                     android:gravity="center"
-                    android:padding="10dp"
+                    android:padding="15dp"
                     android:text="OK"
                     android:textColor="@color/white" />
             </RelativeLayout>

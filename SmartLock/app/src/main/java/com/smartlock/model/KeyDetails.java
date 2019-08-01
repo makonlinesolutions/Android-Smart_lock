@@ -14,6 +14,9 @@ public class KeyDetails {
     @SerializedName("userType")
     @Expose
     public String userType;
+    @SerializedName("lockId")
+    @Expose
+    public String lockId;
     @SerializedName("keyId")
     @Expose
     public String keyId;

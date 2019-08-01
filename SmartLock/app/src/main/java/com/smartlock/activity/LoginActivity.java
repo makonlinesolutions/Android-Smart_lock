@@ -1,6 +1,7 @@
 package com.smartlock.activity;
 
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -10,7 +11,6 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.RequiresApi;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -22,34 +22,32 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.smartlock.R;
-import com.smartlock.dao.DbService;
 import com.smartlock.db.DatabaseHelper;
 import com.smartlock.db.LockDetails;
-import com.smartlock.model.Key;
 import com.smartlock.model.KeyDetails;
 import com.smartlock.model.KeyDetailsResponse;
 import com.smartlock.model.LoginResponse;
 import com.smartlock.net.ResponseService;
 import com.smartlock.retrofit.ApiServiceProvider;
 import com.smartlock.retrofit.ApiServices;
-import com.smartlock.retrofit.RetrofitBase;
 import com.smartlock.sp.MyPreference;
 import com.smartlock.utils.Const;
 import com.smartlock.utils.Constants;
-import com.smartlock.utils.DisplayUtil;
 import com.smartlock.utils.SharePreferenceUtility;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
 import java.util.List;
 
+import dmax.dialog.SpotsDialog;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
 import static com.smartlock.constant.Config.IS_ADMIN_LOGIN;
+import static com.smartlock.utils.Constants.AppConst.GUEST_ID;
+import static com.smartlock.utils.Constants.AppConst.ORDER_ID;
 import static com.smartlock.utils.Constants.AppConst.USER_ID;
 
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener {
@@ -60,7 +58,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     int keyDel;
     private Context mContext;
     //    String user_name = "";
-    ApiServices services;
+    private ApiServices services;
+    private AlertDialog alertDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,7 +68,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
         btn_login = findViewById(R.id.btn_login);
         mContext = LoginActivity.this;
-
         mEtLoginId = findViewById(R.id.edt_mobile_num);
         mEtPassword = findViewById(R.id.edt_password);
         btn_login.setOnClickListener(this);
@@ -90,6 +88,9 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             }
         });
         services = new ApiServiceProvider(getApplicationContext()).apiServices;
+        alertDialog = new SpotsDialog.Builder().setContext(mContext).setMessage("Loading").build();
+
+
     }
 
     @Override
@@ -131,27 +132,33 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     }
 
     private void getRequestPMSLogin(String username, String password) {
+        alertDialog.show();
         Call<LoginResponse> loginResponseCall = services.LOGIN_RESPONSE_OBSERVABLE(username, password);
         loginResponseCall.enqueue(new Callback<LoginResponse>() {
+            @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
             @Override
             public void onResponse(Call<LoginResponse> call, Response<LoginResponse> response) {
                 LoginResponse loginResponse = response.body();
 
                 if (loginResponse != null) {
                     if (loginResponse.response.statusCode == 200) {
-                        SharePreferenceUtility.saveStringPreferences(mContext, USER_ID, loginResponse.response.smo_id);
-//                        Toast.makeText(mContext, "" + loginResponse.response.status, Toast.LENGTH_SHORT).show();
+                        SharePreferenceUtility.saveStringPreferences(mContext, USER_ID, String.valueOf(loginResponse.response.smoId));
+                        SharePreferenceUtility.saveStringPreferences(mContext, ORDER_ID, String.valueOf(loginResponse.response.orderId));
+                        SharePreferenceUtility.saveStringPreferences(mContext, GUEST_ID, String.valueOf(loginResponse.response.guestId));
                         callTTLogin();
                     } else {
-                        Toast.makeText(mContext, "" + loginResponse.response.status, Toast.LENGTH_SHORT).show();
-                    }
+                        alertDialog.dismiss();
+                        showMessageDialog(loginResponse.response.message, getDrawable(R.drawable.ic_iconfinder_ic_cancel_48px_352263));
+                    };
                 } else {
+                    alertDialog.dismiss();
                     Toast.makeText(mContext, "Something went wrong", Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
             public void onFailure(Call<LoginResponse> call, Throwable t) {
+                alertDialog.dismiss();
                 Toast.makeText(mContext, "" + t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
@@ -174,6 +181,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 try {
                     JSONObject jsonObject = new JSONObject(json);
                     if (jsonObject.has("errmsg")) {
+                        alertDialog.dismiss();
                         if (TextUtils.isEmpty(username)) {
                             toast("Please enter mobile number");
                         } else if (TextUtils.isEmpty(password)) {
@@ -190,6 +198,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                         getKeyDetails();
                     }
                 } catch (JSONException e) {
+                    alertDialog.dismiss();
                     e.printStackTrace();
                 }
                 //Toast.makeText(mContext, msg, Toast.LENGTH_SHORT).show();
@@ -219,23 +228,28 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                             }
                             List<LockDetails> tmp_data = databaseHelper.getAllLock();
                             if (tmp_data.size() > 0) {
+                                alertDialog.dismiss();
                                 SharePreferenceUtility.saveBooleanPreferences(mContext, Const.IS_LOGIN, true);
                                 showMessageDialog("Login Successfully", getDrawable(R.drawable.ic_iconfinder_ok_2639876));
                             } else {
+                                alertDialog.dismiss();
                                 showMessageDialog("Oops, No Any Lock assign!!!", getDrawable(R.drawable.ic_iconfinder_ok_2639876));
                             }
 //                        Toast.makeText(mContext, "" + keyDetailsResponse.response.status, Toast.LENGTH_SHORT).show();
                         }
                     } else {
+                        alertDialog.dismiss();
                         showMessageDialog("No data found, Please contact to administrator!!!", getDrawable(R.drawable.ic_iconfinder_ok_2639876));
                     }
                 } else {
+                    alertDialog.dismiss();
                     showMessageDialog("No data found, Please contact to administrator!!!", getDrawable(R.drawable.ic_iconfinder_ok_2639876));
                 }
             }
 
             @Override
             public void onFailure(Call<KeyDetailsResponse> call, Throwable t) {
+                alertDialog.dismiss();
                 Toast.makeText(mContext, "" + t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });

@@ -49,8 +49,7 @@
                     android:layout_height="wrap_content"
                     android:paddingLeft="3dp"
                     android:paddingRight="3dp"
-                    android:text="S210_0d8C39"
-                    android:textColor="#E2000000"
+                    android:textColor="@color/colorPrimary"
                     android:textSize="16dp" />
             </LinearLayout>
         </LinearLayout>

@@ -5,8 +5,8 @@
     android:thickness="6dp"
     android:innerRadius="67dp"
     android:useLevel="false">
-    <stroke android:color="@color/colorPrimary" android:width="2dp" />
-    <solid android:color="@color/colorPrimary" />
+    <stroke android:color="@color/light_gray" android:width="2dp" />
+    <solid android:color="@color/light_gray" />
     <size android:width="170dp" android:height="170dp"/>
 
 </shape>

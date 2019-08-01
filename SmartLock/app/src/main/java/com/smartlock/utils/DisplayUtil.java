@@ -3,6 +3,7 @@ package com.smartlock.utils;
 import android.app.Dialog;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.support.v7.app.AlertDialog;
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
@@ -11,6 +12,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.smartlock.R;
+
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 /**
  * dp、sp convert to px
@@ -130,11 +134,23 @@ public class DisplayUtil {
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         LayoutInflater layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View view = layoutInflater.inflate(R.layout.custom_unlock_dialog, null, false);
-        builder.setView(view);
+        builder.setView(view);                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      
         final Dialog dialog = builder.create();
         TextView textView = view.findViewById(R.id.tv_unlock);
         TextView tv_message = view.findViewById(R.id.tv_message);
+        TextView tv_time = view.findViewById(R.id.tv_time);
         ImageView imageView = view.findViewById(R.id.iv_lock);
+        if (message.equals("Door unlocked successfully!")) {
+            tv_time.setVisibility(View.VISIBLE);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                MediaPlayerNotification.SoundPlayer(context);
+                DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd MMM, hh:mm a");
+                LocalDateTime now = LocalDateTime.now();
+                tv_time.setText(dtf.format(now));
+            } else {
+//                tv_time.setText(dtf.forma);
+            }
+        }
         tv_message.setText(message);
         imageView.setBackground(drawable);
         textView.setOnClickListener(new View.OnClickListener() {

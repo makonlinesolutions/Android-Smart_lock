@@ -241,15 +241,15 @@
                         android:id="@+id/tv_lock_group"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_toLeftOf="@+id/img_arrow_lockgroup"
                         android:text="Ungrouped"
+                        android:layout_alignParentRight="true"
                         android:layout_marginRight="5dp"
                         style="@style/settings_text2"/>
                     <ImageView
+                        android:visibility="gone"
                         android:id="@+id/img_arrow_lockgroup"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_alignParentRight="true"
                         android:background="@drawable/ic_keyboard_arrow_right_black_24dp"/>
                 </RelativeLayout>
 
@@ -264,6 +264,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
+                    android:visibility="gone"
                     android:layout_marginBottom="10dp"
                     android:layout_marginRight="5dp"
                     android:layout_marginLeft="5dp">
@@ -289,6 +290,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:padding="10dp"
+                android:visibility="gone"
                 android:layout_marginTop="5dp"
                 android:background="@color/white">
 
@@ -297,6 +299,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
+                    android:visibility="gone"
                     android:layout_marginBottom="10dp"
                     android:layout_marginRight="5dp"
                     android:layout_marginLeft="5dp">
@@ -319,12 +322,14 @@
                     android:layout_marginLeft="10dp"
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
+                    android:visibility="gone"
                     android:background="@color/lightgray"/>
                 <RelativeLayout
                     android:id="@+id/rl_locksound"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
+                    android:visibility="gone"
                     android:layout_marginBottom="10dp"
                     android:layout_marginRight="5dp"
                     android:layout_marginLeft="5dp">
@@ -347,6 +352,7 @@
                     android:layout_marginLeft="10dp"
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
+                    android:visibility="gone"
                     android:background="@color/lightgray"/>
 
                 <RelativeLayout
@@ -354,6 +360,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
+                    android:visibility="gone"
                     android:layout_marginBottom="10dp"
                     android:layout_marginRight="5dp"
                     android:layout_marginLeft="5dp">
@@ -384,12 +391,14 @@
                     android:layout_marginLeft="10dp"
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
+                    android:visibility="gone"
                     android:background="@color/lightgray"/>
                 <RelativeLayout
                     android:id="@+id/rl_diagnosis"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
+                    android:visibility="gone"
                     android:layout_marginBottom="10dp"
                     android:layout_marginRight="5dp"
                     android:layout_marginLeft="5dp">
@@ -411,12 +420,14 @@
                     android:layout_marginLeft="10dp"
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
+                    android:visibility="gone"
                     android:background="@color/lightgray"/>
                 <RelativeLayout
                     android:id="@+id/rl_read_operations"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
+                    android:visibility="gone"
                     android:layout_marginBottom="10dp"
                     android:layout_marginRight="5dp"
                     android:layout_marginLeft="5dp">
@@ -438,12 +449,14 @@
                     android:layout_marginLeft="10dp"
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
+                    android:visibility="gone"
                     android:background="@color/lightgray"/>
                 <RelativeLayout
                     android:id="@+id/rl_firmware_update"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
+                    android:visibility="gone"
                     android:layout_marginBottom="10dp"
                     android:layout_marginRight="5dp"
                     android:layout_marginLeft="5dp">
@@ -468,6 +481,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:padding="10dp"
+                android:visibility="gone"
                 android:layout_marginTop="5dp"
                 android:background="@color/white">
 

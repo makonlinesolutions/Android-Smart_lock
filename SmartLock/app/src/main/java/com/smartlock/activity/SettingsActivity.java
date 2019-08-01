@@ -10,9 +10,11 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -36,7 +38,7 @@ public class SettingsActivity extends AppCompatActivity {
     private Key mKey;
     private TextView mTvLockNumber, mTvMacId, mTvBattery, mTvValidty, mTvLockName, mTvLockGroup;
     private RelativeLayout rl_lockname, rl_lockgroup, rl_lockclock, rl_diagnosis, rl_firmware_update, rl_unlock_remotely, rl_read_operations, rl_adminpasscode, rl_locksound;
-
+    private Button mBtLock;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -123,6 +125,7 @@ public class SettingsActivity extends AppCompatActivity {
     }
 
     private void initUi() {
+        mContext = SettingsActivity.this;
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -136,7 +139,7 @@ public class SettingsActivity extends AppCompatActivity {
         rl_read_operations = findViewById(R.id.rl_read_operations);
         rl_adminpasscode = findViewById(R.id.rl_adminpasscode);
         rl_locksound = findViewById(R.id.rl_locksound);
-
+        mBtLock = findViewById(R.id.btn_delete);
         mTvLockNumber = findViewById(R.id.tv_lock_number);
         mTvMacId = findViewById(R.id.tv_mac_address);
         mTvBattery = findViewById(R.id.tv_battery);
@@ -144,12 +147,16 @@ public class SettingsActivity extends AppCompatActivity {
         mTvLockName = findViewById(R.id.tv_lock_name);
         mTvLockGroup = findViewById(R.id.tv_lock_group);
 
-        mContext = SettingsActivity.this;
+
+        mBtLock.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                deleteLock();
+            }
+        });
     }
 
     String name_lock;
-
-
     private void openDialogForChangeKeyName() {
         AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
         LayoutInflater layoutInflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -270,5 +277,37 @@ public class SettingsActivity extends AppCompatActivity {
                 }
             }.execute();
         }
+    }
+
+    private void deleteLock() {
+
+        new AsyncTask<Void, Integer, String>() {
+
+            @Override
+            protected String doInBackground(Void... params) {
+                return ResponseService.deleteKey(mKey.getKeyId());
+            }
+
+            @SuppressLint("NewApi")
+            @Override
+            protected void onPostExecute(String json) {
+
+                Log.d("Settings Activity", json);
+                try {
+                    JSONObject jsonObject = new JSONObject(json);
+                    if (jsonObject.has("errcode")) {
+                        Toast.makeText(mContext, "Successfully Deleted", Toast.LENGTH_SHORT).show();
+                        startActivity(new Intent(mContext, MainActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
+                        finish();
+                    } else {
+                        Toast.makeText(mContext, "something went wrong", Toast.LENGTH_SHORT).show();
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+            }
+        }.execute();
+
     }
 }
