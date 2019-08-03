@@ -39,6 +39,7 @@ import com.smartlock.retrofit.ApiServiceProvider;
 import com.smartlock.retrofit.ApiServices;
 import com.smartlock.sp.MyPreference;
 import com.smartlock.utils.Const;
+import com.smartlock.utils.NetworkUtils;
 import com.smartlock.utils.SharePreferenceUtility;
 import com.ttlock.bl.sdk.api.TTLockAPI;
 import com.ttlock.bl.sdk.util.GsonUtil;
@@ -58,7 +59,6 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-import static com.smartlock.constant.Config.IS_ADMIN_LOGIN;
 import static com.smartlock.utils.Const.KEY_VALUE;
 import static com.smartlock.utils.Const.USER_KEY_VALUE;
 
@@ -229,7 +229,8 @@ public class MainActivity extends BaseActivity implements DrawerAdapter.OnItemSe
                         for (int i = 0; i < list.size(); i++) {
                             getRequestToAddLockToPMSServer(list.get(i));
                         }
-                    }
+                        }
+
 
                     Bundle bundle = new Bundle();
                     bundle.putInt("key_data", keys.size());
@@ -408,6 +409,7 @@ public class MainActivity extends BaseActivity implements DrawerAdapter.OnItemSe
         }
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     private void init() {
         //turn on bluetooth
         SmartLockApp.mTTLockAPI.requestBleEnable(this);
@@ -430,7 +432,11 @@ public class MainActivity extends BaseActivity implements DrawerAdapter.OnItemSe
             fragmentTransaction.replace(R.id.container, home_fragment);
             fragmentTransaction.commit();
         } else {
-            syncData();
+            if (NetworkUtils.isNetworkConnected(mContext)) {
+                syncData();
+            } else {
+                Fragment_home.getInstance().showMessageDialog("Please check internet connection", getDrawable(R.drawable.ic_no_internet));
+            }
         }
     }
 

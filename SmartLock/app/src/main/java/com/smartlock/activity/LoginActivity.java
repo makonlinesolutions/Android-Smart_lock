@@ -33,6 +33,7 @@ import com.smartlock.retrofit.ApiServices;
 import com.smartlock.sp.MyPreference;
 import com.smartlock.utils.Const;
 import com.smartlock.utils.Constants;
+import com.smartlock.utils.NetworkUtils;
 import com.smartlock.utils.SharePreferenceUtility;
 
 import org.json.JSONException;
@@ -48,6 +49,7 @@ import retrofit2.Response;
 import static com.smartlock.constant.Config.IS_ADMIN_LOGIN;
 import static com.smartlock.utils.Constants.AppConst.GUEST_ID;
 import static com.smartlock.utils.Constants.AppConst.ORDER_ID;
+import static com.smartlock.utils.Constants.AppConst.TOKEN;
 import static com.smartlock.utils.Constants.AppConst.USER_ID;
 
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener {
@@ -111,6 +113,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     private void validateEntries(String username, String password) {
         boolean IS_ENTRY = true;
 
@@ -127,7 +130,11 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         }
 
         if (IS_ENTRY) {
-            getRequestPMSLogin(username, password);
+            if (NetworkUtils.isNetworkConnected(mContext)) {
+                getRequestPMSLogin(username, password);
+            }else {
+                Fragment_home.getInstance().showMessageDialog("Please check internet connection",getDrawable(R.drawable.ic_no_internet));
+            }
         }
     }
 
@@ -145,6 +152,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                         SharePreferenceUtility.saveStringPreferences(mContext, USER_ID, String.valueOf(loginResponse.response.smoId));
                         SharePreferenceUtility.saveStringPreferences(mContext, ORDER_ID, String.valueOf(loginResponse.response.orderId));
                         SharePreferenceUtility.saveStringPreferences(mContext, GUEST_ID, String.valueOf(loginResponse.response.guestId));
+                        SharePreferenceUtility.saveStringPreferences(mContext, TOKEN, "Bearer " + String.valueOf(loginResponse.response.token));
                         callTTLogin();
                     } else {
                         alertDialog.dismiss();
@@ -208,7 +216,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
     private void getKeyDetails() {
         String user_id = (String) SharePreferenceUtility.getPreferences(mContext, USER_ID, SharePreferenceUtility.PREFTYPE_STRING);
-        Call<KeyDetailsResponse> keyDetailsResponseCall = services.KEY_DETAILS_OBSERVABLE(user_id);
+        String token = (String) SharePreferenceUtility.getPreferences(mContext, TOKEN, SharePreferenceUtility.PREFTYPE_STRING);
+        Call<KeyDetailsResponse> keyDetailsResponseCall = services.KEY_DETAILS_OBSERVABLE(user_id, token);
         keyDetailsResponseCall.enqueue(new Callback<KeyDetailsResponse>() {
             @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
             @Override
@@ -230,7 +239,13 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                             if (tmp_data.size() > 0) {
                                 alertDialog.dismiss();
                                 SharePreferenceUtility.saveBooleanPreferences(mContext, Const.IS_LOGIN, true);
-                                showMessageDialog("Login Successfully", getDrawable(R.drawable.ic_iconfinder_ok_2639876));
+                                SharePreferenceUtility.saveBooleanPreferences(mContext, IS_ADMIN_LOGIN, false);
+                                Intent intent = new Intent(mContext, MainActivity.class);
+                                startActivity(intent);
+                                overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+
+
+//                                showMessageDialog("Login Successfully", getDrawable(R.drawable.ic_iconfinder_ok_2639876));
                             } else {
                                 alertDialog.dismiss();
                                 showMessageDialog("Oops, No Any Lock assign!!!", getDrawable(R.drawable.ic_iconfinder_ok_2639876));

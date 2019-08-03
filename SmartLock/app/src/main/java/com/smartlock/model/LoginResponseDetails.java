@@ -25,4 +25,7 @@ public class LoginResponseDetails {
     @SerializedName("message")
     @Expose
     public String message;
+    @SerializedName("token")
+    @Expose
+    public String token;
 }

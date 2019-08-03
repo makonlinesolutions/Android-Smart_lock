@@ -10,6 +10,7 @@ import retrofit2.Call;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
+import retrofit2.http.Header;
 import retrofit2.http.POST;
 import retrofit2.http.Path;
 
@@ -62,11 +63,11 @@ public interface ApiServices {
 
     @GET("key-details/{order_id}")
     Call<KeyDetailsResponse> KEY_DETAILS_OBSERVABLE(
-            @Path("order_id") String order_id
+            @Path("order_id") String order_id, @Header("Authorization") String authorization
     );
 
     @GET("check-is-guest-checkout/{order_id}/{guest_id}")
     Call<CheckoutCheckResponse> CHECKOUT_CHECK_RESPONSE_CALL(
-            @Path("order_id") String order_id, @Path("guest_id") String guest_id
+            @Path("order_id") String order_id, @Path("guest_id") String guest_id,@Header("Authorization") String authorization
     );
 }

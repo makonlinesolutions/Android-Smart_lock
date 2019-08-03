@@ -107,7 +107,12 @@ public class RegistrationActivity extends AppCompatActivity implements View.OnCl
                         }
                     } else {
                         SharePreferenceUtility.saveBooleanPreferences(mContext, Const.IS_LOGIN, true);
-                        showMessageDialog(msg, getDrawable(R.drawable.ic_iconfinder_ok_2639876));
+
+                        SharePreferenceUtility.saveBooleanPreferences(mContext,IS_ADMIN_LOGIN,true);
+                        Intent intent = new Intent(mContext, MainActivity.class);
+                        startActivity(intent);
+                        overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+//                        showMessageDialog(msg, getDrawable(R.drawable.ic_iconfinder_ok_2639876));
                         String access_token = jsonObject.getString("access_token");
                         String openid = jsonObject.getString("openid");
                         MyPreference.putStr(mContext, MyPreference.ACCESS_TOKEN, access_token);

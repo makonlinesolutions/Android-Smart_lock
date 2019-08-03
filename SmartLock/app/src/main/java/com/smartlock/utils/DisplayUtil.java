@@ -2,6 +2,7 @@ package com.smartlock.utils;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.support.v7.app.AlertDialog;
@@ -12,6 +13,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.smartlock.R;
+import com.smartlock.activity.LoginActivity;
+import com.smartlock.activity.NearbyLockActivity;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -130,7 +133,7 @@ public class DisplayUtil {
         dialog.show();
     }
 
-    public static void showMessageDialog(Context context, String message, Drawable drawable) {
+    public static void showMessageDialog(final Context context, final String message, Drawable drawable) {
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         LayoutInflater layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View view = layoutInflater.inflate(R.layout.custom_unlock_dialog, null, false);
@@ -143,7 +146,7 @@ public class DisplayUtil {
         if (message.equals("Door unlocked successfully!")) {
             tv_time.setVisibility(View.VISIBLE);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                MediaPlayerNotification.SoundPlayer(context);
+//                MediaPlayerNotification.SoundPlayer(context);
                 DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd MMM, hh:mm a");
                 LocalDateTime now = LocalDateTime.now();
                 tv_time.setText(dtf.format(now));
@@ -156,7 +159,13 @@ public class DisplayUtil {
         textView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                dialog.dismiss();
+                if (message.contains("Disconnected")) {
+                    context.startActivity(new Intent(context, LoginActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_CLEAR_TASK));
+                } if (message.equals("Please select the key")) {
+                    context.startActivity(new Intent(context, NearbyLockActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_CLEAR_TASK));
+                }else {
+                    dialog.dismiss();
+                }
             }
         });
         dialog.setCanceledOnTouchOutside(false);

@@ -6,9 +6,11 @@ import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Parcelable;
+import android.support.annotation.RequiresApi;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -198,6 +200,7 @@ public class SmartLockApp extends Application {
             }
         }
 
+        @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
         @Override
         public void onDeviceDisconnected(ExtendedBluetoothDevice extendedBluetoothDevice) {
             //default is unlock flag
@@ -206,6 +209,9 @@ public class SmartLockApp extends Application {
 //            if(!operateSuccess) {
 //                toast("disconnected");
 //            }
+            if (DBG) {
+                Fragment_home.getInstance().showMessageDialog("Disconnected!! Please contact to Administrator",getDrawable(R.drawable.ic_iconfinder_143_attention_183267));
+            }
             LogUtil.d("disconnected", DBG);
             ((BaseActivity) curActivity).cancelProgressDialog();
         }
@@ -365,6 +371,15 @@ public class SmartLockApp extends Application {
             if (error == Error.SUCCESS) {
                 Fragment_home.getInstance().showMessageDialog(getString(R.string.words_unlock_successed), getDrawable(R.drawable.ic_unlock));
 //                toast(getString(R.string.words_unlock_successed));
+
+//                Fragment_home.getInstance().setUnlockImage();
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        Fragment_home.getInstance().dismissDialog();
+                    }
+                },3000);
+
             } else
                 Fragment_home.getInstance().showMessageDialog(getString(R.string.words_error_unlock), getDrawable(R.drawable.ic_iconfinder_ic_cancel_48px_352263));
             //toast(error.getErrorMsg());
