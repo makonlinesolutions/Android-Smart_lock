@@ -8,6 +8,7 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.RequiresApi;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
@@ -24,6 +25,8 @@ import com.smartlock.R;
 import com.smartlock.net.ResponseService;
 import com.smartlock.sp.MyPreference;
 import com.smartlock.utils.Const;
+import com.smartlock.utils.DisplayUtil;
+import com.smartlock.utils.NetworkUtils;
 import com.smartlock.utils.SharePreferenceUtility;
 
 import org.json.JSONException;
@@ -76,55 +79,75 @@ public class RegistrationActivity extends AppCompatActivity implements View.OnCl
 
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     public void onClick(View v) {
-        alertDialog.show();
+
         final String username = mEtLoginId.getText().toString();
         final String password = mEtPassword.getText().toString();
-        new AsyncTask<Void, Integer, String>() {
+        boolean isEntry = true;
+        if (TextUtils.isEmpty(username)) {
+            Toast.makeText(mContext, "Please enter user name", Toast.LENGTH_SHORT).show();
+            isEntry = false;
+            return;
+        }
+        if (TextUtils.isEmpty(password)) {
+            Toast.makeText(mContext, "Please enter password", Toast.LENGTH_SHORT).show();
+            isEntry = false;
+            return;
+        }
 
-            @Override
-            protected String doInBackground(Void... params) {
-                return ResponseService.auth(username, password);
-            }
+        if (isEntry) {
+            if (NetworkUtils.isNetworkConnected(mContext)) {
+                alertDialog.show();
+                new AsyncTask<Void, Integer, String>() {
 
-            @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-            @Override
-            protected void onPostExecute(String json) {
-
-                alertDialog.dismiss();
-                String msg = getString(R.string.words_login_successed);
-                try {
-                    JSONObject jsonObject = new JSONObject(json);
-                    if (jsonObject.has("errmsg")) {
-                        if (TextUtils.isEmpty(username)) {
-                            toast("Please enter mobile number");
-                        } else if (TextUtils.isEmpty(password)) {
-                            toast("Please enter password");
-                        } else {
-                            msg = "Invalid login credentials!\nTry again";
-                            showMessageDialog(msg, getDrawable(R.drawable.ic_iconfinder_ic_cancel_48px_352263));
-                        }
-                    } else {
-                        SharePreferenceUtility.saveBooleanPreferences(mContext, Const.IS_LOGIN, true);
-
-                        SharePreferenceUtility.saveBooleanPreferences(mContext,IS_ADMIN_LOGIN,true);
-                        Intent intent = new Intent(mContext, MainActivity.class);
-                        startActivity(intent);
-                        overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
-//                        showMessageDialog(msg, getDrawable(R.drawable.ic_iconfinder_ok_2639876));
-                        String access_token = jsonObject.getString("access_token");
-                        String openid = jsonObject.getString("openid");
-                        MyPreference.putStr(mContext, MyPreference.ACCESS_TOKEN, access_token);
-                        MyPreference.putStr(mContext, MyPreference.OPEN_ID, openid);
+                    @Override
+                    protected String doInBackground(Void... params) {
+                        return ResponseService.auth(username, password);
                     }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
+
+                    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+                    @Override
+                    protected void onPostExecute(String json) {
+
+                        alertDialog.dismiss();
+                        String msg = getString(R.string.words_login_successed);
+                        try {
+                            JSONObject jsonObject = new JSONObject(json);
+                            if (jsonObject.has("errmsg")) {
+                                if (TextUtils.isEmpty(username)) {
+                                    toast("Please enter mobile number");
+                                } else if (TextUtils.isEmpty(password)) {
+                                    toast("Please enter password");
+                                } else {
+                                    msg = "Invalid login credentials!\nTry again";
+                                    showMessageDialog(msg, getDrawable(R.drawable.ic_iconfinder_ic_cancel_48px_352263));
+                                }
+                            } else {
+                                SharePreferenceUtility.saveBooleanPreferences(mContext, Const.IS_LOGIN, true);
+                                Toast.makeText(mContext, "Login successfully", Toast.LENGTH_SHORT).show();
+                                SharePreferenceUtility.saveBooleanPreferences(mContext,IS_ADMIN_LOGIN,true);
+                                Intent intent = new Intent(mContext, MainActivity.class);
+                                startActivity(intent);
+                                overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+//                        showMessageDialog(msg, getDrawable(R.drawable.ic_iconfinder_ok_2639876));
+                                String access_token = jsonObject.getString("access_token");
+                                String openid = jsonObject.getString("openid");
+                                MyPreference.putStr(mContext, MyPreference.ACCESS_TOKEN, access_token);
+                                MyPreference.putStr(mContext, MyPreference.OPEN_ID, openid);
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
 
 
+                    }
+                }.execute();
+            }else {
+                DisplayUtil.showMessageDialog(mContext, "Please check internet connection", getDrawable(R.drawable.ic_no_internet));
             }
-        }.execute();
+        }
     }
 /*
     private void showMessageDialog(final String msg, final String user_id, int resId){

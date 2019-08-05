@@ -122,12 +122,12 @@
                         android:layout_height="wrap_content"
                         android:layout_centerVertical="true"
                         android:layout_marginRight="10dp"
-                        android:fontFamily="serif"
                         android:layout_toRightOf="@+id/view"
-                        android:hint="Enter mobile number"
+                        android:background="@drawable/semi_round_editext"
+                        android:fontFamily="serif"
+                        android:hint="Enter User Id"
                         android:inputType="textEmailAddress"
                         android:padding="15dp"
-                        android:background="@drawable/semi_round_editext"
                         android:textColor="@color/black"
                         android:textColorHint="@color/gray" />
                     <!-- <br.com.sapereaude.maskedEditText.MaskedEditText

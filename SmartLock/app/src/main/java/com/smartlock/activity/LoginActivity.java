@@ -33,6 +33,7 @@ import com.smartlock.retrofit.ApiServices;
 import com.smartlock.sp.MyPreference;
 import com.smartlock.utils.Const;
 import com.smartlock.utils.Constants;
+import com.smartlock.utils.DisplayUtil;
 import com.smartlock.utils.NetworkUtils;
 import com.smartlock.utils.SharePreferenceUtility;
 
@@ -104,6 +105,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         ((TextView) findViewById(R.id.auth_openid)).setText(openid);
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     public void onClick(View v) {
         final String username = mEtLoginId.getText().toString();
@@ -133,16 +135,16 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             if (NetworkUtils.isNetworkConnected(mContext)) {
                 getRequestPMSLogin(username, password);
             }else {
-                Fragment_home.getInstance().showMessageDialog("Please check internet connection",getDrawable(R.drawable.ic_no_internet));
+                DisplayUtil.showMessageDialog(mContext, "Please check internet connection", getDrawable(R.drawable.ic_no_internet));
             }
         }
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     private void getRequestPMSLogin(String username, String password) {
         alertDialog.show();
         Call<LoginResponse> loginResponseCall = services.LOGIN_RESPONSE_OBSERVABLE(username, password);
         loginResponseCall.enqueue(new Callback<LoginResponse>() {
-            @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
             @Override
             public void onResponse(Call<LoginResponse> call, Response<LoginResponse> response) {
                 LoginResponse loginResponse = response.body();
@@ -238,6 +240,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                             List<LockDetails> tmp_data = databaseHelper.getAllLock();
                             if (tmp_data.size() > 0) {
                                 alertDialog.dismiss();
+                                Toast.makeText(mContext, "Login Successfully", Toast.LENGTH_SHORT).show();
                                 SharePreferenceUtility.saveBooleanPreferences(mContext, Const.IS_LOGIN, true);
                                 SharePreferenceUtility.saveBooleanPreferences(mContext, IS_ADMIN_LOGIN, false);
                                 Intent intent = new Intent(mContext, MainActivity.class);

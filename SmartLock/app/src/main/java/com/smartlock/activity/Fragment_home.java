@@ -211,9 +211,8 @@ public class Fragment_home extends Fragment implements View.OnClickListener {
 
             } else {
                 mKey = (Key) SharePreferenceUtility.getPreferences(getContext(), KEY_VALUE, SharePreferenceUtility.PREFTYPE_OBJECT);
-
+                arrKey = DbService.getKeyListKey();
                 if (mKey != null) {
-
                     img_lock.setBackgroundResource(R.drawable.ic_lock_black_24dp);
                     curKey = mKey;
                     mTvLockName.setText(mKey.getLockAlias());
@@ -222,7 +221,24 @@ public class Fragment_home extends Fragment implements View.OnClickListener {
                     ll_options.setVisibility(View.VISIBLE);
                     mTvNoLockFound.setVisibility(View.INVISIBLE);
                     viewLine.setVisibility(View.VISIBLE);
-                } else {
+                }else if (arrKey.size()>0) {
+                    if (arrKey.size() == 1) {
+                        mKey = arrKey.get(0);
+                        img_lock.setBackgroundResource(R.drawable.ic_lock_black_24dp);
+                        curKey = mKey;
+                        mTvLockName.setText(mKey.getLockAlias());
+                        mTvLockName.setVisibility(View.VISIBLE);
+                        mIvLockName.setVisibility(View.VISIBLE);
+                        ll_options.setVisibility(View.VISIBLE);
+                        mTvNoLockFound.setVisibility(View.INVISIBLE);
+                        viewLine.setVisibility(View.VISIBLE);
+                    } else {
+                        Toast.makeText(getContext(), "Please select key", Toast.LENGTH_SHORT).show();
+                        SharePreferenceUtility.saveObjectPreferences(getContext(), KEY_VALUE, null);
+                        startActivity(new Intent(getContext(), NearbyLockActivity.class));
+                        getActivity().finish();
+                    }
+                }else {
                     img_lock.setBackgroundResource(R.drawable.ic_add_black_24dp);
                     mTvLockName.setVisibility(View.INVISIBLE);
                     mIvLockName.setVisibility(View.INVISIBLE);
@@ -419,7 +435,6 @@ public class Fragment_home extends Fragment implements View.OnClickListener {
     public void onClick(View v) {
         if (v.getId() == R.id.img_lock) {
 
-
             if (NetworkUtils.isNetworkConnected(mContext)) {
                 mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
                 if (mBluetoothAdapter == null) {
@@ -576,14 +591,4 @@ public class Fragment_home extends Fragment implements View.OnClickListener {
         dialog.dismiss();
     }
 
-   /* @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-    public void setUnlockImage() {
-        img_lock.setBackground(getActivity().getDrawable(R.drawable.ic_unlock_color));
-    }
-
-
-    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-    public void setlockImage() {
-        img_lock.setBackground(getActivity().getDrawable(R.drawable.ic_lock_black_24dp));
-    }*/
 }

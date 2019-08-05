@@ -5,7 +5,10 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.RequiresApi;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -23,12 +26,21 @@ import android.widget.Toast;
 import com.dd.processbutton.FlatButton;
 import com.smartlock.R;
 import com.smartlock.model.Key;
+import com.smartlock.model.UnlockKeyNameResponse;
 import com.smartlock.net.ResponseService;
+import com.smartlock.retrofit.ApiServiceProvider;
+import com.smartlock.retrofit.ApiServices;
 import com.smartlock.sp.MyPreference;
 import com.smartlock.utils.DisplayUtil;
+import com.smartlock.utils.NetworkUtils;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import dmax.dialog.SpotsDialog;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 import static com.smartlock.activity.NearbyLockActivity.curKey;
 
@@ -39,6 +51,8 @@ public class SettingsActivity extends AppCompatActivity {
     private TextView mTvLockNumber, mTvMacId, mTvBattery, mTvValidty, mTvLockName, mTvLockGroup;
     private RelativeLayout rl_lockname, rl_lockgroup, rl_lockclock, rl_diagnosis, rl_firmware_update, rl_unlock_remotely, rl_read_operations, rl_adminpasscode, rl_locksound;
     private Button mBtLock;
+    private ApiServices services;
+    private android.app.AlertDialog alertDialog;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -52,19 +66,24 @@ public class SettingsActivity extends AppCompatActivity {
         }
 
         rl_lockname.setOnClickListener(new View.OnClickListener() {
+            @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
             @Override
             public void onClick(View v) {
-                openDialogForChangeKeyName();
+                if (NetworkUtils.isNetworkConnected(mContext)) {
+                    openDialogForChangeKeyName();
+                } else {
+                    DisplayUtil.showMessageDialog(mContext, "Please check internet connection", getDrawable(R.drawable.ic_no_internet));
+                }
             }
         });
 
-        rl_lockgroup.setOnClickListener(new View.OnClickListener() {
+       /* rl_lockgroup.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(SettingsActivity.this, LockgroupActivity.class);
                 startActivity(intent);
             }
-        });
+        });*/
 
         rl_lockclock.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -130,6 +149,7 @@ public class SettingsActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
+        services = new ApiServiceProvider(mContext).apiServices;
         rl_lockname = findViewById(R.id.rl_lockname);
         rl_lockgroup = findViewById(R.id.rl_lockgroup);
         rl_lockclock = findViewById(R.id.rl_lockclock);
@@ -146,12 +166,18 @@ public class SettingsActivity extends AppCompatActivity {
         mTvValidty = findViewById(R.id.tv_validity_period);
         mTvLockName = findViewById(R.id.tv_lock_name);
         mTvLockGroup = findViewById(R.id.tv_lock_group);
+        alertDialog = new SpotsDialog.Builder().setContext(mContext).setMessage("Loading").build();
 
 
         mBtLock.setOnClickListener(new View.OnClickListener() {
+            @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
             @Override
             public void onClick(View v) {
-                deleteLock();
+                if (NetworkUtils.isNetworkConnected(mContext)) {
+                    deleteLock();
+                } else {
+                    DisplayUtil.showMessageDialog(mContext, "Please check internet connection", getDrawable(R.drawable.ic_no_internet));
+                }
             }
         });
     }
@@ -174,10 +200,37 @@ public class SettingsActivity extends AppCompatActivity {
                 name_lock = edt_lock_name.getText().toString().trim();
                 if (TextUtils.isEmpty(name_lock)) {
                     DisplayUtil.showMessageDialog(SettingsActivity.this, "Please enter name", getDrawable(R.drawable.ic_iconfinder_143_attention_183267));
-                    //Toast.makeText(mContext, "Please enter name", Toast.LENGTH_SHORT).show();
                 } else {
-                    getRequestToChangeName(name_lock);
                     dialog.dismiss();
+
+                    if (NetworkUtils.isNetworkConnected(mContext)) {
+                        alertDialog.show();
+                        Call<UnlockKeyNameResponse> unlockKeyNameResponseCall = services.UNLOCK_KEY_NAME_RESPONSE_CALL(String.valueOf(mKey.getLockId()), name_lock);
+                        unlockKeyNameResponseCall.enqueue(new Callback<UnlockKeyNameResponse>() {
+                            @Override
+                            public void onResponse(Call<UnlockKeyNameResponse> call, Response<UnlockKeyNameResponse> response) {
+                                alertDialog.dismiss();
+                                if (response.isSuccessful()) {
+                                    if (response.body().response.statusCode == 200) {
+                                        if (TextUtils.isEmpty(name_lock)) {
+                                            DisplayUtil.showMessageDialog(mContext, "Please enter name", getDrawable(R.drawable.ic_iconfinder_143_attention_183267));
+                                            //Toast.makeText(mContext, "Please enter name", Toast.LENGTH_SHORT).show();
+                                        } else {
+                                            getRequestToChangeName(name_lock);
+                                            dialog.dismiss();
+                                        }
+                                    }
+                                }
+                            }
+
+                            @Override
+                            public void onFailure(Call<UnlockKeyNameResponse> call, Throwable t) {
+                                alertDialog.dismiss();
+                            }
+                        });
+                    } else {
+                        DisplayUtil.showMessageDialog(mContext, "Please check internet connection", getDrawable(R.drawable.ic_no_internet));
+                    }
                 }
             }
         });
@@ -195,7 +248,6 @@ public class SettingsActivity extends AppCompatActivity {
             protected String doInBackground(Void... params) {
                 return ResponseService.uploadLockName(name, token, lock_id);
             }
-
             @SuppressLint("NewApi")
             @Override
             protected void onPostExecute(String json) {
@@ -206,17 +258,20 @@ public class SettingsActivity extends AppCompatActivity {
                         if (jsonObject.getString("errcode").equals("0")) {
                             msg = "Lock Name changed successfully";
                             mTvLockName.setText(name_lock);
+                            DisplayUtil.showMessageDialog(SettingsActivity.this, msg, getDrawable(R.drawable.ic_iconfinder_ok_2639876));
                         } else {
                             msg = "Error while changing lock name!";
+                            DisplayUtil.showMessageDialog(SettingsActivity.this, msg, getDrawable(R.drawable.ic_iconfinder_ic_cancel_48px_352263));
+
                         }
                     } else {
                         msg = "Error while changing lock name!";
+                        DisplayUtil.showMessageDialog(SettingsActivity.this, msg, getDrawable(R.drawable.ic_iconfinder_ic_cancel_48px_352263));
+
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-                DisplayUtil.showMessageDialog(SettingsActivity.this, msg, getDrawable(R.drawable.ic_iconfinder_ic_cancel_48px_352263));
-                Toast.makeText(mContext, msg, Toast.LENGTH_SHORT).show();
             }
         }.execute();
     }
@@ -263,7 +318,7 @@ public class SettingsActivity extends AppCompatActivity {
                         } else {
                             mTvLockNumber.setText(jsonObject.getString("lockName"));
                             mTvMacId.setText(jsonObject.getString("lockMac"));
-                            mTvBattery.setText(jsonObject.getString("electricQuantity"));
+                            mTvBattery.setText(jsonObject.getString("electricQuantity") + "%");
                             mTvLockName.setText(jsonObject.getString("lockAlias"));
                             JSONObject lockGroupDetails = jsonObject.getJSONObject("lockVersion");
                             mTvLockGroup.setText(lockGroupDetails.getString("groupId"));
@@ -280,7 +335,7 @@ public class SettingsActivity extends AppCompatActivity {
     }
 
     private void deleteLock() {
-
+        alertDialog.show();
         new AsyncTask<Void, Integer, String>() {
 
             @Override
@@ -291,7 +346,7 @@ public class SettingsActivity extends AppCompatActivity {
             @SuppressLint("NewApi")
             @Override
             protected void onPostExecute(String json) {
-
+                alertDialog.dismiss();
                 Log.d("Settings Activity", json);
                 try {
                     JSONObject jsonObject = new JSONObject(json);

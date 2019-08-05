@@ -39,6 +39,7 @@ import com.smartlock.retrofit.ApiServiceProvider;
 import com.smartlock.retrofit.ApiServices;
 import com.smartlock.sp.MyPreference;
 import com.smartlock.utils.Const;
+import com.smartlock.utils.DisplayUtil;
 import com.smartlock.utils.NetworkUtils;
 import com.smartlock.utils.SharePreferenceUtility;
 import com.ttlock.bl.sdk.api.TTLockAPI;
@@ -79,6 +80,7 @@ public class MainActivity extends BaseActivity implements DrawerAdapter.OnItemSe
     private boolean IS_FROM_NEAR_BY_ACTIVITY = false;
     public static Key curKey;
     private Intent intent;
+    private ApiServices services;
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
@@ -148,6 +150,12 @@ public class MainActivity extends BaseActivity implements DrawerAdapter.OnItemSe
             finish();
             return;
         }
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+    @Override
+    public void onResume() {
+        super.onResume();
         init();
     }
 
@@ -323,6 +331,7 @@ public class MainActivity extends BaseActivity implements DrawerAdapter.OnItemSe
     @Override
     public void onItemSelected(int position) {
         if (position == POS_LOGOUT) {
+            Toast.makeText(mContext, "Logout Successfully", Toast.LENGTH_SHORT).show();
             MyPreference.putStr(mContext, MyPreference.ACCESS_TOKEN, "");
             MyPreference.putStr(mContext, MyPreference.OPEN_ID, "");
             SharePreferenceUtility.saveBooleanPreferences(mContext, Config.IS_ADMIN_LOGIN, false);
@@ -341,6 +350,7 @@ public class MainActivity extends BaseActivity implements DrawerAdapter.OnItemSe
             if (is_admin_login) {
                 intent = new Intent(MainActivity.this, AddLockActivity.class);
             } else {
+                Toast.makeText(mContext, "Logout Successfully", Toast.LENGTH_SHORT).show();
                 MyPreference.putStr(mContext, MyPreference.ACCESS_TOKEN, "");
                 MyPreference.putStr(mContext, MyPreference.OPEN_ID, "");
                 SharePreferenceUtility.saveBooleanPreferences(mContext, Config.IS_ADMIN_LOGIN, false);
@@ -355,12 +365,17 @@ public class MainActivity extends BaseActivity implements DrawerAdapter.OnItemSe
             overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
         }
         if (position == POS_DASHBOARD) {
-            Fragment home_fragment = new Fragment_home();
+           /* Fragment home_fragment = new Fragment_home();
             FragmentManager fragmentManager_home = getSupportFragmentManager();
             FragmentTransaction fragmentTransaction = fragmentManager_home.beginTransaction();
             fragmentTransaction.replace(R.id.container, home_fragment);
             fragmentTransaction.addToBackStack(null);
-            fragmentTransaction.commit();
+            fragmentTransaction.commit();*/
+
+            Intent intent = new Intent(MainActivity.this, MainActivity.class);
+            startActivity(intent);
+            overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+            finish();
         }
         if (position == POS_SETTINGS) {
             Intent intent = new Intent(MainActivity.this, SettingsNavActivity.class);
@@ -435,13 +450,11 @@ public class MainActivity extends BaseActivity implements DrawerAdapter.OnItemSe
             if (NetworkUtils.isNetworkConnected(mContext)) {
                 syncData();
             } else {
-                Fragment_home.getInstance().showMessageDialog("Please check internet connection", getDrawable(R.drawable.ic_no_internet));
+                DisplayUtil.showMessageDialog(mContext, "Please check internet connection", getDrawable(R.drawable.ic_no_internet));
             }
         }
     }
 
-
-    private ApiServices services;
 
     private void getRequestToAddLockToPMSServer(KeyObj keyObj) {
         services = new ApiServiceProvider(getApplicationContext()).apiServices;

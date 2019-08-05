@@ -210,7 +210,7 @@ public class SmartLockApp extends Application {
 //                toast("disconnected");
 //            }
             if (DBG) {
-                Fragment_home.getInstance().showMessageDialog("Disconnected!! Please contact to Administrator",getDrawable(R.drawable.ic_iconfinder_143_attention_183267));
+//                Fragment_home.getInstance().showMessageDialog("Disconnected!! Please contact to Administrator",getDrawable(R.drawable.ic_iconfinder_143_attention_183267));
             }
             LogUtil.d("disconnected", DBG);
             ((BaseActivity) curActivity).cancelProgressDialog();

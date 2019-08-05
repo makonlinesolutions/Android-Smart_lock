@@ -4,7 +4,7 @@
     <string-array name="ld_activityScreenTitles">
         <item>Dashboard</item>
         <item>Add Door Lock</item>
-        <item>Log Out</item>
+        <item>Logout</item>
     </string-array>
 
     <!--<string-array name="ld_activityScreenTitles">
