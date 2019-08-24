@@ -154,4 +154,6 @@
     <string name="dialog_cancel">Cancel</string>
     <string name="dialog_sure">OK</string>
 
+    <string name="operation_failed">Operation failed. Please ensure the lock is within 2 meters of the phone. Also, on your Phone- Switch Bluetooth OFF wait for 15 seconds and Turn Bluetooth ON</string>
+
 </resources>

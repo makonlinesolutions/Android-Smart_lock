@@ -2,9 +2,11 @@ package com.smartlock.activity;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -14,10 +16,8 @@ import android.widget.TextView;
 
 import com.google.gson.reflect.TypeToken;
 import com.smartlock.R;
-import com.smartlock.adapter.KeyAdapter;
 import com.smartlock.app.SmartLockApp;
 import com.smartlock.constant.Config;
-import com.smartlock.dao.DbService;
 import com.smartlock.db.DatabaseHelper;
 import com.smartlock.db.LockDetails;
 import com.smartlock.model.Key;
@@ -206,7 +206,24 @@ public class NearbyLockActivity extends BaseActivity {
 
     @Override
     public void onBackPressed() {
-        startActivity(new Intent(NearbyLockActivity.this, MainActivity.class).putExtra("from_near_by_activity", true));
-        finish();
+        if (keys.size() > 1) {
+            new AlertDialog.Builder(this)
+                    .setMessage("Are You Sure`1 You Want To Exit?")
+                    .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            NearbyLockActivity.this.finishAffinity();
+                        }
+                    })
+                    .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+                    }).create().show();
+        } else {
+            startActivity(new Intent(NearbyLockActivity.this, MainActivity.class).putExtra("from_near_by_activity", true));
+            finish();
+        }
     }
 }

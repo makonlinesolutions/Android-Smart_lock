@@ -21,6 +21,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.smartlock.BuildConfig;
 import com.smartlock.R;
 import com.smartlock.db.DatabaseHelper;
 import com.smartlock.db.LockDetails;
@@ -77,6 +78,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
         txt_label = findViewById(R.id.text_label);
         txt_label.setText("LOGIN");
+
+        ((TextView)findViewById(R.id.tv_version)).setText("Version Name: "+BuildConfig.VERSION_NAME);
 
       /*  Intent intent = getIntent();
         if (intent != null && intent.hasExtra("user_id")) {

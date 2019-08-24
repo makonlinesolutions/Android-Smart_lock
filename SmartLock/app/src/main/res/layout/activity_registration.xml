@@ -306,4 +306,17 @@
             </LinearLayout>
         </RelativeLayout>
     </ScrollView>
+
+    <TextView
+        android:id="@+id/tv_version"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        android:padding="10dp"
+        android:gravity="center"
+        android:layout_alignParentBottom="true"
+        android:fontFamily="serif"
+        android:textAllCaps="true"
+        android:textColor="@color/light_gray"
+        android:textSize="12dp" />
 </RelativeLayout>

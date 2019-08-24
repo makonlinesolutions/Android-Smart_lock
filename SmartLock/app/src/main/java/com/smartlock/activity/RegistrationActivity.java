@@ -8,7 +8,6 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.RequiresApi;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
@@ -21,6 +20,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.smartlock.BuildConfig;
 import com.smartlock.R;
 import com.smartlock.net.ResponseService;
 import com.smartlock.sp.MyPreference;
@@ -35,6 +35,8 @@ import org.json.JSONObject;
 import dmax.dialog.SpotsDialog;
 
 import static com.smartlock.constant.Config.IS_ADMIN_LOGIN;
+import static com.smartlock.utils.Constants.AppConst.NOVA_LOCK_ADMIN_USER_ID;
+import static com.smartlock.utils.Constants.AppConst.NOVA_LOCK_ADMIN_USER_PASSWORD;
 
 public class RegistrationActivity extends AppCompatActivity implements View.OnClickListener {
     EditText mEtLoginId, mEtPassword;
@@ -60,8 +62,11 @@ public class RegistrationActivity extends AppCompatActivity implements View.OnCl
 
         txt_label = findViewById(R.id.text_label);
 
+        ((TextView)findViewById(R.id.tv_version)).setText("Version Name: "+BuildConfig.VERSION_NAME);
         mEtLoginId = findViewById(R.id.edt_mobile_num);
         mEtPassword = findViewById(R.id.edt_password);
+
+
         btn_login.setOnClickListener(this);
 
         ((TextView) findViewById(R.id.text_label)).setOnClickListener(new View.OnClickListener() {

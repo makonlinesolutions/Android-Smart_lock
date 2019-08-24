@@ -331,6 +331,7 @@ public class MainActivity extends BaseActivity implements DrawerAdapter.OnItemSe
     @Override
     public void onItemSelected(int position) {
         if (position == POS_LOGOUT) {
+            DbService.deleteAllKey();
             Toast.makeText(mContext, "Logout Successfully", Toast.LENGTH_SHORT).show();
             MyPreference.putStr(mContext, MyPreference.ACCESS_TOKEN, "");
             MyPreference.putStr(mContext, MyPreference.OPEN_ID, "");
@@ -350,6 +351,7 @@ public class MainActivity extends BaseActivity implements DrawerAdapter.OnItemSe
             if (is_admin_login) {
                 intent = new Intent(MainActivity.this, AddLockActivity.class);
             } else {
+                DbService.deleteAllKey();
                 Toast.makeText(mContext, "Logout Successfully", Toast.LENGTH_SHORT).show();
                 MyPreference.putStr(mContext, MyPreference.ACCESS_TOKEN, "");
                 MyPreference.putStr(mContext, MyPreference.OPEN_ID, "");
