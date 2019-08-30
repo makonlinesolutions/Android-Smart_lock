@@ -25,11 +25,17 @@ public class SplashScreenActivity extends AppCompatActivity {
     private static final int PERMISSION_REQUEST_CODE = 200;
     private View view;
     private boolean ISLOGIN;
+    Thread splashTread;
+//    ImageView imageView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash_screen);
+
+//        imageView = (ImageView)findViewById(R.id.imageView2);
+//        imageView.setScaleType(ImageView.ScaleType.FIT_XY);
+
         view = findViewById(android.R.id.content);
         ISLOGIN = (boolean) SharePreferenceUtility.getPreferences(this, Const.IS_LOGIN, SharePreferenceUtility.PREFTYPE_BOOLEAN);
         if (checkPermission()) {

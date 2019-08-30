@@ -151,7 +151,7 @@ public class Fragment_home extends Fragment implements View.OnClickListener {
                         mKey = arrKey.get(0);
                         img_lock.setBackgroundResource(R.drawable.ic_lock_black_24dp);
                         curKey = mKey;
-                        mTvLockName.setText(mKey.getLockAlias());
+                        mTvLockName.setText("Lock Name: " + mKey.getLockAlias());
                         mTvLockName.setVisibility(View.VISIBLE);
                         mIvLockName.setVisibility(View.VISIBLE);
                         ll_options.setVisibility(View.VISIBLE);
@@ -185,7 +185,7 @@ public class Fragment_home extends Fragment implements View.OnClickListener {
 
                         img_lock.setBackgroundResource(R.drawable.ic_lock_black_24dp);
                         curKey = mKey;
-                        mTvLockName.setText(keyDetails.getLockAlis_value());
+                        mTvLockName.setText("Lock Name: " + keyDetails.getLockAlis_value());
                         mTvLockName.setVisibility(View.VISIBLE);
                         mIvLockName.setVisibility(View.VISIBLE);
                         ll_options.setVisibility(View.VISIBLE);
@@ -222,7 +222,7 @@ public class Fragment_home extends Fragment implements View.OnClickListener {
                 if (mKey != null) {
                     curKey = mKey;
                     DbService.saveKey(mKey);
-                    mTvLockName.setText(keyDetails.getLockAlis_value());
+                    mTvLockName.setText("Lock Name: " + keyDetails.getLockAlis_value());
                     mTvLockName.setVisibility(View.VISIBLE);
                     mIvLockName.setVisibility(View.VISIBLE);
                     ll_options.setVisibility(View.VISIBLE);
@@ -239,7 +239,7 @@ public class Fragment_home extends Fragment implements View.OnClickListener {
                 if (mKey != null) {
                     img_lock.setBackgroundResource(R.drawable.ic_lock_black_24dp);
                     curKey = mKey;
-                    mTvLockName.setText(mKey.getLockAlias());
+                    mTvLockName.setText("Lock Name: " + mKey.getLockAlias());
                     mTvLockName.setVisibility(View.VISIBLE);
                     mIvLockName.setVisibility(View.VISIBLE);
                     ll_options.setVisibility(View.VISIBLE);
@@ -250,7 +250,7 @@ public class Fragment_home extends Fragment implements View.OnClickListener {
                         mKey = arrKey.get(0);
                         img_lock.setBackgroundResource(R.drawable.ic_lock_black_24dp);
                         curKey = mKey;
-                        mTvLockName.setText(mKey.getLockAlias());
+                        mTvLockName.setText("Lock Name: " + mKey.getLockAlias());
                         mTvLockName.setVisibility(View.VISIBLE);
                         mIvLockName.setVisibility(View.VISIBLE);
                         ll_options.setVisibility(View.VISIBLE);
@@ -439,7 +439,7 @@ public class Fragment_home extends Fragment implements View.OnClickListener {
                     if (jsonObject.has("errcode")) {
                         if (jsonObject.getString("errcode").equals("0")) {
                             msg = "Lock Name changed successfully";
-                            mTvLockName.setText(name_lock);
+                            mTvLockName.setText("Lock Name: " + name_lock);
                         } else {
                             msg = "Something went wrong";
                         }
