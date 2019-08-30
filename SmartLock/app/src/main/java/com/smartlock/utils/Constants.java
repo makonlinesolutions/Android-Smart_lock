@@ -30,6 +30,12 @@ public class Constants {
         String USER_ID = "user_id";
         String ORDER_ID = "order_id";
         String GUEST_ID = "guest_id`";
+        String CHECK_IN_DATE = "checkInDate";
+        String CHECK_OUT_DATE = "checkOutDate";
+        String CHECK_IN_TIME = "checkInTime";
+        String CHECK_OUT_TIME = "checkOutTime";
+        String ORDER_STATUS = "orderStatus";
+        String ORDER_TYPE = "orderType";
         String TOKEN = "token";
         String NOVA_LOCK_ADMIN_USER_ID = "+919041979590";
         String NOVA_LOCK_ADMIN_USER_PASSWORD = "123456";

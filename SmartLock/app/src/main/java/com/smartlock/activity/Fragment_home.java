@@ -55,9 +55,12 @@ import com.ttlock.bl.sdk.scanner.ExtendedBluetoothDevice;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -69,6 +72,10 @@ import static com.smartlock.app.SmartLockApp.mContext;
 import static com.smartlock.app.SmartLockApp.mTTLockAPI;
 import static com.smartlock.utils.Const.KEY_VALUE;
 import static com.smartlock.utils.Const.USER_KEY_VALUE;
+import static com.smartlock.utils.Constants.AppConst.CHECK_IN_DATE;
+import static com.smartlock.utils.Constants.AppConst.CHECK_IN_TIME;
+import static com.smartlock.utils.Constants.AppConst.CHECK_OUT_DATE;
+import static com.smartlock.utils.Constants.AppConst.CHECK_OUT_TIME;
 import static com.smartlock.utils.Constants.AppConst.TOKEN;
 
 public class Fragment_home extends Fragment implements View.OnClickListener {
@@ -140,6 +147,7 @@ public class Fragment_home extends Fragment implements View.OnClickListener {
         Bundle bundle = getArguments();
 
         if (bundle != null) {
+
             from_near_by_activity = bundle.getBoolean("from_near_by_activity", false);
         }
         if (!from_near_by_activity) {
@@ -458,8 +466,75 @@ public class Fragment_home extends Fragment implements View.OnClickListener {
     @Override
     public void onClick(View v) {
         if (v.getId() == R.id.img_lock) {
+            if (!NetworkUtils.isNetworkConnected(mContext)) {
+                if(isCheckInDate()) {
+                    if(isCheckInTime()) {
+//                        Fragment_home.getInstance().showMessageDialog("Please check internet connection", getActivity().getDrawable(R.drawable.ic_no_internet));
+                        mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+                        if (mBluetoothAdapter == null) {
+                            // Device does not support Bluetooth
+                        } else {
+                            if (!mBluetoothAdapter.isEnabled()) {
+                                mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+                                if (mBluetoothAdapter.disable()) {
+                                    mBluetoothAdapter.enable();
+                                    showMessageDialog("Bluetooth is enabled Successfully", getActivity().getDrawable(R.drawable.ic_iconfinder_ok_2639876));
+                                }
+                            } else {
+                                boolean is_admin_login = (boolean) SharePreferenceUtility.getPreferences(getContext(), Config.IS_ADMIN_LOGIN, SharePreferenceUtility.PREFTYPE_BOOLEAN);
+                                /*if (is_admin_login)*/ {
+                                    if (mKey == null) {
+                                        startActivity(new Intent(getContext(), AddLockActivity.class));
+                                    } else {
 
-            if (NetworkUtils.isNetworkConnected(mContext)) {
+                                        if (mKey != null && mKey.getLockMac() != null && mTTLockAPI.isConnected(mKey.getLockMac())) {//If the lock is connected, you can call interface directly
+                                            img_lock.setBackgroundResource(R.drawable.ic_unlock_color);
+                                            if (mKey.isAdmin())
+                                                mTTLockAPI.unlockByAdministrator(null, openid, mKey.getLockVersion(), mKey.getAdminPwd(), mKey.getLockKey(), mKey.getLockFlagPos(), System.currentTimeMillis(), mKey.getAesKeyStr(), mKey.getTimezoneRawOffset());
+                                            else
+                                                mTTLockAPI.unlockByUser(null, openid, mKey.getLockVersion(), mKey.getStartDate(), mKey.getEndDate(), mKey.getLockKey(), mKey.getLockFlagPos(), mKey.getAesKeyStr(), mKey.getTimezoneRawOffset());
+                                        } else {//to connect the lock
+                                            if (isDeviceNearBy(mKey.getLockMac())) {
+                                                progressView.setVisibility(View.VISIBLE);
+                                                progressView.startAnimation();
+                                                new Handler().postDelayed(
+                                                        new Runnable() {
+                                                            @Override
+                                                            public void run() {
+                                                                progressView.stopAnimation();
+                                                                progressView.setVisibility(View.GONE);
+                                                                img_lock.setVisibility(View.GONE);
+                                                                mIvUnLock.setVisibility(View.VISIBLE);
+                                                            }
+                                                        }, 5000);
+                                                new Handler().postDelayed(
+                                                        new Runnable() {
+                                                            @Override
+                                                            public void run() {
+                                                                img_lock.setVisibility(View.VISIBLE);
+                                                                mIvUnLock.setVisibility(View.GONE);
+                                                            }
+                                                        }, 8000);
+                                                progressView.setVisibility(View.VISIBLE);
+                                                progressView.startAnimation();
+                                                mTTLockAPI.connect(mKey.getLockMac());
+                                                bleSession.setOperation(Operation.CLICK_UNLOCK);
+                                                bleSession.setLockmac(mKey.getLockMac());
+                                            } else {
+                                                showMessageDialog(mContext.getString(R.string.operation_failed), getContext().getDrawable(R.drawable.ic_iconfinder_ic_cancel_48px_352263));
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }else{
+                        Fragment_home.getInstance().showMessageDialog("Please check your checkIn/checkOut Time", getActivity().getDrawable(R.drawable.ic_warning_black_48dp));
+                    }
+                }else{
+                    Fragment_home.getInstance().showMessageDialog("Please check your checkIn/checkOut Date", getActivity().getDrawable(R.drawable.ic_warning_black_48dp));
+                }
+            } else {
                 mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
                 if (mBluetoothAdapter == null) {
                     // Device does not support Bluetooth
@@ -526,10 +601,58 @@ public class Fragment_home extends Fragment implements View.OnClickListener {
                         }
                     }
                 }
-            } else {
-                Fragment_home.getInstance().showMessageDialog("Please check internet connection", getActivity().getDrawable(R.drawable.ic_no_internet));
             }
         }
+    }
+
+    private boolean isCheckInTime() {
+        boolean isCheckInTime = false ;
+        String checkInTime = (String) SharePreferenceUtility.getPreferences(mContext, CHECK_IN_TIME, SharePreferenceUtility.PREFTYPE_STRING);
+        String checkOutTime = (String) SharePreferenceUtility.getPreferences(mContext, CHECK_OUT_TIME, SharePreferenceUtility.PREFTYPE_STRING);
+        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
+        Date checkIn = null, checkOut = null, currTime = null;
+        String time = sdf.format(new Date());
+        try{
+            checkIn = sdf.parse(checkInTime);
+            checkOut = sdf.parse(checkOutTime);
+            currTime = sdf.parse("18:00:00");
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        /*if (currTime.after(checkIn) && currTime.before(checkOut)) {
+            isCheckInTime = true ;
+        } else if (currTime.after(checkIn) && currTime.after(checkOut)) {
+            isCheckInTime = true ;
+        }*/
+        if(checkOut.compareTo(checkIn) <= 0) {
+            if(currTime.compareTo(checkOut) < 0 || currTime.compareTo(checkIn) >= 0) {
+                isCheckInTime = true;
+            }
+        } else if(currTime.compareTo(checkOut) < 0 && currTime.compareTo(checkIn) >= 0) {
+            isCheckInTime = true;
+        }
+
+        return isCheckInTime;
+    }
+
+    private boolean isCheckInDate() {
+        boolean isCorrectDate = false ;
+        String checkInDate = (String) SharePreferenceUtility.getPreferences(mContext, CHECK_IN_DATE, SharePreferenceUtility.PREFTYPE_STRING);
+        String checkOutDate = (String) SharePreferenceUtility.getPreferences(mContext, CHECK_OUT_DATE, SharePreferenceUtility.PREFTYPE_STRING);
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
+        Date checkIn = null,checkOut = null , todaysDate = null;
+        String today = sdf.format(new Date());
+        try{
+            checkIn = sdf.parse(checkInDate);
+            checkOut = sdf.parse(checkOutDate);
+            todaysDate = sdf.parse(today);
+        }catch(Exception e) {
+            e.printStackTrace();
+        }
+        if((todaysDate.compareTo(checkIn)>=0) && (todaysDate.compareTo(checkOut)<=0)){
+            isCorrectDate = true ;
+        }
+        return isCorrectDate;
     }
 
 
@@ -571,10 +694,8 @@ public class Fragment_home extends Fragment implements View.OnClickListener {
                                     } else {
                                         mTTLockAPI.unlockByUser(null, openid, mKey.getLockVersion(), mKey.getStartDate(), mKey.getEndDate(), mKey.getLockKey(), mKey.getLockFlagPos(), mKey.getAesKeyStr(), mKey.getTimezoneRawOffset());
                                     }
-
                                 } else {//to connect the lock
                                     if (isDeviceNearBy(mKey.getLockMac())) {
-
                                         progressView.setVisibility(View.VISIBLE);
                                         progressView.startAnimation();
                                         new Handler().postDelayed(
@@ -588,7 +709,6 @@ public class Fragment_home extends Fragment implements View.OnClickListener {
                                                     }
                                                 }, 5000);
 
-
                                         new Handler().postDelayed(
                                                 new Runnable() {
                                                     @Override
@@ -597,8 +717,6 @@ public class Fragment_home extends Fragment implements View.OnClickListener {
                                                         mIvUnLock.setVisibility(View.GONE);
                                                     }
                                                 }, 8000);
-
-
                                         progressView.setVisibility(View.VISIBLE);
                                         progressView.startAnimation();
                                         mTTLockAPI.connect(mKey.getLockMac());
@@ -607,7 +725,6 @@ public class Fragment_home extends Fragment implements View.OnClickListener {
                                     } else {
                                         showMessageDialog(mContext.getString(R.string.operation_failed), getContext().getDrawable(R.drawable.ic_iconfinder_ic_cancel_48px_352263));
                                     }
-
                                 }
                             }
                         }

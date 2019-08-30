@@ -49,6 +49,10 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 import static com.smartlock.constant.Config.IS_ADMIN_LOGIN;
+import static com.smartlock.utils.Constants.AppConst.CHECK_IN_DATE;
+import static com.smartlock.utils.Constants.AppConst.CHECK_IN_TIME;
+import static com.smartlock.utils.Constants.AppConst.CHECK_OUT_DATE;
+import static com.smartlock.utils.Constants.AppConst.CHECK_OUT_TIME;
 import static com.smartlock.utils.Constants.AppConst.GUEST_ID;
 import static com.smartlock.utils.Constants.AppConst.ORDER_ID;
 import static com.smartlock.utils.Constants.AppConst.TOKEN;
@@ -95,8 +99,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         });
         services = new ApiServiceProvider(getApplicationContext()).apiServices;
         alertDialog = new SpotsDialog.Builder().setContext(mContext).setMessage("Loading").build();
-
-
     }
 
     @Override
@@ -157,6 +159,10 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                         SharePreferenceUtility.saveStringPreferences(mContext, USER_ID, String.valueOf(loginResponse.response.smoId));
                         SharePreferenceUtility.saveStringPreferences(mContext, ORDER_ID, String.valueOf(loginResponse.response.orderId));
                         SharePreferenceUtility.saveStringPreferences(mContext, GUEST_ID, String.valueOf(loginResponse.response.guestId));
+                        SharePreferenceUtility.saveStringPreferences(mContext, CHECK_IN_DATE, loginResponse.response.checkInDate);
+                        SharePreferenceUtility.saveStringPreferences(mContext, CHECK_OUT_DATE, loginResponse.response.checkOutDate);
+                        SharePreferenceUtility.saveStringPreferences(mContext, CHECK_IN_TIME, loginResponse.response.checkInTime);
+                        SharePreferenceUtility.saveStringPreferences(mContext, CHECK_OUT_TIME, loginResponse.response.checkOutTime);
                         SharePreferenceUtility.saveStringPreferences(mContext, TOKEN, "Bearer " + String.valueOf(loginResponse.response.token));
                         callTTLogin();
                     } else {

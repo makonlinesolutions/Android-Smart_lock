@@ -28,4 +28,23 @@ public class LoginResponseDetails {
     @SerializedName("token")
     @Expose
     public String token;
+    @SerializedName("checkInDate")
+    @Expose
+    public String checkInDate;
+    @SerializedName("checkInTime")
+    @Expose
+    public String checkInTime;
+    @SerializedName("checkOutDate")
+    @Expose
+    public String checkOutDate;
+    @SerializedName("checkOutTime")
+    @Expose
+    public String checkOutTime;
+    @SerializedName("orderStatus")
+    @Expose
+    public Integer orderStatus;
+    @SerializedName("orderType")
+    @Expose
+    public String orderType;
+
 }

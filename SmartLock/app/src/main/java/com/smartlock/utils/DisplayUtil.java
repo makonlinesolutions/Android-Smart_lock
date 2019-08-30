@@ -170,7 +170,5 @@ public class DisplayUtil {
         });
         dialog.setCanceledOnTouchOutside(false);
         dialog.show();
-
     }
-
 }
