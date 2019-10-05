@@ -8,6 +8,7 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.RequiresApi;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
@@ -40,7 +41,7 @@ import static com.smartlock.utils.Constants.AppConst.NOVA_LOCK_ADMIN_USER_PASSWO
 
 public class RegistrationActivity extends AppCompatActivity implements View.OnClickListener {
     EditText mEtLoginId, mEtPassword;
-    Button btn_login;
+    FloatingActionButton btn_login;
     TextView txt_label;
 
     String a;

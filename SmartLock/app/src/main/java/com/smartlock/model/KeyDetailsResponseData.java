@@ -12,6 +12,9 @@ public class KeyDetailsResponseData {
     @SerializedName("Response")
     @Expose
     public List<KeyDetails> response = null;
+    @SerializedName("orderDetails")
+    @Expose
+    public OrderDetails orderDetails;
     @SerializedName("statusCode")
     @Expose
     public int statusCode;

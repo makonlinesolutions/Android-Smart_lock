@@ -39,144 +39,142 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical">
-
-
-    <LinearLayout
-        android:orientation="vertical"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="10dp"
-        android:layout_marginTop="5dp"
-        android:background="@color/white">
-
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:layout_marginBottom="10dp"
-            android:layout_marginRight="5dp"
-            android:layout_marginLeft="5dp"
-            android:layout_gravity="center_vertical">
-            <TextView
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                style="@style/settings_text"
-                android:text="Lock Number"
-                android:layout_marginLeft="5dp"
-                />
-            <TextView
-                android:id="@+id/tv_lock_number"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentRight="true"
-                android:text="S210_07G89"
-                style="@style/settings_text2"
-                android:layout_marginRight="5dp"/>
-        </RelativeLayout>
+                android:padding="10dp"
+                android:layout_marginTop="5dp"
+                android:background="@color/white">
 
-        <View
-            android:layout_marginLeft="10dp"
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="@color/lightgray"/>
-        <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:layout_marginBottom="10dp"
-        android:layout_marginRight="5dp"
-        android:layout_marginLeft="5dp">
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            style="@style/settings_text"
-            android:text="MAC/ID"
-            android:layout_marginLeft="5dp"
-            />
-        <TextView
-            android:id="@+id/tv_mac_address"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:text="D8:2C:6C:39:8C:1D/1340845"
-            android:layout_marginRight="5dp"
-            style="@style/settings_text2"/>
-    </RelativeLayout>
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginBottom="10dp"
+                    android:layout_marginRight="5dp"
+                    android:layout_marginLeft="5dp"
+                    android:layout_gravity="center_vertical">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        style="@style/settings_text"
+                        android:text="Lock Number"
+                        android:layout_marginLeft="5dp"
+                        />
+                    <TextView
+                        android:id="@+id/tv_lock_number"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true"
+                        android:text="S210_07G89"
+                        style="@style/settings_text2"
+                        android:layout_marginRight="5dp"/>
+                </RelativeLayout>
 
-        <View
-            android:layout_marginLeft="10dp"
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="@color/lightgray"/>
+                <View
+                    android:layout_marginLeft="10dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/lightgray"/>
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginBottom="10dp"
+                    android:layout_marginRight="5dp"
+                    android:layout_marginLeft="5dp">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        style="@style/settings_text"
+                        android:text="MAC/ID"
+                        android:layout_marginLeft="5dp"
+                        />
+                    <TextView
+                        android:id="@+id/tv_mac_address"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true"
+                        android:text="D8:2C:6C:39:8C:1D/1340845"
+                        android:layout_marginRight="5dp"
+                        style="@style/settings_text2"/>
+                </RelativeLayout>
 
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:layout_marginBottom="10dp"
-            android:layout_marginRight="5dp"
-            android:layout_marginLeft="5dp"
-            android:layout_gravity="center_vertical"
-            android:gravity="center"
-            >
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                style="@style/settings_text"
-                android:text="Battery"
-                android:layout_marginLeft="5dp"
-                />
+                <View
+                    android:layout_marginLeft="10dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/lightgray"/>
 
-            <ImageView
-                android:id="@+id/img_battery"
-                android:layout_width="25dp"
-                android:layout_height="25dp"
-                android:layout_toLeftOf="@+id/tv_battery"
-                android:layout_marginRight="10dp"
-                android:background="@drawable/battery"
-                android:layout_centerVertical="true"
-                />
-            <TextView
-                android:id="@+id/tv_battery"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentRight="true"
-                android:text="100%"
-                android:layout_centerVertical="true"
-                android:layout_marginRight="5dp"
-                style="@style/settings_text2"/>
-        </RelativeLayout>
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginBottom="10dp"
+                    android:layout_marginRight="5dp"
+                    android:layout_marginLeft="5dp"
+                    android:layout_gravity="center_vertical"
+                    android:gravity="center"
+                    >
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        style="@style/settings_text"
+                        android:text="Battery"
+                        android:layout_marginLeft="5dp"
+                        />
 
-        <View
-            android:layout_marginLeft="10dp"
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="@color/lightgray"/>
+                    <ImageView
+                        android:id="@+id/img_battery"
+                        android:layout_width="25dp"
+                        android:layout_height="25dp"
+                        android:layout_toLeftOf="@+id/tv_battery"
+                        android:layout_marginRight="10dp"
+                        android:background="@drawable/battery"
+                        android:layout_centerVertical="true"
+                        />
+                    <TextView
+                        android:id="@+id/tv_battery"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true"
+                        android:text="100%"
+                        android:layout_centerVertical="true"
+                        android:layout_marginRight="5dp"
+                        style="@style/settings_text2"/>
+                </RelativeLayout>
 
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:layout_marginBottom="10dp"
-            android:layout_marginRight="5dp"
-            android:layout_marginLeft="5dp">
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                style="@style/settings_text"
-                android:text="Validity Period"
-                android:layout_marginLeft="5dp"
-                />
-            <TextView
-                android:id="@+id/tv_validity_period"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentRight="true"
-                android:text="Permanent"
-                android:layout_marginRight="5dp"
-                style="@style/settings_text2"/>
-        </RelativeLayout>
-    </LinearLayout>
+                <View
+                    android:layout_marginLeft="10dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/lightgray"/>
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginBottom="10dp"
+                    android:layout_marginRight="5dp"
+                    android:layout_marginLeft="5dp">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        style="@style/settings_text"
+                        android:text="Validity Period"
+                        android:layout_marginLeft="5dp"
+                        />
+                    <TextView
+                        android:id="@+id/tv_validity_period"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true"
+                        android:text="Permanent"
+                        android:layout_marginRight="5dp"
+                        style="@style/settings_text2"/>
+                </RelativeLayout>
+            </LinearLayout>
 
             <LinearLayout
                 android:orientation="vertical"
@@ -526,15 +524,14 @@
                         android:text="Unlock Notification"
                         android:layout_marginLeft="5dp"
                         />
-                <Switch
-                    android:id="@+id/switch_notification"
-                    android:layout_alignParentRight="true"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:theme="@style/ThemeOverlay.MySwitchCompat"/>
+                    <Switch
+                        android:id="@+id/switch_notification"
+                        android:layout_alignParentRight="true"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:theme="@style/ThemeOverlay.MySwitchCompat"/>
                 </RelativeLayout>
             </LinearLayout>
-
 
             <Button
                 android:id="@+id/btn_delete"

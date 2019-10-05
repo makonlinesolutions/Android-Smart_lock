@@ -8,6 +8,10 @@ import android.util.Log;
 import com.google.gson.Gson;
 import com.smartlock.db.LockDetails;
 import com.smartlock.model.Key;
+import com.smartlock.model.KeyDetailsResponse;
+import com.smartlock.model.OrderDetails;
+
+import retrofit2.Callback;
 
 public class SharePreferenceUtility {
 
@@ -62,7 +66,6 @@ public class SharePreferenceUtility {
             e.printStackTrace();
         }
     }
-
 
     public static void saveUserLock(Context context, String strKey, LockDetails lockDetails) {
         try {

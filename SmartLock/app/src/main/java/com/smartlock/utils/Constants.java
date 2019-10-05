@@ -39,5 +39,19 @@ public class Constants {
         String TOKEN = "token";
         String NOVA_LOCK_ADMIN_USER_ID = "+919041979590";
         String NOVA_LOCK_ADMIN_USER_PASSWORD = "123456";
+
+        /*Order Details Constants*/
+        String CHECK_IN = "check_in";
+        String CHECK_OUT = "check_out";
+        String ADULTS = "adults";
+        String KIDS = "kids";
+        String ORDER_ON = "ordered_on";
+        String ARRIVE_TIME = "arrive_time";
+        String DEPARTURE_TIME = "departure_time";
+        String GROUP_NAME = "group_name";
+        String GROUP_CODE = "group_code";
+        String ROOM_NO = "room_no";
+        String ROOM_SHORT = "room_short";
+        String ROOM_TYPE = "room_type";
     }
 }

@@ -11,6 +11,7 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.RequiresApi;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -28,6 +29,7 @@ import com.smartlock.db.LockDetails;
 import com.smartlock.model.KeyDetails;
 import com.smartlock.model.KeyDetailsResponse;
 import com.smartlock.model.LoginResponse;
+import com.smartlock.model.OrderDetails;
 import com.smartlock.net.ResponseService;
 import com.smartlock.retrofit.ApiServiceProvider;
 import com.smartlock.retrofit.ApiServices;
@@ -49,18 +51,32 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 import static com.smartlock.constant.Config.IS_ADMIN_LOGIN;
+import static com.smartlock.utils.Constants.AppConst.ADULTS;
+import static com.smartlock.utils.Constants.AppConst.ARRIVE_TIME;
+import static com.smartlock.utils.Constants.AppConst.CHECK_IN;
 import static com.smartlock.utils.Constants.AppConst.CHECK_IN_DATE;
 import static com.smartlock.utils.Constants.AppConst.CHECK_IN_TIME;
+import static com.smartlock.utils.Constants.AppConst.CHECK_OUT;
 import static com.smartlock.utils.Constants.AppConst.CHECK_OUT_DATE;
 import static com.smartlock.utils.Constants.AppConst.CHECK_OUT_TIME;
+import static com.smartlock.utils.Constants.AppConst.DEPARTURE_TIME;
+import static com.smartlock.utils.Constants.AppConst.GROUP_CODE;
+import static com.smartlock.utils.Constants.AppConst.GROUP_NAME;
 import static com.smartlock.utils.Constants.AppConst.GUEST_ID;
+import static com.smartlock.utils.Constants.AppConst.KIDS;
 import static com.smartlock.utils.Constants.AppConst.ORDER_ID;
+import static com.smartlock.utils.Constants.AppConst.ORDER_ON;
+import static com.smartlock.utils.Constants.AppConst.ORDER_STATUS;
+import static com.smartlock.utils.Constants.AppConst.ORDER_TYPE;
+import static com.smartlock.utils.Constants.AppConst.ROOM_NO;
+import static com.smartlock.utils.Constants.AppConst.ROOM_SHORT;
+import static com.smartlock.utils.Constants.AppConst.ROOM_TYPE;
 import static com.smartlock.utils.Constants.AppConst.TOKEN;
 import static com.smartlock.utils.Constants.AppConst.USER_ID;
 
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener {
     EditText mEtLoginId, mEtPassword;
-    Button btn_login;
+    FloatingActionButton btn_login;
     TextView txt_label;
     String a;
     int keyDel;
@@ -163,6 +179,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                         SharePreferenceUtility.saveStringPreferences(mContext, CHECK_OUT_DATE, loginResponse.response.checkOutDate);
                         SharePreferenceUtility.saveStringPreferences(mContext, CHECK_IN_TIME, loginResponse.response.checkInTime);
                         SharePreferenceUtility.saveStringPreferences(mContext, CHECK_OUT_TIME, loginResponse.response.checkOutTime);
+                        SharePreferenceUtility.saveStringPreferences(mContext, ORDER_TYPE, loginResponse.response.orderType);
+                        SharePreferenceUtility.saveIntPreferences(mContext, ORDER_STATUS, loginResponse.response.orderStatus);
                         SharePreferenceUtility.saveStringPreferences(mContext, TOKEN, "Bearer " + String.valueOf(loginResponse.response.token));
                         callTTLogin();
                     } else {
@@ -238,6 +256,21 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 if (keyDetailsResponse != null) {
                     if (keyDetailsResponse.response.statusCode == 200) {
                         List<KeyDetails> key_details = keyDetailsResponse.response.response;
+                        if(keyDetailsResponse.response.orderDetails != null){
+                            SharePreferenceUtility.saveStringPreferences(LoginActivity.this, ROOM_NO, keyDetailsResponse.response.orderDetails.roomNo);
+                            SharePreferenceUtility.saveStringPreferences(LoginActivity.this, ROOM_SHORT, keyDetailsResponse.response.orderDetails.shortCode);
+                            SharePreferenceUtility.saveStringPreferences(LoginActivity.this, CHECK_IN, keyDetailsResponse.response.orderDetails.checkIn);
+                            SharePreferenceUtility.saveStringPreferences(LoginActivity.this, CHECK_OUT, keyDetailsResponse.response.orderDetails.checkOut);
+                            SharePreferenceUtility.saveIntPreferences(LoginActivity.this, ADULTS, keyDetailsResponse.response.orderDetails.adults);
+                            SharePreferenceUtility.saveIntPreferences(LoginActivity.this, KIDS, keyDetailsResponse.response.orderDetails.kids);
+                            SharePreferenceUtility.saveStringPreferences(LoginActivity.this, ORDER_ON, keyDetailsResponse.response.orderDetails.orderedOn);
+                            SharePreferenceUtility.saveStringPreferences(LoginActivity.this, ARRIVE_TIME, keyDetailsResponse.response.orderDetails.arriveTime);
+                            SharePreferenceUtility.saveStringPreferences(LoginActivity.this, DEPARTURE_TIME, keyDetailsResponse.response.orderDetails.departureTime);
+                            SharePreferenceUtility.saveStringPreferences(LoginActivity.this, GROUP_NAME, keyDetailsResponse.response.orderDetails.groupName);
+                            SharePreferenceUtility.saveStringPreferences(LoginActivity.this, GROUP_CODE, keyDetailsResponse.response.orderDetails.groupCode);
+                            SharePreferenceUtility.saveStringPreferences(LoginActivity.this, ROOM_TYPE, keyDetailsResponse.response.orderDetails.title);
+                        }
+
                         if (key_details.size() > 0) {
 
                             DatabaseHelper databaseHelper = new DatabaseHelper(mContext);
@@ -255,8 +288,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                                 Intent intent = new Intent(mContext, MainActivity.class);
                                 startActivity(intent);
                                 overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
-
-
 //                                showMessageDialog("Login Successfully", getDrawable(R.drawable.ic_iconfinder_ok_2639876));
                             } else {
                                 alertDialog.dismiss();

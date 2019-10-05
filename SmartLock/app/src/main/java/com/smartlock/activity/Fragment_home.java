@@ -16,6 +16,8 @@ import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
+import android.support.design.card.MaterialCardView;
+import android.support.design.widget.BottomSheetBehavior;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
@@ -72,10 +74,22 @@ import static com.smartlock.app.SmartLockApp.mContext;
 import static com.smartlock.app.SmartLockApp.mTTLockAPI;
 import static com.smartlock.utils.Const.KEY_VALUE;
 import static com.smartlock.utils.Const.USER_KEY_VALUE;
+import static com.smartlock.utils.Constants.AppConst.ADULTS;
+import static com.smartlock.utils.Constants.AppConst.ARRIVE_TIME;
+import static com.smartlock.utils.Constants.AppConst.CHECK_IN;
 import static com.smartlock.utils.Constants.AppConst.CHECK_IN_DATE;
 import static com.smartlock.utils.Constants.AppConst.CHECK_IN_TIME;
+import static com.smartlock.utils.Constants.AppConst.CHECK_OUT;
 import static com.smartlock.utils.Constants.AppConst.CHECK_OUT_DATE;
 import static com.smartlock.utils.Constants.AppConst.CHECK_OUT_TIME;
+import static com.smartlock.utils.Constants.AppConst.DEPARTURE_TIME;
+import static com.smartlock.utils.Constants.AppConst.GROUP_CODE;
+import static com.smartlock.utils.Constants.AppConst.GROUP_NAME;
+import static com.smartlock.utils.Constants.AppConst.KIDS;
+import static com.smartlock.utils.Constants.AppConst.ORDER_ON;
+import static com.smartlock.utils.Constants.AppConst.ROOM_NO;
+import static com.smartlock.utils.Constants.AppConst.ROOM_SHORT;
+import static com.smartlock.utils.Constants.AppConst.ROOM_TYPE;
 import static com.smartlock.utils.Constants.AppConst.TOKEN;
 
 public class Fragment_home extends Fragment implements View.OnClickListener {
@@ -97,14 +111,19 @@ public class Fragment_home extends Fragment implements View.OnClickListener {
     private ApiServices services;
     private BluetoothAdapter mBluetoothAdapter;
 
-    private List<ExtendedBluetoothDevice> mLeDevices;
-    private ExtendedBluetoothDevice device;
+    private List<ExtendedBluetoothDevice> mLeDevices ;
+    private ExtendedBluetoothDevice device ;
+
+    /*Bottom Sheet*/
+    private BottomSheetBehavior behavior ;
+    private MaterialCardView linearBottomLayout ;
+    private ImageView iv_arrow ;
+    private TextView tv_room_no, tv_check_in, tv_check_out, tv_adults, tv_kids, tv_ordered_on, tv_arrive_time, tv_departure_time, tv_group_name_code, tv_room_id;
 
     private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             final String action = intent.getAction();
-
             if (action.equals(BleConstant.ACTION_BLE_DEVICE)) {
                 Bundle bundle = intent.getExtras();
                 device = bundle.getParcelable(BleConstant.DEVICE);
@@ -136,6 +155,19 @@ public class Fragment_home extends Fragment implements View.OnClickListener {
         mTvNoLockFound = view.findViewById(R.id.tv_no_lock_found);
         viewLine = view.findViewById(R.id.view1);
         mTvRoomNumber = view.findViewById(R.id.tv_room_number);
+        linearBottomLayout = view.findViewById(R.id.bottom_sheet_room_details);
+        behavior = BottomSheetBehavior.from(linearBottomLayout);
+        iv_arrow = view.findViewById(R.id.iv_arrow);
+        tv_room_no = view.findViewById(R.id.tv_room_no);
+        tv_check_in = view.findViewById(R.id.tv_check_in);
+        tv_check_out = view.findViewById(R.id.tv_check_out);
+        tv_adults = view.findViewById(R.id.tv_adults);
+        tv_kids = view.findViewById(R.id.tv_kids);
+        tv_ordered_on = view.findViewById(R.id.tv_ordered_on);
+        tv_arrive_time = view.findViewById(R.id.tv_arrive_time);
+        tv_departure_time = view.findViewById(R.id.tv_departure_time);
+        tv_group_name_code = view.findViewById(R.id.tv_group_name_code);
+        tv_room_id = view.findViewById(R.id.tv_room_id);
         init();
         ll_ekeys.setVisibility(View.GONE);
         ll_passcode.setVisibility(View.GONE);
@@ -144,10 +176,49 @@ public class Fragment_home extends Fragment implements View.OnClickListener {
         arrKeyDetails = databaseHelper.getAllLock();
         services = new ApiServiceProvider(mContext).apiServices;
 
+        behavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
+            @Override
+            public void onStateChanged(@NonNull View view, int newState) {
+                switch (newState) {
+                    case BottomSheetBehavior.STATE_HIDDEN:
+                        break;
+                    case BottomSheetBehavior.STATE_EXPANDED: {
+                        iv_arrow.setImageDrawable(getContext().getResources().getDrawable(R.drawable.ic_keyboard_arrow_down_black_24dp));
+                    }
+                    break;
+                    case BottomSheetBehavior.STATE_COLLAPSED: {
+                        setRoomDetails();
+                        iv_arrow.setImageDrawable(getContext().getResources().getDrawable(R.drawable.ic_keyboard_arrow_up_black_24dp));
+                    }
+                    break;
+                    case BottomSheetBehavior.STATE_DRAGGING:
+                        break;
+                    case BottomSheetBehavior.STATE_SETTLING:
+                        break;
+                }
+            }
+
+            @Override
+            public void onSlide(@NonNull View view, float v) {
+
+            }
+        });
+
+        iv_arrow.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (behavior.getState() != BottomSheetBehavior.STATE_EXPANDED) {
+                    behavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+                } else {
+                    setRoomDetails();
+                    behavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+                }
+            }
+        });
+
         Bundle bundle = getArguments();
 
         if (bundle != null) {
-
             from_near_by_activity = bundle.getBoolean("from_near_by_activity", false);
         }
         if (!from_near_by_activity) {
@@ -239,8 +310,6 @@ public class Fragment_home extends Fragment implements View.OnClickListener {
                 } else {
                     showMessageDialog("Please select the key", getActivity().getDrawable(R.drawable.ic_iconfinder_143_attention_183267));
                 }
-
-
             } else {
                 mKey = (Key) SharePreferenceUtility.getPreferences(getContext(), KEY_VALUE, SharePreferenceUtility.PREFTYPE_OBJECT);
                 arrKey = DbService.getKeyListKey();
@@ -282,7 +351,12 @@ public class Fragment_home extends Fragment implements View.OnClickListener {
         }
 
         boolean is_admin_login = (boolean) SharePreferenceUtility.getPreferences(getContext(), Config.IS_ADMIN_LOGIN, SharePreferenceUtility.PREFTYPE_BOOLEAN);
-
+        if(!is_admin_login){
+            linearBottomLayout.setVisibility(View.VISIBLE);
+            setRoomDetails();
+        }else {
+            linearBottomLayout.setVisibility(View.GONE);
+        }
         if (mKey != null && mKey.isAdmin()) {
             ll_send_key.setVisibility(View.VISIBLE);
         } else {
@@ -364,11 +438,96 @@ public class Fragment_home extends Fragment implements View.OnClickListener {
         viewLine.setVisibility(View.GONE);
         if (!is_admin_login) {
             if (keyDetails != null) {
-                mTvRoomNumber.setText("Your Room Number is : " + keyDetails.getRoomNo());
-                mTvRoomNumber.setVisibility(View.VISIBLE);
+//                mTvRoomNumber.setText("Your Room Number is : " + keyDetails.getRoomNo());
+//                mTvRoomNumber.setVisibility(View.VISIBLE);
+                linearBottomLayout.setVisibility(View.VISIBLE);
+                setRoomDetails();
             }
         }
         return view;
+    }
+
+    private void setRoomDetails() {
+        String room_no = (String) SharePreferenceUtility.getPreferences(getContext(), ROOM_NO, SharePreferenceUtility.PREFTYPE_STRING);
+        String room_short_name = (String) SharePreferenceUtility.getPreferences(getContext(), ROOM_SHORT, SharePreferenceUtility.PREFTYPE_STRING);
+        if(room_no.equalsIgnoreCase("")){
+            tv_room_no.setVisibility(View.GONE);
+        }else {
+            if(room_short_name.equalsIgnoreCase("")){
+                tv_room_no.setText(room_no);
+            }else {
+                tv_room_no.setText(room_no + " (" + room_short_name + ")");
+            }
+//            tv_room_no.setVisibility(View.VISIBLE);
+        }
+        String check_in = (String) SharePreferenceUtility.getPreferences(getContext(), CHECK_IN, SharePreferenceUtility.PREFTYPE_STRING);
+        if(check_in.equalsIgnoreCase("")){
+            tv_check_in.setVisibility(View.GONE);
+        }else {
+            tv_check_in.setText(check_in);
+            tv_check_in.setVisibility(View.VISIBLE);
+        }
+        String check_out = (String) SharePreferenceUtility.getPreferences(getContext(), CHECK_OUT, SharePreferenceUtility.PREFTYPE_STRING);
+        if(check_out.equalsIgnoreCase("")){
+            tv_check_out.setVisibility(View.GONE);
+        }else {
+            tv_check_out.setText(check_out);
+            tv_check_out.setVisibility(View.VISIBLE);
+        }
+        int adults = (Integer) SharePreferenceUtility.getPreferences(getContext(), ADULTS, SharePreferenceUtility.PREFTYPE_INT);
+        if(adults == 0){
+            tv_adults.setVisibility(View.GONE);
+        }else {
+            tv_adults.setText(""+adults);
+            tv_adults.setVisibility(View.VISIBLE);
+        }
+        int kids = (Integer) SharePreferenceUtility.getPreferences(getContext(), KIDS, SharePreferenceUtility.PREFTYPE_INT);
+        if(kids == 0){
+            tv_kids.setVisibility(View.GONE);
+        }else {
+            tv_kids.setText(""+kids);
+            tv_kids.setVisibility(View.VISIBLE);
+        }
+        String order_on = (String) SharePreferenceUtility.getPreferences(getContext(), ORDER_ON, SharePreferenceUtility.PREFTYPE_STRING);
+        if(order_on.equalsIgnoreCase("")){
+            tv_ordered_on.setVisibility(View.GONE);
+        }else {
+            tv_ordered_on.setText(order_on);
+            tv_ordered_on.setVisibility(View.VISIBLE);
+        }
+        String arrive_on = (String) SharePreferenceUtility.getPreferences(getContext(), ARRIVE_TIME, SharePreferenceUtility.PREFTYPE_STRING);
+        if(arrive_on.equalsIgnoreCase("")){
+            tv_arrive_time.setVisibility(View.GONE);
+        }else {
+            tv_arrive_time.setText(arrive_on);
+            tv_arrive_time.setVisibility(View.VISIBLE);
+        }
+        String departure_time = (String) SharePreferenceUtility.getPreferences(getContext(), DEPARTURE_TIME, SharePreferenceUtility.PREFTYPE_STRING);
+        if(departure_time.equalsIgnoreCase("")){
+            tv_departure_time.setVisibility(View.GONE);
+        }else {
+            tv_departure_time.setText(departure_time);
+            tv_departure_time.setVisibility(View.VISIBLE);
+        }
+        String group_name = (String) SharePreferenceUtility.getPreferences(getContext(), GROUP_NAME, SharePreferenceUtility.PREFTYPE_STRING);
+        String group_code = (String) SharePreferenceUtility.getPreferences(getContext(), GROUP_CODE, SharePreferenceUtility.PREFTYPE_STRING);
+        if(group_name.equalsIgnoreCase("")) {
+            tv_group_name_code.setVisibility(View.GONE);
+        }else{
+            tv_group_name_code.setVisibility(View.VISIBLE);
+            if(group_code.equalsIgnoreCase("")){
+                tv_group_name_code.setText(group_name);
+            }else {
+                tv_group_name_code.setText(group_name + " (" + group_code + ")");
+            }
+        }
+        String room_type = (String) SharePreferenceUtility.getPreferences(getContext(), ROOM_TYPE, SharePreferenceUtility.PREFTYPE_STRING);
+       if(room_type.equalsIgnoreCase("")){
+           tv_room_id.setVisibility(View.GONE);
+       }else {
+           tv_room_id.setText(room_type);
+           tv_room_id.setVisibility(View.VISIBLE);
+       }
     }
 
     public static Fragment_home getInstance() {
