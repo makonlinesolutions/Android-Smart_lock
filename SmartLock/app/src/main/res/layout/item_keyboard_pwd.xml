@@ -3,8 +3,8 @@
     <data>
         <variable
             name="keyboardPwd"
-            type="com.smartlock.model.KeyboardPwd" />
-        <import type="com.smartlock.utils.DateUitl" />
+            type="com.nova_smartlock.model.KeyboardPwd" />
+        <import type="com.nova_smartlock.utils.DateUitl" />
     </data>
     <LinearLayout
         android:orientation="horizontal" android:layout_width="match_parent"

@@ -3,7 +3,7 @@
     <data>
         <variable
             name="underGatewayLock"
-            type="com.smartlock.model.UnderGatewayLock" />
+            type="com.nova_smartlock.model.UnderGatewayLock" />
     </data>
     <LinearLayout
         android:orientation="horizontal" android:layout_width="match_parent"

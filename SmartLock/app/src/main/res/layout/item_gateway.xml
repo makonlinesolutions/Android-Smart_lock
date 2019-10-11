@@ -3,7 +3,7 @@
     <data>
         <variable
             name="gateway"
-            type="com.smartlock.model.Gateway" />
+            type="com.nova_smartlock.model.Gateway" />
     </data>
     <LinearLayout
         android:orientation="horizontal" android:layout_width="match_parent"
