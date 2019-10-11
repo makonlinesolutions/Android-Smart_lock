@@ -554,7 +554,7 @@ public class Fragment_home extends Fragment implements View.OnClickListener {
             public void onClick(View v) {
                 name_lock = edt_lock_name.getText().toString().trim();
                 if (TextUtils.isEmpty(name_lock)) {
-                    DisplayUtil.showMessageDialog(getContext(), "Please enter name", getActivity().getDrawable(R.drawable.ic_iconfinder_143_attention_183267));
+                    DisplayUtil.showMessageDialog(getContext(), "Please Rename the lock", getActivity().getDrawable(R.drawable.ic_iconfinder_143_attention_183267));
                     //Toast.makeText(getContext(), "Please enter name", Toast.LENGTH_SHORT).show();
                 } else {
                     if (NetworkUtils.isNetworkConnected(getContext())) {
@@ -565,7 +565,7 @@ public class Fragment_home extends Fragment implements View.OnClickListener {
                                 if (response.isSuccessful()) {
                                     if (response.body().response.statusCode == 200) {
                                         if (TextUtils.isEmpty(name_lock)) {
-                                            DisplayUtil.showMessageDialog(getContext(), "Please enter name", getActivity().getDrawable(R.drawable.ic_iconfinder_143_attention_183267));
+                                            DisplayUtil.showMessageDialog(getContext(), "Please Rename the lock\n", getActivity().getDrawable(R.drawable.ic_iconfinder_143_attention_183267));
                                             //Toast.makeText(getContext(), "Please enter name", Toast.LENGTH_SHORT).show();
                                         } else {
                                             getRequestToChangeName(name_lock);
@@ -581,7 +581,7 @@ public class Fragment_home extends Fragment implements View.OnClickListener {
                             }
                         });
                     } else {
-                        Fragment_home.getInstance().showMessageDialog("Please check internet connection", getActivity().getDrawable(R.drawable.ic_no_internet));
+                        Fragment_home.getInstance().showMessageDialog("Please check Mobile network connection", getActivity().getDrawable(R.drawable.ic_no_internet));
                     }
                 }
             }
@@ -631,7 +631,7 @@ public class Fragment_home extends Fragment implements View.OnClickListener {
             if (!NetworkUtils.isNetworkConnected(mContext)) {
                 if(isCheckInDate()) {
                     if(isCheckInTime()) {
-//                        Fragment_home.getInstance().showMessageDialog("Please check internet connection", getActivity().getDrawable(R.drawable.ic_no_internet));
+//                        Fragment_home.getInstance().showMessageDialog("Please check Mobile network connection", getActivity().getDrawable(R.drawable.ic_no_internet));
                         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
                         if (mBluetoothAdapter == null) {
                             // Device does not support Bluetooth
@@ -640,7 +640,7 @@ public class Fragment_home extends Fragment implements View.OnClickListener {
                                 mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
                                 if (mBluetoothAdapter.disable()) {
                                     mBluetoothAdapter.enable();
-                                    showMessageDialog("Bluetooth is enabled Successfully", getActivity().getDrawable(R.drawable.ic_iconfinder_ok_2639876));
+                                    showMessageDialog("Bluetooth  is successfully enabled / ON", getActivity().getDrawable(R.drawable.ic_iconfinder_ok_2639876));
                                 }
                             } else {
                                 boolean is_admin_login = (boolean) SharePreferenceUtility.getPreferences(getContext(), Config.IS_ADMIN_LOGIN, SharePreferenceUtility.PREFTYPE_BOOLEAN);
@@ -706,7 +706,7 @@ public class Fragment_home extends Fragment implements View.OnClickListener {
                         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
                         if (mBluetoothAdapter.disable()) {
                             mBluetoothAdapter.enable();
-                            showMessageDialog("Bluetooth is enabled Successfully", getActivity().getDrawable(R.drawable.ic_iconfinder_ok_2639876));
+                            showMessageDialog("Bluetooth  is successfully enabled / ON", getActivity().getDrawable(R.drawable.ic_iconfinder_ok_2639876));
                         }
                     } else {
                         boolean is_admin_login = (boolean) SharePreferenceUtility.getPreferences(getContext(), Config.IS_ADMIN_LOGIN, SharePreferenceUtility.PREFTYPE_BOOLEAN);

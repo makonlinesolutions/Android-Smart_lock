@@ -154,7 +154,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             if (NetworkUtils.isNetworkConnected(mContext)) {
                 getRequestPMSLogin(username, password);
             }else {
-                DisplayUtil.showMessageDialog(mContext, "Please check internet connection", getDrawable(R.drawable.ic_no_internet));
+                DisplayUtil.showMessageDialog(mContext, "Please check Mobile network connection", getDrawable(R.drawable.ic_no_internet));
             }
         }
     }
@@ -222,7 +222,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                         } else if (TextUtils.isEmpty(password)) {
                             toast("Please enter password");
                         } else {
-                            msg = "Invalid login credentials!\nTry again";
+                            msg = "Incorrect Username or Password! Please Try again";
                             showMessageDialog(msg, getDrawable(R.drawable.ic_iconfinder_ic_cancel_48px_352263));
                         }
                     } else {
@@ -280,13 +280,13 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                             List<LockDetails> tmp_data = databaseHelper.getAllLock();
                             if (tmp_data.size() > 0) {
                                 alertDialog.dismiss();
-                                Toast.makeText(mContext, "Login Successfully", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(mContext, "Access Validated! - Login successful!", Toast.LENGTH_SHORT).show();
                                 SharePreferenceUtility.saveBooleanPreferences(mContext, Const.IS_LOGIN, true);
                                 SharePreferenceUtility.saveBooleanPreferences(mContext, IS_ADMIN_LOGIN, false);
                                 Intent intent = new Intent(mContext, MainActivity.class);
                                 startActivity(intent);
                                 overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
-//                                showMessageDialog("Login Successfully", getDrawable(R.drawable.ic_iconfinder_ok_2639876));
+//                                showMessageDialog("Access Validated! - Login successful!", getDrawable(R.drawable.ic_iconfinder_ok_2639876));
                             } else {
                                 alertDialog.dismiss();
                                 showMessageDialog("Oops, No Any Lock assign!!!", getDrawable(R.drawable.ic_iconfinder_ok_2639876));
@@ -357,7 +357,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             public void onClick(View v) {
                 dialog.dismiss();
 
-                if (msg.equals("Login Successfully")) {
+                if (msg.equals("Access Validated! - Login successful!")) {
                     SharePreferenceUtility.saveBooleanPreferences(mContext, IS_ADMIN_LOGIN, false);
                     Intent intent = new Intent(mContext, MainActivity.class);
                     startActivity(intent);

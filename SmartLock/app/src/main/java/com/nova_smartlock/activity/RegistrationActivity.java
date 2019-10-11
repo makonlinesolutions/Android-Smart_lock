@@ -148,7 +148,7 @@ public class RegistrationActivity extends AppCompatActivity implements View.OnCl
                     }
                 }.execute();
             }else {
-                DisplayUtil.showMessageDialog(mContext, "Please check internet connection", getDrawable(R.drawable.ic_no_internet));
+                DisplayUtil.showMessageDialog(mContext, "Please check Mobile network connection", getDrawable(R.drawable.ic_no_internet));
             }
         }
     }

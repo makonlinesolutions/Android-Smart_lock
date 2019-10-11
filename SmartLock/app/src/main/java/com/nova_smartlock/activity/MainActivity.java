@@ -332,7 +332,7 @@ public class MainActivity extends BaseActivity implements DrawerAdapter.OnItemSe
     public void onItemSelected(int position) {
         if (position == POS_LOGOUT) {
             DbService.deleteAllKey();
-            Toast.makeText(mContext, "Logout Successfully", Toast.LENGTH_SHORT).show();
+            Toast.makeText(mContext, "Logout Successful!", Toast.LENGTH_SHORT).show();
             MyPreference.putStr(mContext, MyPreference.ACCESS_TOKEN, "");
             MyPreference.putStr(mContext, MyPreference.OPEN_ID, "");
             SharePreferenceUtility.saveBooleanPreferences(mContext, Config.IS_ADMIN_LOGIN, false);
@@ -352,7 +352,7 @@ public class MainActivity extends BaseActivity implements DrawerAdapter.OnItemSe
                 intent = new Intent(MainActivity.this, AddLockActivity.class);
             } else {
                 DbService.deleteAllKey();
-                Toast.makeText(mContext, "Logout Successfully", Toast.LENGTH_SHORT).show();
+                Toast.makeText(mContext, "Logout Successful!", Toast.LENGTH_SHORT).show();
                 MyPreference.putStr(mContext, MyPreference.ACCESS_TOKEN, "");
                 MyPreference.putStr(mContext, MyPreference.OPEN_ID, "");
                 SharePreferenceUtility.saveBooleanPreferences(mContext, Config.IS_ADMIN_LOGIN, false);
@@ -452,7 +452,7 @@ public class MainActivity extends BaseActivity implements DrawerAdapter.OnItemSe
             if (NetworkUtils.isNetworkConnected(mContext)) {
                 syncData();
             } else {
-                DisplayUtil.showMessageDialog(mContext, "Please check internet connection", getDrawable(R.drawable.ic_no_internet));
+                DisplayUtil.showMessageDialog(mContext, "Please check Mobile network connection", getDrawable(R.drawable.ic_no_internet));
             }
         }
     }
