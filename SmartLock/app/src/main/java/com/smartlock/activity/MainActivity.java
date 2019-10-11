@@ -38,6 +38,7 @@ import com.smartlock.net.ResponseService;
 import com.smartlock.retrofit.ApiServiceProvider;
 import com.smartlock.retrofit.ApiServices;
 import com.smartlock.sp.MyPreference;
+import com.smartlock.utils.CommonUtils;
 import com.smartlock.utils.Const;
 import com.smartlock.utils.DisplayUtil;
 import com.smartlock.utils.NetworkUtils;
@@ -88,6 +89,8 @@ public class MainActivity extends BaseActivity implements DrawerAdapter.OnItemSe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        CommonUtils.showProgressDialog(MainActivity.this);
+
         Toolbar toolbar = findViewById(R.id.toolbar);
         toolbar.setTitle("Smart Lock");
         setSupportActionBar(toolbar);
@@ -99,7 +102,6 @@ public class MainActivity extends BaseActivity implements DrawerAdapter.OnItemSe
                 IS_ADMIN = intent.getBooleanExtra("isAdmin", false);
                 IS_FROM_NEAR_BY_ACTIVITY = intent.getBooleanExtra("from_near_by_activity", false);
             }
-
         }
 
         mContext = MainActivity.this;

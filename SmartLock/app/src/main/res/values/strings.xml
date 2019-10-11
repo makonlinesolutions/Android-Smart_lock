@@ -156,4 +156,5 @@
 
     <string name="operation_failed">Operation failed. Please ensure the lock is within 2 meters of the phone. Also, on your Phone- Switch Bluetooth OFF wait for 15 seconds and Turn Bluetooth ON</string>
 
+    <string name="terms_condition">By tapping the "Yes, I agree", I acknowledge that I read and understand this <font color='#00ccff'>important information</font></string>
 </resources>

@@ -53,7 +53,10 @@
             app:cardCornerRadius="5dp"
             card_view:cardCornerRadius="3dp"
             card_view:cardElevation="20dp"
-            card_view:cardUseCompatPadding="true">
+            app:contentPadding="10dp"
+            android:clipToPadding="false"
+            android:clipChildren="false"
+            app:cardUseCompatPadding="false">
 
             <RelativeLayout
                 android:id="@+id/rl_lock"
@@ -62,7 +65,8 @@
                 android:layout_centerHorizontal="true"
                 android:layout_gravity="center"
                 android:layout_marginTop="10dp"
-                android:layout_marginBottom="10dp">
+                android:layout_marginBottom="10dp"
+                android:clipToPadding="false">
 
                 <ImageView
                     android:id="@+id/img_circular"
@@ -104,7 +108,6 @@
                         android:visibility="gone"
                         android:src="@drawable/ic_unlock_color"
                         android:layout_centerInParent="true" />
-
 
                     <TextView
                         android:id="@+id/tv_battery"

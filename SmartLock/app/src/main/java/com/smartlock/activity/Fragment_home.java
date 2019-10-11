@@ -22,6 +22,8 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -487,6 +489,7 @@ public class Fragment_home extends Fragment implements View.OnClickListener {
 
                                     if (isDeviceNearBy(mKey.getLockMac())) {
 
+                                        final Animation animation = AnimationUtils.loadAnimation(getContext(), R.anim.blink);
 
                                         progressView.setVisibility(View.VISIBLE);
                                         progressView.startAnimation();
@@ -497,7 +500,11 @@ public class Fragment_home extends Fragment implements View.OnClickListener {
                                                         progressView.stopAnimation();
                                                         progressView.setVisibility(View.GONE);
                                                         img_lock.setVisibility(View.GONE);
+
+                                                        mIvUnLock.setAnimation(animation);
+                                                        animation.start();
                                                         mIvUnLock.setVisibility(View.VISIBLE);
+                                                        animation.cancel();
                                                     }
                                                 }, 5000);
 
@@ -505,7 +512,10 @@ public class Fragment_home extends Fragment implements View.OnClickListener {
                                                 new Runnable() {
                                                     @Override
                                                     public void run() {
+                                                        img_lock.setAnimation(animation);
+                                                        animation.start();
                                                         img_lock.setVisibility(View.VISIBLE);
+                                                        animation.cancel();
                                                         mIvUnLock.setVisibility(View.GONE);
                                                     }
                                                 }, 8000);
@@ -574,6 +584,7 @@ public class Fragment_home extends Fragment implements View.OnClickListener {
 
                                 } else {//to connect the lock
                                     if (isDeviceNearBy(mKey.getLockMac())) {
+                                        final Animation animation = AnimationUtils.loadAnimation(getContext(), R.anim.blink);
 
                                         progressView.setVisibility(View.VISIBLE);
                                         progressView.startAnimation();
@@ -584,16 +595,22 @@ public class Fragment_home extends Fragment implements View.OnClickListener {
                                                         progressView.stopAnimation();
                                                         progressView.setVisibility(View.GONE);
                                                         img_lock.setVisibility(View.GONE);
+
+                                                        mIvUnLock.setAnimation(animation);
+                                                        animation.start();
                                                         mIvUnLock.setVisibility(View.VISIBLE);
+                                                        animation.cancel();
                                                     }
                                                 }, 5000);
-
 
                                         new Handler().postDelayed(
                                                 new Runnable() {
                                                     @Override
                                                     public void run() {
+                                                        img_lock.setAnimation(animation);
+                                                        animation.start();
                                                         img_lock.setVisibility(View.VISIBLE);
+                                                        animation.cancel();
                                                         mIvUnLock.setVisibility(View.GONE);
                                                     }
                                                 }, 8000);
