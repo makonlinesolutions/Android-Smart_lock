@@ -71,7 +71,7 @@
                             android:layout_weight="1"
                             android:padding="10dp"
                             android:textColor="@color/black"
-                            android:text="Room Number : "
+                            android:text="Bed Number : "
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"/>
                         <TextView

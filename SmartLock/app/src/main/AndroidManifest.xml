@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.smartlock">
+    package="com.nova_smartlock">
 
 
     <uses-permission android:name="android.permission.BLUETOOTH" />
@@ -14,7 +14,7 @@
         android:usesCleartextTraffic="true"
         android:icon="@drawable/log_mast_lock"
         android:label="@string/app_name"
-        android:name=".app.SmartLockApp"
+        android:name="com.nova_smartlock.app.SmartLockApp"
         android:roundIcon="@drawable/log_mast_lock"
         android:supportsRtl="true"
         android:networkSecurityConfig="@xml/net_config"
@@ -26,45 +26,45 @@
             android:name="com.ttlock.bl.sdk.service.DfuService"
             android:exported="true" />
 
-        <activity android:name=".activity.FeedbackActivity"/>
-        <activity android:name=".activity.PasscodesActivity" />
-        <activity android:name=".activity.EkeysActivity" />
-        <activity android:name=".activity.LockSoundActivity" />
-        <activity android:name=".activity.AboutActivity" />
-        <activity android:name=".activity.SettingsGatewayActivity" />
-        <activity android:name=".activity.SettingsLockGroupActivity" />
-        <activity android:name=".activity.SettingsLockUserActivity" />
-        <activity android:name=".activity.RecepientActivity" />
-        <activity android:name=".activity.SettingsTransferLocksActivity" />
-        <activity android:name=".activity.AdminPasscodeActivity" />
-        <activity android:name=".activity.UnlockRemotelyActivity" />
-        <activity android:name=".activity.ReadOperationRecordsActivity" />
-        <activity android:name=".activity.FirmwareUpdateActivity" />
-        <activity android:name=".activity.DiagnosisActivity" />
-        <activity android:name=".activity.LockClockActivity" />
-        <activity android:name=".activity.LockgroupActivity" />
-        <activity android:name=".activity.LockNameActivity" />
-        <activity android:name=".activity.CustomerServiceActivity" />
-        <activity android:name=".activity.MessagesActivity" />
-        <activity android:name=".activity.SettingsNavActivity" />
-        <activity android:name=".activity.NearbyLockActivity" />
-        <activity android:name=".activity.AddLockActivity" />
-        <activity android:name=".activity.GeneratePasscodeActivity" />
-        <activity android:name=".activity.SendeKeyActivity" />
-        <activity android:name=".activity.SettingsActivity" />
-        <activity android:name=".activity.RecordsActivity" />
-        <activity android:name=".activity.OtpActivity" />
-        <activity android:name=".activity.MainActivity" />
-        <activity android:name=".activity.LoginActivity" />
-        <activity android:name=".activity.SplashScreenActivity">
+        <activity android:name="com.nova_smartlock.activity.FeedbackActivity"/>
+        <activity android:name="com.nova_smartlock.activity.PasscodesActivity" />
+        <activity android:name="com.nova_smartlock.activity.EkeysActivity" />
+        <activity android:name="com.nova_smartlock.activity.LockSoundActivity" />
+        <activity android:name="com.nova_smartlock.activity.AboutActivity" />
+        <activity android:name="com.nova_smartlock.activity.SettingsGatewayActivity" />
+        <activity android:name="com.nova_smartlock.activity.SettingsLockGroupActivity" />
+        <activity android:name="com.nova_smartlock.activity.SettingsLockUserActivity" />
+        <activity android:name="com.nova_smartlock.activity.RecepientActivity" />
+        <activity android:name="com.nova_smartlock.activity.SettingsTransferLocksActivity" />
+        <activity android:name="com.nova_smartlock.activity.AdminPasscodeActivity" />
+        <activity android:name="com.nova_smartlock.activity.UnlockRemotelyActivity" />
+        <activity android:name="com.nova_smartlock.activity.ReadOperationRecordsActivity" />
+        <activity android:name="com.nova_smartlock.activity.FirmwareUpdateActivity" />
+        <activity android:name="com.nova_smartlock.activity.DiagnosisActivity" />
+        <activity android:name="com.nova_smartlock.activity.LockClockActivity" />
+        <activity android:name="com.nova_smartlock.activity.LockgroupActivity" />
+        <activity android:name="com.nova_smartlock.activity.LockNameActivity" />
+        <activity android:name="com.nova_smartlock.activity.CustomerServiceActivity" />
+        <activity android:name="com.nova_smartlock.activity.MessagesActivity" />
+        <activity android:name="com.nova_smartlock.activity.SettingsNavActivity" />
+        <activity android:name="com.nova_smartlock.activity.NearbyLockActivity" />
+        <activity android:name="com.nova_smartlock.activity.AddLockActivity" />
+        <activity android:name="com.nova_smartlock.activity.GeneratePasscodeActivity" />
+        <activity android:name="com.nova_smartlock.activity.SendeKeyActivity" />
+        <activity android:name="com.nova_smartlock.activity.SettingsActivity" />
+        <activity android:name="com.nova_smartlock.activity.RecordsActivity" />
+        <activity android:name="com.nova_smartlock.activity.OtpActivity" />
+        <activity android:name="com.nova_smartlock.activity.MainActivity" />
+        <activity android:name="com.nova_smartlock.activity.LoginActivity" />
+        <activity android:name="com.nova_smartlock.activity.SplashScreenActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".activity.RegistrationActivity"/>
-        <activity android:name=".activity.FoundDeviceActivity"/>
+        <activity android:name="com.nova_smartlock.activity.RegistrationActivity"/>
+        <activity android:name="com.nova_smartlock.activity.FoundDeviceActivity"/>
     </application>
 
 
