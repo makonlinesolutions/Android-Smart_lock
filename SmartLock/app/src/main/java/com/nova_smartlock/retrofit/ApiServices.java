@@ -61,9 +61,9 @@ public interface ApiServices {
             @Field("remarks") String remarks
     );
 
-    @GET("key-details/{order_id}")
+    @GET("key-details/{smo_id}")
     Call<KeyDetailsResponse> KEY_DETAILS_OBSERVABLE(
-            @Path("order_id") String order_id, @Header("Authorization") String authorization
+            @Path("smo_id") String order_id, @Header("Authorization") String authorization
     );
 
     @GET("check-is-guest-checkout/{order_id}/{guest_id}")

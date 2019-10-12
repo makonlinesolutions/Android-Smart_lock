@@ -363,7 +363,6 @@ public class MainActivity extends BaseActivity implements DrawerAdapter.OnItemSe
             if (is_admin_login) {
                 Intent intent = new Intent(MainActivity.this, AddLockActivity.class);
                 startActivity(intent);
-                overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
             } else {
                 new AlertDialog.Builder(this)
                         .setMessage("Are you sure you want to logout?")
@@ -477,7 +476,7 @@ public class MainActivity extends BaseActivity implements DrawerAdapter.OnItemSe
             if (NetworkUtils.isNetworkConnected(mContext)) {
                 syncData();
             } else {
-                DisplayUtil.showMessageDialog(mContext, "Please check internet connection", getDrawable(R.drawable.ic_no_internet));
+                DisplayUtil.showMessageDialog(mContext, "Please check Mobile network connection", getDrawable(R.drawable.ic_no_internet));
             }
         }
     }

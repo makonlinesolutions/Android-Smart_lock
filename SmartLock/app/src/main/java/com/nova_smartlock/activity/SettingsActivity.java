@@ -71,7 +71,7 @@ public class SettingsActivity extends AppCompatActivity {
                 if (NetworkUtils.isNetworkConnected(mContext)) {
                     openDialogForChangeKeyName();
                 } else {
-                    DisplayUtil.showMessageDialog(mContext, "Please check internet connection", getDrawable(R.drawable.ic_no_internet));
+                    DisplayUtil.showMessageDialog(mContext, "Please check Mobile network connection", getDrawable(R.drawable.ic_no_internet));
                 }
             }
         });
@@ -175,7 +175,7 @@ public class SettingsActivity extends AppCompatActivity {
                 if (NetworkUtils.isNetworkConnected(mContext)) {
                     deleteLock();
                 } else {
-                    DisplayUtil.showMessageDialog(mContext, "Please check internet connection", getDrawable(R.drawable.ic_no_internet));
+                    DisplayUtil.showMessageDialog(mContext, "Please check Mobile network connection", getDrawable(R.drawable.ic_no_internet));
                 }
             }
         });
@@ -228,7 +228,7 @@ public class SettingsActivity extends AppCompatActivity {
                             }
                         });
                     } else {
-                        DisplayUtil.showMessageDialog(mContext, "Please check internet connection", getDrawable(R.drawable.ic_no_internet));
+                        DisplayUtil.showMessageDialog(mContext, "Please check Mobile network connection", getDrawable(R.drawable.ic_no_internet));
                     }
                 }
             }
@@ -350,7 +350,7 @@ public class SettingsActivity extends AppCompatActivity {
                 try {
                     JSONObject jsonObject = new JSONObject(json);
                     if (jsonObject.has("errcode")) {
-                        Toast.makeText(mContext, "Successfully Deleted", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(mContext, "Lock Sucessfully deleted", Toast.LENGTH_SHORT).show();
                         startActivity(new Intent(mContext, MainActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
                         finish();
                     } else {
