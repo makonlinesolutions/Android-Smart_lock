@@ -48,6 +48,7 @@ import com.nova_smartlock.net.ResponseService;
 import com.nova_smartlock.retrofit.ApiServiceProvider;
 import com.nova_smartlock.retrofit.ApiServices;
 import com.nova_smartlock.sp.MyPreference;
+import com.nova_smartlock.utils.CommonUtils;
 import com.nova_smartlock.utils.Const;
 import com.nova_smartlock.utils.Constants;
 import com.nova_smartlock.utils.DisplayUtil;
@@ -87,6 +88,7 @@ import static com.nova_smartlock.utils.Constants.AppConst.CHECK_OUT_TIME;
 import static com.nova_smartlock.utils.Constants.AppConst.DEPARTURE_TIME;
 import static com.nova_smartlock.utils.Constants.AppConst.GROUP_CODE;
 import static com.nova_smartlock.utils.Constants.AppConst.GROUP_NAME;
+import static com.nova_smartlock.utils.Constants.AppConst.IS_FIRST_TIME_LOGIN;
 import static com.nova_smartlock.utils.Constants.AppConst.KIDS;
 import static com.nova_smartlock.utils.Constants.AppConst.ORDER_ON;
 import static com.nova_smartlock.utils.Constants.AppConst.ROOM_NO;
@@ -116,6 +118,7 @@ public class Fragment_home extends Fragment implements View.OnClickListener {
     private ExtendedBluetoothDevice device ;
     private android.app.AlertDialog alertDialog;
     private View view;
+    private boolean is_first_time_login;
     private BottomSheetBehavior behavior ;
     private MaterialCardView linearBottomLayout ;
     private ImageView iv_arrow ;
@@ -169,6 +172,13 @@ public class Fragment_home extends Fragment implements View.OnClickListener {
         tv_departure_time = view.findViewById(R.id.tv_departure_time);
         tv_group_name_code = view.findViewById(R.id.tv_group_name_code);
         tv_room_id = view.findViewById(R.id.tv_room_id);
+
+        is_first_time_login = (boolean) SharePreferenceUtility.getPreferences(getContext(), IS_FIRST_TIME_LOGIN, SharePreferenceUtility.PREFTYPE_BOOLEAN);
+
+        if (is_first_time_login) {
+            alertDialog = new SpotsDialog.Builder().setContext(getActivity()).setMessage("Loading").build();
+            alertDialog.setCanceledOnTouchOutside(false);
+        }
         init();
         ll_ekeys.setVisibility(View.GONE);
         ll_passcode.setVisibility(View.GONE);
@@ -180,6 +190,7 @@ public class Fragment_home extends Fragment implements View.OnClickListener {
         behavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
             @Override
             public void onStateChanged(@NonNull View view, int newState) {
+
                 switch (newState) {
                     case BottomSheetBehavior.STATE_HIDDEN:
                         break;
@@ -197,22 +208,26 @@ public class Fragment_home extends Fragment implements View.OnClickListener {
                     case BottomSheetBehavior.STATE_SETTLING:
                         break;
                 }
+
             }
 
             @Override
             public void onSlide(@NonNull View view, float v) {
-
             }
         });
 
         iv_arrow.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (behavior.getState() != BottomSheetBehavior.STATE_EXPANDED) {
-                    behavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+                if ((boolean) SharePreferenceUtility.getPreferences(getContext(), IS_FIRST_TIME_LOGIN, SharePreferenceUtility.PREFTYPE_BOOLEAN)) {
+                    if (behavior.getState() != BottomSheetBehavior.STATE_EXPANDED) {
+                        behavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+                    } else {
+                        setRoomDetails();
+                        behavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+                    }
                 } else {
-                    setRoomDetails();
-                    behavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+                    CommonUtils.showProgressDialog(getContext());
                 }
             }
         });
@@ -373,6 +388,7 @@ public class Fragment_home extends Fragment implements View.OnClickListener {
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(intent);
                 ((Activity) getContext()).overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+
             }
         });
 
@@ -428,7 +444,11 @@ public class Fragment_home extends Fragment implements View.OnClickListener {
         mIvLockName.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                //if ((boolean) SharePreferenceUtility.getPreferences(getContext(), IS_FIRST_TIME_LOGIN, SharePreferenceUtility.PREFTYPE_BOOLEAN)) {
                 openDialogForChangeKeyName();
+                /*}else {
+                    CommonUtils.showProgressDialog(getContext());
+                }*/
             }
         });
 
@@ -528,12 +548,12 @@ public class Fragment_home extends Fragment implements View.OnClickListener {
             }
         }
         String room_type = (String) SharePreferenceUtility.getPreferences(getContext(), ROOM_TYPE, SharePreferenceUtility.PREFTYPE_STRING);
-       if(room_type.equalsIgnoreCase("")){
-           tv_room_id.setVisibility(View.GONE);
-       }else {
-           tv_room_id.setText(room_type);
-           tv_room_id.setVisibility(View.VISIBLE);
-       }
+        if (room_type.equalsIgnoreCase("")) {
+            tv_room_id.setVisibility(View.GONE);
+        } else {
+            tv_room_id.setText(room_type);
+            tv_room_id.setVisibility(View.VISIBLE);
+        }
     }
 
     public static Fragment_home getInstance() {
@@ -579,13 +599,17 @@ public class Fragment_home extends Fragment implements View.OnClickListener {
                             }
 
                             @Override
-                            public void onFailure(Call<UnlockKeyNameResponse> call, Throwable t) {
+                            public void onFailure
+                                    (Call<UnlockKeyNameResponse> call, Throwable t) {
 
                             }
                         });
                     } else {
                         Fragment_home.getInstance().showMessageDialog("Please check Mobile network connection", getActivity().getDrawable(R.drawable.ic_no_internet));
                     }
+                /*}else {
+                    CommonUtils.showProgressDialog(getContext());
+                }*/
                 }
             }
         });
@@ -631,143 +655,149 @@ public class Fragment_home extends Fragment implements View.OnClickListener {
     @Override
     public void onClick(View v) {
         if (v.getId() == R.id.img_lock) {
-            if (!NetworkUtils.isNetworkConnected(mContext)) {
-                if(isCheckInDate()) {
-                    if(isCheckInTime()) {
+            is_first_time_login = (boolean) SharePreferenceUtility.getPreferences(getContext(), IS_FIRST_TIME_LOGIN, SharePreferenceUtility.PREFTYPE_BOOLEAN);
+            if (is_first_time_login) {
+                if (!NetworkUtils.isNetworkConnected(mContext)) {
+                    if (isCheckInDate()) {
+                        if (isCheckInTime()) {
 //                        Fragment_home.getInstance().showMessageDialog("Please check Mobile network connection", getActivity().getDrawable(R.drawable.ic_no_internet));
-                        mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-                        if (mBluetoothAdapter == null) {
-                            // Device does not support Bluetooth
-                        } else {
-                            if (!mBluetoothAdapter.isEnabled()) {
-                                mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-                                if (mBluetoothAdapter.disable()) {
-                                    mBluetoothAdapter.enable();
-                                    showMessageDialog("Bluetooth  is successfully enabled / ON", getActivity().getDrawable(R.drawable.ic_iconfinder_ok_2639876));
-                                }
+                            mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+                            if (mBluetoothAdapter == null) {
+                                // Device does not support Bluetooth
                             } else {
-                                boolean is_admin_login = (boolean) SharePreferenceUtility.getPreferences(getContext(), Config.IS_ADMIN_LOGIN, SharePreferenceUtility.PREFTYPE_BOOLEAN);
-                                /*if (is_admin_login)*/ {
-                                    if (mKey == null) {
-                                        startActivity(new Intent(getContext(), AddLockActivity.class).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
-                                    } else {
+                                if (!mBluetoothAdapter.isEnabled()) {
+                                    mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+                                    if (mBluetoothAdapter.disable()) {
+                                        mBluetoothAdapter.enable();
+                                        showMessageDialog("Bluetooth  is successfully enabled / ON", getActivity().getDrawable(R.drawable.ic_iconfinder_ok_2639876));
+                                    }
+                                } else {
+                                    boolean is_admin_login = (boolean) SharePreferenceUtility.getPreferences(getContext(), Config.IS_ADMIN_LOGIN, SharePreferenceUtility.PREFTYPE_BOOLEAN);
+                                    /*if (is_admin_login)*/
+                                    {
+                                        if (mKey == null) {
+                                            startActivity(new Intent(getContext(), AddLockActivity.class).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+                                        } else {
 
-                                        if (mKey != null && mKey.getLockMac() != null && mTTLockAPI.isConnected(mKey.getLockMac())) {//If the lock is connected, you can call interface directly
-                                            img_lock.setBackgroundResource(R.drawable.ic_unlock_color);
-                                            if (mKey.isAdmin())
-                                                mTTLockAPI.unlockByAdministrator(null, openid, mKey.getLockVersion(), mKey.getAdminPwd(), mKey.getLockKey(), mKey.getLockFlagPos(), System.currentTimeMillis(), mKey.getAesKeyStr(), mKey.getTimezoneRawOffset());
-                                            else
-                                                mTTLockAPI.unlockByUser(null, openid, mKey.getLockVersion(), mKey.getStartDate(), mKey.getEndDate(), mKey.getLockKey(), mKey.getLockFlagPos(), mKey.getAesKeyStr(), mKey.getTimezoneRawOffset());
-                                        } else {//to connect the lock
-                                            if (isDeviceNearBy(mKey.getLockMac())) {
-                                                progressView.setVisibility(View.VISIBLE);
-                                                progressView.startAnimation();
-                                                new Handler().postDelayed(
-                                                        new Runnable() {
-                                                            @Override
-                                                            public void run() {
-                                                                progressView.stopAnimation();
-                                                                progressView.setVisibility(View.GONE);
-                                                                img_lock.setVisibility(View.GONE);
-                                                                mIvUnLock.setVisibility(View.VISIBLE);
-                                                            }
-                                                        }, 5000);
-                                                new Handler().postDelayed(
-                                                        new Runnable() {
-                                                            @Override
-                                                            public void run() {
-                                                                img_lock.setVisibility(View.VISIBLE);
-                                                                mIvUnLock.setVisibility(View.GONE);
-                                                            }
-                                                        }, 8000);
-                                                progressView.setVisibility(View.VISIBLE);
-                                                progressView.startAnimation();
-                                                mTTLockAPI.connect(mKey.getLockMac());
-                                                bleSession.setOperation(Operation.CLICK_UNLOCK);
-                                                bleSession.setLockmac(mKey.getLockMac());
-                                            } else {
-                                                Log.d("operation failed", "operation  684");
-                                                showMessageDialog(mContext.getString(R.string.operation_failed), getContext().getDrawable(R.drawable.ic_iconfinder_ic_cancel_48px_352263));
+                                            if (mKey != null && mKey.getLockMac() != null && mTTLockAPI.isConnected(mKey.getLockMac())) {//If the lock is connected, you can call interface directly
+                                                img_lock.setBackgroundResource(R.drawable.ic_unlock_color);
+                                                if (mKey.isAdmin())
+                                                    mTTLockAPI.unlockByAdministrator(null, openid, mKey.getLockVersion(), mKey.getAdminPwd(), mKey.getLockKey(), mKey.getLockFlagPos(), System.currentTimeMillis(), mKey.getAesKeyStr(), mKey.getTimezoneRawOffset());
+                                                else
+                                                    mTTLockAPI.unlockByUser(null, openid, mKey.getLockVersion(), mKey.getStartDate(), mKey.getEndDate(), mKey.getLockKey(), mKey.getLockFlagPos(), mKey.getAesKeyStr(), mKey.getTimezoneRawOffset());
+                                            } else {//to connect the lock
+                                                if (isDeviceNearBy(mKey.getLockMac())) {
+                                                    progressView.setVisibility(View.VISIBLE);
+                                                    progressView.startAnimation();
+                                                    new Handler().postDelayed(
+                                                            new Runnable() {
+                                                                @Override
+                                                                public void run() {
+                                                                    progressView.stopAnimation();
+                                                                    progressView.setVisibility(View.GONE);
+                                                                    img_lock.setVisibility(View.GONE);
+                                                                    mIvUnLock.setVisibility(View.VISIBLE);
+                                                                }
+                                                            }, 5000);
+                                                    new Handler().postDelayed(
+                                                            new Runnable() {
+                                                                @Override
+                                                                public void run() {
+                                                                    img_lock.setVisibility(View.VISIBLE);
+                                                                    mIvUnLock.setVisibility(View.GONE);
+                                                                }
+                                                            }, 8000);
+                                                    progressView.setVisibility(View.VISIBLE);
+                                                    progressView.startAnimation();
+                                                    mTTLockAPI.connect(mKey.getLockMac());
+                                                    bleSession.setOperation(Operation.CLICK_UNLOCK);
+                                                    bleSession.setLockmac(mKey.getLockMac());
+                                                } else {
+                                                    Log.d("operation failed", "operation  684");
+                                                    showMessageDialog(mContext.getString(R.string.operation_failed), getContext().getDrawable(R.drawable.ic_iconfinder_ic_cancel_48px_352263));
+                                                }
                                             }
                                         }
                                     }
                                 }
                             }
-                        }
-                    }else{
-                        Fragment_home.getInstance().showMessageDialog("Please check your checkIn/checkOut Time", getActivity().getDrawable(R.drawable.ic_warning_black_48dp));
-                    }
-                }else{
-                    Fragment_home.getInstance().showMessageDialog("Please check your checkIn/checkOut Date", getActivity().getDrawable(R.drawable.ic_warning_black_48dp));
-                }
-            } else {
-                mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-                if (mBluetoothAdapter == null) {
-                    // Device does not support Bluetooth
-                } else {
-                    if (!mBluetoothAdapter.isEnabled()) {
-                        mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-                        if (mBluetoothAdapter.disable()) {
-                            mBluetoothAdapter.enable();
-                            showMessageDialog("Bluetooth  is successfully enabled / ON", getActivity().getDrawable(R.drawable.ic_iconfinder_ok_2639876));
+                        } else {
+                            Fragment_home.getInstance().showMessageDialog("Please check your checkIn/checkOut Time", getActivity().getDrawable(R.drawable.ic_warning_black_48dp));
                         }
                     } else {
-                        boolean is_admin_login = (boolean) SharePreferenceUtility.getPreferences(getContext(), Config.IS_ADMIN_LOGIN, SharePreferenceUtility.PREFTYPE_BOOLEAN);
-                        if (is_admin_login) {
-                            if (mKey == null) {
-                                startActivity(new Intent(getContext(), AddLockActivity.class).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
-                            } else {
-
-                                if (mKey != null && mKey.getLockMac() != null && mTTLockAPI.isConnected(mKey.getLockMac())) {//If the lock is connected, you can call interface directly
-                                    img_lock.setBackgroundResource(R.drawable.ic_unlock_color);
-                                    if (mKey.isAdmin())
-                                        mTTLockAPI.unlockByAdministrator(null, openid, mKey.getLockVersion(), mKey.getAdminPwd(), mKey.getLockKey(), mKey.getLockFlagPos(), System.currentTimeMillis(), mKey.getAesKeyStr(), mKey.getTimezoneRawOffset());
-                                    else
-                                        mTTLockAPI.unlockByUser(null, openid, mKey.getLockVersion(), mKey.getStartDate(), mKey.getEndDate(), mKey.getLockKey(), mKey.getLockFlagPos(), mKey.getAesKeyStr(), mKey.getTimezoneRawOffset());
-                                } else {//to connect the lock
-
-                                    if (isDeviceNearBy(mKey.getLockMac())) {
-
-
-                                        progressView.setVisibility(View.VISIBLE);
-                                        progressView.startAnimation();
-                                        new Handler().postDelayed(
-                                                new Runnable() {
-                                                    @Override
-                                                    public void run() {
-                                                        progressView.stopAnimation();
-                                                        progressView.setVisibility(View.GONE);
-                                                        img_lock.setVisibility(View.GONE);
-                                                        mIvUnLock.setVisibility(View.VISIBLE);
-                                                    }
-                                                }, 5000);
-
-                                        new Handler().postDelayed(
-                                                new Runnable() {
-                                                    @Override
-                                                    public void run() {
-                                                        img_lock.setVisibility(View.VISIBLE);
-                                                        mIvUnLock.setVisibility(View.GONE);
-                                                    }
-                                                }, 8000);
-
-
-                                        progressView.setVisibility(View.VISIBLE);
-                                        progressView.startAnimation();
-                                        mTTLockAPI.connect(mKey.getLockMac());
-                                        bleSession.setOperation(Operation.CLICK_UNLOCK);
-                                        bleSession.setLockmac(mKey.getLockMac());
-                                    } else {
-                                        Log.d("operation failed", "operation  756");
-                                        showMessageDialog(mContext.getString(R.string.operation_failed), getContext().getDrawable(R.drawable.ic_iconfinder_ic_cancel_48px_352263));
-                                    }
-                                }
+                        Fragment_home.getInstance().showMessageDialog("Please check your checkIn/checkOut Date", getActivity().getDrawable(R.drawable.ic_warning_black_48dp));
+                    }
+                } else {
+                    mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+                    if (mBluetoothAdapter == null) {
+                        // Device does not support Bluetooth
+                    } else {
+                        if (!mBluetoothAdapter.isEnabled()) {
+                            mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+                            if (mBluetoothAdapter.disable()) {
+                                mBluetoothAdapter.enable();
+                                showMessageDialog("Bluetooth  is successfully enabled / ON", getActivity().getDrawable(R.drawable.ic_iconfinder_ok_2639876));
                             }
                         } else {
-                            getRequestCheckChecked();
+                            boolean is_admin_login = (boolean) SharePreferenceUtility.getPreferences(getContext(), Config.IS_ADMIN_LOGIN, SharePreferenceUtility.PREFTYPE_BOOLEAN);
+                            if (is_admin_login) {
+                                if (mKey == null) {
+                                    startActivity(new Intent(getContext(), AddLockActivity.class).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+                                } else {
+
+                                    if (mKey != null && mKey.getLockMac() != null && mTTLockAPI.isConnected(mKey.getLockMac())) {//If the lock is connected, you can call interface directly
+                                        img_lock.setBackgroundResource(R.drawable.ic_unlock_color);
+                                        if (mKey.isAdmin())
+                                            mTTLockAPI.unlockByAdministrator(null, openid, mKey.getLockVersion(), mKey.getAdminPwd(), mKey.getLockKey(), mKey.getLockFlagPos(), System.currentTimeMillis(), mKey.getAesKeyStr(), mKey.getTimezoneRawOffset());
+                                        else
+                                            mTTLockAPI.unlockByUser(null, openid, mKey.getLockVersion(), mKey.getStartDate(), mKey.getEndDate(), mKey.getLockKey(), mKey.getLockFlagPos(), mKey.getAesKeyStr(), mKey.getTimezoneRawOffset());
+                                    } else {//to connect the lock
+
+                                        if (isDeviceNearBy(mKey.getLockMac())) {
+
+
+                                            progressView.setVisibility(View.VISIBLE);
+                                            progressView.startAnimation();
+                                            new Handler().postDelayed(
+                                                    new Runnable() {
+                                                        @Override
+                                                        public void run() {
+                                                            progressView.stopAnimation();
+                                                            progressView.setVisibility(View.GONE);
+                                                            img_lock.setVisibility(View.GONE);
+                                                            mIvUnLock.setVisibility(View.VISIBLE);
+                                                        }
+                                                    }, 5000);
+
+                                            new Handler().postDelayed(
+                                                    new Runnable() {
+                                                        @Override
+                                                        public void run() {
+                                                            img_lock.setVisibility(View.VISIBLE);
+                                                            mIvUnLock.setVisibility(View.GONE);
+                                                        }
+                                                    }, 8000);
+
+
+                                            progressView.setVisibility(View.VISIBLE);
+                                            progressView.startAnimation();
+                                            mTTLockAPI.connect(mKey.getLockMac());
+                                            bleSession.setOperation(Operation.CLICK_UNLOCK);
+                                            bleSession.setLockmac(mKey.getLockMac());
+                                        } else {
+                                            Log.d("operation failed", "operation  756");
+                                            showMessageDialog(mContext.getString(R.string.operation_failed), getContext().getDrawable(R.drawable.ic_iconfinder_ic_cancel_48px_352263));
+                                        }
+                                    }
+                                }
+                            } else {
+                                getRequestCheckChecked();
+                            }
                         }
                     }
                 }
+            }else {
+                CommonUtils.showProgressDialog(getContext());
             }
         }
     }
@@ -991,8 +1021,6 @@ public class Fragment_home extends Fragment implements View.OnClickListener {
     private void init() {
         services = new ApiServiceProvider(mContext).apiServices;
         mContext.registerReceiver(mReceiver, getIntentFilter());
-        alertDialog = new SpotsDialog.Builder().setContext(getActivity()).setMessage("Loading").build();
-        alertDialog.setCanceledOnTouchOutside(false);
     }
 
     private IntentFilter getIntentFilter() {

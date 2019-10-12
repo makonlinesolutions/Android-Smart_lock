@@ -61,6 +61,7 @@ import static com.nova_smartlock.utils.Constants.AppConst.DEPARTURE_TIME;
 import static com.nova_smartlock.utils.Constants.AppConst.GROUP_CODE;
 import static com.nova_smartlock.utils.Constants.AppConst.GROUP_NAME;
 import static com.nova_smartlock.utils.Constants.AppConst.GUEST_ID;
+import static com.nova_smartlock.utils.Constants.AppConst.IS_FIRST_TIME_LOGIN;
 import static com.nova_smartlock.utils.Constants.AppConst.KIDS;
 import static com.nova_smartlock.utils.Constants.AppConst.ORDER_ID;
 import static com.nova_smartlock.utils.Constants.AppConst.ORDER_ON;
@@ -180,6 +181,9 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                         SharePreferenceUtility.saveStringPreferences(mContext, ORDER_TYPE, loginResponse.response.orderType);
                         SharePreferenceUtility.saveIntPreferences(mContext, ORDER_STATUS, loginResponse.response.orderStatus);
                         SharePreferenceUtility.saveStringPreferences(mContext, TOKEN, "Bearer " + String.valueOf(loginResponse.response.token));
+
+
+
                         callTTLogin();
                     } else {
                         alertDialog.dismiss();

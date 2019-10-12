@@ -158,4 +158,5 @@
     <string name="room_details">Room Details</string>
     <string name="contact_admin">No data found, Please contact to administrator!!!</string>
 
+    <string name="terms_condition">By tapping the \"Yes, I agree\", I acknowledge that I read and understand this <font color='#00ccff'>important information</font></string>
 </resources>
