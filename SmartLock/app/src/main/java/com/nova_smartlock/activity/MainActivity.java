@@ -2,6 +2,7 @@ package com.nova_smartlock.activity;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -64,6 +65,7 @@ import retrofit2.Response;
 
 import static com.nova_smartlock.utils.Const.KEY_VALUE;
 import static com.nova_smartlock.utils.Const.USER_KEY_VALUE;
+import static com.nova_smartlock.utils.Constants.AppConst.IS_FIRST_TIME_LOGIN;
 
 public class MainActivity extends BaseActivity implements DrawerAdapter.OnItemSelectedListener {
     private static final int POS_DASHBOARD = 0;
@@ -83,6 +85,8 @@ public class MainActivity extends BaseActivity implements DrawerAdapter.OnItemSe
     public static Key curKey;
     private Intent intent;
     private ApiServices services;
+    private Dialog dialog = null;
+    private boolean is_admin_login;
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
@@ -90,7 +94,11 @@ public class MainActivity extends BaseActivity implements DrawerAdapter.OnItemSe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        //CommonUtils.showProgressDialog(MainActivity.this);
+        final boolean is_first_time_login = (boolean) SharePreferenceUtility.getPreferences(MainActivity.this, IS_FIRST_TIME_LOGIN, SharePreferenceUtility.PREFTYPE_BOOLEAN);
+
+        if (!is_first_time_login) {
+            dialog = CommonUtils.showProgressDialog(MainActivity.this);
+        }
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         toolbar.setTitle("Smart Lock");
@@ -117,7 +125,8 @@ public class MainActivity extends BaseActivity implements DrawerAdapter.OnItemSe
 
         mIvLock = findViewById(R.id.ivLockLock);
         DrawerAdapter adapter;
-        boolean is_admin_login = (boolean) SharePreferenceUtility.getPreferences(mContext, Config.IS_ADMIN_LOGIN, SharePreferenceUtility.PREFTYPE_BOOLEAN);
+
+        is_admin_login = (boolean) SharePreferenceUtility.getPreferences(mContext, Config.IS_ADMIN_LOGIN, SharePreferenceUtility.PREFTYPE_BOOLEAN);
 
         if (is_admin_login) {
             adapter = new DrawerAdapter(Arrays.asList(
@@ -140,8 +149,12 @@ public class MainActivity extends BaseActivity implements DrawerAdapter.OnItemSe
         mIvLock.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(MainActivity.this, NearbyLockActivity.class));
-                overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+                if ((boolean) SharePreferenceUtility.getPreferences(MainActivity.this, IS_FIRST_TIME_LOGIN, SharePreferenceUtility.PREFTYPE_BOOLEAN)) {
+                    startActivity(new Intent(MainActivity.this, NearbyLockActivity.class));
+                    overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+                }else {
+                    CommonUtils.showProgressDialog(MainActivity.this);
+                }
             }
         });
 
@@ -404,28 +417,32 @@ public class MainActivity extends BaseActivity implements DrawerAdapter.OnItemSe
     public void onBackPressed() {
         Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.container);
 
-        if (fragment instanceof Fragment_home) {
-            new AlertDialog.Builder(this)
-                    .setMessage("Are you sure you want to exit?")
-                    .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            MainActivity.this.finishAffinity();
-                        }
-                    })
-                    .setNegativeButton("No", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.dismiss();
-                        }
-                    }).create().show();
-        } else {
+        if (dialog != null && dialog.isShowing()){
+            dialog = CommonUtils.showProgressDialog(MainActivity.this);
+        }else {
+            if (fragment instanceof Fragment_home) {
+                new AlertDialog.Builder(this)
+                        .setMessage("Are you sure you want to exit?")
+                        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                MainActivity.this.finishAffinity();
+                            }
+                        })
+                        .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                            }
+                        }).create().show();
+            } else {
 
-            Fragment home_fragment = new Fragment_home();
-            FragmentManager fragmentManager_home = getSupportFragmentManager();
-            FragmentTransaction fragmentTransaction = fragmentManager_home.beginTransaction();
-            fragmentTransaction.replace(R.id.container, home_fragment);
-            fragmentTransaction.commit();
+                Fragment home_fragment = new Fragment_home();
+                FragmentManager fragmentManager_home = getSupportFragmentManager();
+                FragmentTransaction fragmentTransaction = fragmentManager_home.beginTransaction();
+                fragmentTransaction.replace(R.id.container, home_fragment);
+                fragmentTransaction.commit();
+            }
         }
     }
 

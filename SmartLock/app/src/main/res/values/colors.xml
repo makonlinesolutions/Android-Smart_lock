@@ -20,4 +20,5 @@
 
     <color name="textColor3">#333333</color>
     <color name="textBlue">#00bfff</color>
+    <color name="translucent_black">#27050505</color>
 </resources>

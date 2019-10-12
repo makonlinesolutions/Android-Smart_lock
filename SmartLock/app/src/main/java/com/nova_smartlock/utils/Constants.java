@@ -39,6 +39,7 @@ public class Constants {
         String TOKEN = "token";
         String NOVA_LOCK_ADMIN_USER_ID = "+919041979590";
         String NOVA_LOCK_ADMIN_USER_PASSWORD = "123456";
+        String IS_FIRST_TIME_LOGIN = "first_time_login";
 
         /*Order Details Constants*/
         String CHECK_IN = "check_in";
