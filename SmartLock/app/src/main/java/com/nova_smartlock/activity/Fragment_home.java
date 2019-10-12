@@ -241,7 +241,7 @@ public class Fragment_home extends Fragment implements View.OnClickListener {
                         viewLine.setVisibility(View.VISIBLE);
                     } else {
                         SharePreferenceUtility.saveObjectPreferences(getContext(), KEY_VALUE, null);
-                        startActivity(new Intent(getContext(), NearbyLockActivity.class));
+                        startActivity(new Intent(getContext(), NearbyLockActivity.class).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
                         getActivity().finish();
                     }
                 } else {
@@ -275,7 +275,7 @@ public class Fragment_home extends Fragment implements View.OnClickListener {
                         viewLine.setVisibility(View.VISIBLE);
                     } else {
                         SharePreferenceUtility.saveObjectPreferences(getContext(), KEY_VALUE, null);
-                        startActivity(new Intent(getContext(), NearbyLockActivity.class));
+                        startActivity(new Intent(getContext(), NearbyLockActivity.class).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
                         getActivity().finish();
                     }
 
@@ -339,7 +339,7 @@ public class Fragment_home extends Fragment implements View.OnClickListener {
                     } else {
                         Toast.makeText(getContext(), "Please select key", Toast.LENGTH_SHORT).show();
                         SharePreferenceUtility.saveObjectPreferences(getContext(), KEY_VALUE, null);
-                        startActivity(new Intent(getContext(), NearbyLockActivity.class));
+                        startActivity(new Intent(getContext(), NearbyLockActivity.class).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
                         getActivity().finish();
                     }
                 }else {
@@ -372,6 +372,7 @@ public class Fragment_home extends Fragment implements View.OnClickListener {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getActivity(), RecordsActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(intent);
                 ((Activity) getContext()).overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
             }
@@ -381,6 +382,7 @@ public class Fragment_home extends Fragment implements View.OnClickListener {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getActivity(), SettingsActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(intent);
                 ((Activity) getContext()).overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
             }
@@ -390,6 +392,7 @@ public class Fragment_home extends Fragment implements View.OnClickListener {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getActivity(), SendeKeyActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(intent);
                 ((Activity) getContext()).overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
             }
@@ -399,6 +402,7 @@ public class Fragment_home extends Fragment implements View.OnClickListener {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getActivity(), GeneratePasscodeActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(intent);
             }
         });
@@ -407,6 +411,7 @@ public class Fragment_home extends Fragment implements View.OnClickListener {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getActivity(), EkeysActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(intent);
                 ((Activity) getContext()).overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
             }
@@ -416,6 +421,7 @@ public class Fragment_home extends Fragment implements View.OnClickListener {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getActivity(), PasscodesActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(intent);
                 ((Activity) getContext()).overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
             }
@@ -646,7 +652,7 @@ public class Fragment_home extends Fragment implements View.OnClickListener {
                                 boolean is_admin_login = (boolean) SharePreferenceUtility.getPreferences(getContext(), Config.IS_ADMIN_LOGIN, SharePreferenceUtility.PREFTYPE_BOOLEAN);
                                 /*if (is_admin_login)*/ {
                                     if (mKey == null) {
-                                        startActivity(new Intent(getContext(), AddLockActivity.class));
+                                        startActivity(new Intent(getContext(), AddLockActivity.class).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
                                     } else {
 
                                         if (mKey != null && mKey.getLockMac() != null && mTTLockAPI.isConnected(mKey.getLockMac())) {//If the lock is connected, you can call interface directly
@@ -712,7 +718,7 @@ public class Fragment_home extends Fragment implements View.OnClickListener {
                         boolean is_admin_login = (boolean) SharePreferenceUtility.getPreferences(getContext(), Config.IS_ADMIN_LOGIN, SharePreferenceUtility.PREFTYPE_BOOLEAN);
                         if (is_admin_login) {
                             if (mKey == null) {
-                                startActivity(new Intent(getContext(), AddLockActivity.class));
+                                startActivity(new Intent(getContext(), AddLockActivity.class).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
                             } else {
 
                                 if (mKey != null && mKey.getLockMac() != null && mTTLockAPI.isConnected(mKey.getLockMac())) {//If the lock is connected, you can call interface directly
@@ -835,22 +841,6 @@ public class Fragment_home extends Fragment implements View.OnClickListener {
         }
     }
 
-    @Override
-    public void onPause() {
-        super.onPause();
-        mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-        if (!mBluetoothAdapter.isEnabled()) {
-            if (mBluetoothAdapter.disable()) {
-                mBluetoothAdapter.enable();
-                Log.d("BLUETOOTH", String.valueOf(mBluetoothAdapter.isEnabled()));
-            }
-        }
-
-        if (alertDialog!=null && alertDialog.isShowing()) {
-            alertDialog.dismiss();
-        }
-    }
-
     private boolean isDeviceNearBy(String mack_address) {
         Log.d("selected mac address", mack_address);
         HashSet<ExtendedBluetoothDevice> hashSet = new HashSet<ExtendedBluetoothDevice>();
@@ -893,7 +883,7 @@ public class Fragment_home extends Fragment implements View.OnClickListener {
                             showMessageDialog("You have already checked-out", getActivity().getDrawable(R.drawable.ic_iconfinder_ok_2639876));
                         } else {
                             if (mKey == null) {
-                                startActivity(new Intent(getContext(), AddLockActivity.class));
+                                startActivity(new Intent(getContext(), AddLockActivity.class).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
                             } else {
                                 if (mKey != null && mKey.getLockMac() != null && mTTLockAPI.isConnected(mKey.getLockMac())) {//If the lock is connected, you can call interface directly
                                     img_lock.setBackgroundResource(R.drawable.ic_unlock_color);
@@ -950,6 +940,7 @@ public class Fragment_home extends Fragment implements View.OnClickListener {
                     SharePreferenceUtility.saveObjectPreferences(mContext, USER_KEY_VALUE, null);
                     SharePreferenceUtility.saveBooleanPreferences(mContext, Const.IS_LOGIN, false);
                     Intent intent = new Intent(mContext, SplashScreenActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     mContext.startActivity(intent);
 //                    Toast.makeText(mContext, "Something went wrong", Toast.LENGTH_SHORT).show();
                 }

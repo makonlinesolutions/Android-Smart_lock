@@ -297,7 +297,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                         if (alertDialog!=null && alertDialog.isShowing()) {
                             alertDialog.dismiss();
                         }
-                        showMessageDialog("No data found, Please contact to administrator!!!", getDrawable(R.drawable.ic_iconfinder_ok_2639876));
+                        showMessageDialog(getResources().getString(R.string.contact_admin), getDrawable(R.drawable.ic_iconfinder_ok_2639876));
                     }
                 } else {
                     if (alertDialog!=null && alertDialog.isShowing()) {

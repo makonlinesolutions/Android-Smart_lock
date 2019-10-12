@@ -156,5 +156,6 @@
 
     <string name="operation_failed">Operation failed. Please ensure the lock is within 2 meters of the phone. Also, on your Phone- Switch Bluetooth OFF wait for 15 seconds and Turn Bluetooth ON</string>
     <string name="room_details">Room Details</string>
+    <string name="contact_admin">No data found, Please contact to administrator!!!</string>
 
 </resources>

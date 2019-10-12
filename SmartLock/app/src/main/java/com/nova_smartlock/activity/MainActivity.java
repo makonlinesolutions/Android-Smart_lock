@@ -331,40 +331,65 @@ public class MainActivity extends BaseActivity implements DrawerAdapter.OnItemSe
     @Override
     public void onItemSelected(int position) {
         if (position == POS_LOGOUT) {
-            DbService.deleteAllKey();
-            Toast.makeText(mContext, "Logout Successfully", Toast.LENGTH_SHORT).show();
-            MyPreference.putStr(mContext, MyPreference.ACCESS_TOKEN, "");
-            MyPreference.putStr(mContext, MyPreference.OPEN_ID, "");
-            SharePreferenceUtility.saveBooleanPreferences(mContext, Config.IS_ADMIN_LOGIN, false);
-            SharePreferenceUtility.saveObjectPreferences(mContext, KEY_VALUE, null);
-            SharePreferenceUtility.saveObjectPreferences(mContext, USER_KEY_VALUE, null);
-            SharePreferenceUtility.saveBooleanPreferences(mContext, Const.IS_LOGIN, false);
-            Intent intent = new Intent(MainActivity.this, SplashScreenActivity.class);
-            startActivity(intent);
-            overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
-            finish();
+            new AlertDialog.Builder(this)
+                    .setMessage("Are you sure you want to logout?")
+                    .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            DbService.deleteAllKey();
+                            Toast.makeText(mContext, "Logout Successfully", Toast.LENGTH_SHORT).show();
+                            MyPreference.putStr(mContext, MyPreference.ACCESS_TOKEN, "");
+                            MyPreference.putStr(mContext, MyPreference.OPEN_ID, "");
+                            SharePreferenceUtility.saveBooleanPreferences(mContext, Config.IS_ADMIN_LOGIN, false);
+                            SharePreferenceUtility.saveObjectPreferences(mContext, KEY_VALUE, null);
+                            SharePreferenceUtility.saveObjectPreferences(mContext, USER_KEY_VALUE, null);
+                            SharePreferenceUtility.saveBooleanPreferences(mContext, Const.IS_LOGIN, false);
+                            Intent intent = new Intent(MainActivity.this, SplashScreenActivity.class);
+                            startActivity(intent);
+                            overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+                            finish();
+                        }
+                    })
+                    .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+                    }).create().show();
         }
         if (position == POS_ADDLOCK) {
-            Intent intent;
             boolean is_admin_login = (boolean) SharePreferenceUtility.getPreferences(mContext, Config.IS_ADMIN_LOGIN, SharePreferenceUtility.PREFTYPE_BOOLEAN);
 
             if (is_admin_login) {
-                intent = new Intent(MainActivity.this, AddLockActivity.class);
-            } else {
-                DbService.deleteAllKey();
-                Toast.makeText(mContext, "Logout Successfully", Toast.LENGTH_SHORT).show();
-                MyPreference.putStr(mContext, MyPreference.ACCESS_TOKEN, "");
-                MyPreference.putStr(mContext, MyPreference.OPEN_ID, "");
-                SharePreferenceUtility.saveBooleanPreferences(mContext, Config.IS_ADMIN_LOGIN, false);
-                SharePreferenceUtility.saveObjectPreferences(mContext, KEY_VALUE, null);
-                SharePreferenceUtility.saveBooleanPreferences(mContext, Const.IS_LOGIN, false);
-                intent = new Intent(MainActivity.this, SplashScreenActivity.class);
+                Intent intent = new Intent(MainActivity.this, AddLockActivity.class);
                 startActivity(intent);
                 overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
-                finish();
+            } else {
+                new AlertDialog.Builder(this)
+                        .setMessage("Are you sure you want to logout?")
+                        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                DbService.deleteAllKey();
+                                Toast.makeText(mContext, "Logout Successfully", Toast.LENGTH_SHORT).show();
+                                MyPreference.putStr(mContext, MyPreference.ACCESS_TOKEN, "");
+                                MyPreference.putStr(mContext, MyPreference.OPEN_ID, "");
+                                SharePreferenceUtility.saveBooleanPreferences(mContext, Config.IS_ADMIN_LOGIN, false);
+                                SharePreferenceUtility.saveObjectPreferences(mContext, KEY_VALUE, null);
+                                SharePreferenceUtility.saveBooleanPreferences(mContext, Const.IS_LOGIN, false);
+                                Intent intent_ = new Intent(MainActivity.this, SplashScreenActivity.class);
+                                startActivity(intent_);
+                                overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+                                finish();
+                            }
+                        })
+                        .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                            }
+                        }).create().show();
             }
-            startActivity(intent);
-            overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
         }
         if (position == POS_DASHBOARD) {
            /* Fragment home_fragment = new Fragment_home();
