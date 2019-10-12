@@ -34,6 +34,9 @@ public class CheckoutCheckItems {
     @SerializedName("statusCode")
     @Expose
     public Integer statusCode;
+    @SerializedName("message")
+    @Expose
+    public String message;
 
 
 }

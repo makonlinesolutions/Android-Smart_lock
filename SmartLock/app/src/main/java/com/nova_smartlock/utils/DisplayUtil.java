@@ -15,9 +15,17 @@ import android.widget.TextView;
 import com.nova_smartlock.R;
 import com.nova_smartlock.activity.LoginActivity;
 import com.nova_smartlock.activity.NearbyLockActivity;
+import com.nova_smartlock.activity.SplashScreenActivity;
+import com.nova_smartlock.constant.Config;
+import com.nova_smartlock.dao.DbService;
+import com.nova_smartlock.sp.MyPreference;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+
+import static com.nova_smartlock.app.SmartLockApp.mContext;
+import static com.nova_smartlock.utils.Const.KEY_VALUE;
+import static com.nova_smartlock.utils.Const.USER_KEY_VALUE;
 
 /**
  * dp、sp convert to px
@@ -161,8 +169,20 @@ public class DisplayUtil {
             public void onClick(View v) {
                 if (message.contains("Disconnected")) {
                     context.startActivity(new Intent(context, LoginActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_CLEAR_TASK));
-                } if (message.equals("Please select the key")) {
+                } else if (message.equals("Please select the key")) {
                     context.startActivity(new Intent(context, NearbyLockActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_CLEAR_TASK));
+                } else if (message.contains("Access Denied") || message.equals("You have already checked-out")) {
+                    DbService.deleteAllKey();
+//                    Toast.makeText(mContext, "Logout Successfully", Toast.LENGTH_SHORT).show();
+                    MyPreference.putStr(mContext, MyPreference.ACCESS_TOKEN, "");
+                    MyPreference.putStr(mContext, MyPreference.OPEN_ID, "");
+                    SharePreferenceUtility.saveBooleanPreferences(context, Config.IS_ADMIN_LOGIN, false);
+                    SharePreferenceUtility.saveObjectPreferences(context, KEY_VALUE, null);
+                    SharePreferenceUtility.saveObjectPreferences(context, USER_KEY_VALUE, null);
+                    SharePreferenceUtility.saveBooleanPreferences(context, Const.IS_LOGIN, false);
+                    Intent intent = new Intent(mContext, SplashScreenActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    mContext.startActivity(intent);
                 }else {
                     dialog.dismiss();
                 }
