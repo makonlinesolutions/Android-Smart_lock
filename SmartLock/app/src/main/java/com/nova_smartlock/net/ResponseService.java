@@ -32,7 +32,8 @@ public class ResponseService {
         params.put("client_secret", Config.CLIENT_SECRET);
         params.put("grant_type", "password");
         params.put("username", username);
-        params.put("password", DigitUtil.getMD5(password));
+        params.put("password", password);
+//        params.put("password", DigitUtil.getMD5(password));
         params.put("redirect_uri", Config.REDIRECT_URI);
         return OkHttpRequest.sendPost(url, params);
     }

@@ -3,7 +3,10 @@ package com.nova_smartlock.retrofit;
 import com.nova_smartlock.model.AddLockResponse;
 import com.nova_smartlock.model.CheckoutCheckResponse;
 import com.nova_smartlock.model.KeyDetailsResponse;
+import com.nova_smartlock.model.LockTimeUpdateResponse;
 import com.nova_smartlock.model.LoginResponse;
+import com.nova_smartlock.model.TTLockLoginResponse;
+import com.nova_smartlock.model.TermConditionResponse;
 import com.nova_smartlock.model.UnlockKeyNameResponse;
 
 import retrofit2.Call;
@@ -21,6 +24,16 @@ public interface ApiServices {
     Call<LoginResponse> LOGIN_RESPONSE_OBSERVABLE(
             @Field("username") String username,
             @Field("password") String password
+    );
+
+    @FormUrlEncoded
+    @POST("customer-unlock-lock")
+    Call<LockTimeUpdateResponse> LOCK_TIME_UPDATE_RESPONSE_CALL(
+            @Field("smo_id") String smo_id,
+            @Field("guest_id") String guest_id,
+            @Field("guest_type") String guest_type,
+            @Field("unlock_time") String unlock_time,
+            @Header("Authorization") String authorization
     );
 
     @FormUrlEncoded
@@ -70,4 +83,19 @@ public interface ApiServices {
     Call<CheckoutCheckResponse> CHECKOUT_CHECK_RESPONSE_CALL(
             @Path("order_id") String order_id, @Path("guest_id") String guest_id,@Header("Authorization") String authorization
     );
+
+
+    @FormUrlEncoded
+    @POST("oauth2/token")
+    Call<TTLockLoginResponse> TT_LOCK_LOGIN_RESPONSE_CALL (@Field("client_id") String client_id,
+                                                           @Field("client_secret") String client_secret,
+                                                           @Field("grant_type") String grant_type,
+                                                           @Field("username") String username,
+                                                           @Field("redirect_uri") String redirect_uri,
+                                                           @Field("password") String password
+                                                           );
+
+    @POST("policy-doc")
+    Call<TermConditionResponse> TERM_CONDITION_RESPONSE_CALL ();
+
 }

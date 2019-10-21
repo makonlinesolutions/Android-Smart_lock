@@ -37,7 +37,7 @@ public class Constants {
         String ORDER_STATUS = "orderStatus";
         String ORDER_TYPE = "orderType";
         String TOKEN = "token";
-        String NOVA_LOCK_ADMIN_USER_ID = "+919041979590";
+        String NOVA_LOCK_ADMIN_USER_ID = "nss_admin";
         String NOVA_LOCK_ADMIN_USER_PASSWORD = "123456";
         String IS_FIRST_TIME_LOGIN = "first_time_login";
 
@@ -51,6 +51,7 @@ public class Constants {
         String DEPARTURE_TIME = "departure_time";
         String GROUP_NAME = "group_name";
         String GROUP_CODE = "group_code";
+        String GUEST_TYPE = "guest_type";
         String ROOM_NO = "room_no";
         String ROOM_SHORT = "room_short";
         String ROOM_TYPE = "room_type";

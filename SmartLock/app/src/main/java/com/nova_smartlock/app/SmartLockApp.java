@@ -370,6 +370,7 @@ public class SmartLockApp extends Application {
         public void onUnlock(ExtendedBluetoothDevice extendedBluetoothDevice, int uid, int uniqueid, long lockTime, Error error) {
             if (error == Error.SUCCESS) {
                 Fragment_home.getInstance().showMessageDialog(getString(R.string.words_unlock_successed), getDrawable(R.drawable.ic_unlock));
+                Fragment_home.getInstance().sendUnlockTime();
 //                toast(getString(R.string.words_unlock_successed));
 
 //                Fragment_home.getInstance().setUnlockImage();

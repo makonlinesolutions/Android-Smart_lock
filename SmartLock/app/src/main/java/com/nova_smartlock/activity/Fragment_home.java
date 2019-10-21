@@ -37,12 +37,14 @@ import com.github.rahatarmanahmed.cpv.CircularProgressView;
 import com.nova_smartlock.R;
 import com.nova_smartlock.constant.BleConstant;
 import com.nova_smartlock.constant.Config;
+import com.nova_smartlock.constant.UnlockTimeInterface;
 import com.nova_smartlock.dao.DbService;
 import com.nova_smartlock.db.DatabaseHelper;
 import com.nova_smartlock.db.LockDetails;
 import com.nova_smartlock.enumtype.Operation;
 import com.nova_smartlock.model.CheckoutCheckResponse;
 import com.nova_smartlock.model.Key;
+import com.nova_smartlock.model.LockTimeUpdateResponse;
 import com.nova_smartlock.model.UnlockKeyNameResponse;
 import com.nova_smartlock.net.ResponseService;
 import com.nova_smartlock.retrofit.ApiServiceProvider;
@@ -88,6 +90,7 @@ import static com.nova_smartlock.utils.Constants.AppConst.CHECK_OUT_TIME;
 import static com.nova_smartlock.utils.Constants.AppConst.DEPARTURE_TIME;
 import static com.nova_smartlock.utils.Constants.AppConst.GROUP_CODE;
 import static com.nova_smartlock.utils.Constants.AppConst.GROUP_NAME;
+import static com.nova_smartlock.utils.Constants.AppConst.GUEST_TYPE;
 import static com.nova_smartlock.utils.Constants.AppConst.IS_FIRST_TIME_LOGIN;
 import static com.nova_smartlock.utils.Constants.AppConst.KIDS;
 import static com.nova_smartlock.utils.Constants.AppConst.ORDER_ON;
@@ -96,7 +99,7 @@ import static com.nova_smartlock.utils.Constants.AppConst.ROOM_SHORT;
 import static com.nova_smartlock.utils.Constants.AppConst.ROOM_TYPE;
 import static com.nova_smartlock.utils.Constants.AppConst.TOKEN;
 
-public class Fragment_home extends Fragment implements View.OnClickListener {
+public class Fragment_home extends Fragment implements View.OnClickListener, UnlockTimeInterface {
     private ImageView img_lock, img_circular, mIvLockName, mIvUnLock;
     private CircularProgressView progressView;
     private LinearLayout ll_records, ll_settings, ll_send_key, ll_generate_passcode, ll_ekeys, ll_passcode, ll_options;
@@ -1037,5 +1040,32 @@ public class Fragment_home extends Fragment implements View.OnClickListener {
         if (alertDialog!=null && alertDialog.isShowing()) {
             alertDialog.dismiss();
         }
+    }
+
+    @Override
+    public void sendUnlockTime() {
+        String guest_id = (String) SharePreferenceUtility.getPreferences(mContext, Constants.AppConst.GUEST_ID, SharePreferenceUtility.PREFTYPE_STRING);
+        String smo_id = (String) SharePreferenceUtility.getPreferences(mContext, Constants.AppConst.USER_ID, SharePreferenceUtility.PREFTYPE_STRING);
+        String guest_type = (String) SharePreferenceUtility.getPreferences(getContext(), GUEST_TYPE, SharePreferenceUtility.PREFTYPE_STRING);
+        String token = (String) SharePreferenceUtility.getPreferences(mContext, TOKEN, SharePreferenceUtility.PREFTYPE_STRING);
+
+
+        Call<LockTimeUpdateResponse> checkoutCheckResponseCall = services.LOCK_TIME_UPDATE_RESPONSE_CALL(smo_id, guest_id, guest_type, String.valueOf(System.currentTimeMillis()), token);
+        checkoutCheckResponseCall.enqueue(new Callback<LockTimeUpdateResponse>() {
+            @Override
+            public void onResponse(Call<LockTimeUpdateResponse> call, Response<LockTimeUpdateResponse> response) {
+                if (response.isSuccessful()) {
+                    if (response.body().response.statusCode == 200) {
+                        Log.d("Send Unlock", response.body().response.response);
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<LockTimeUpdateResponse> call, Throwable t) {
+                Log.d("Send Unlock", t.getMessage());
+            }
+        });
+
     }
 }

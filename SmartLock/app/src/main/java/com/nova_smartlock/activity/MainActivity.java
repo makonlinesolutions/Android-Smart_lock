@@ -28,7 +28,6 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.google.gson.reflect.TypeToken;
-
 import com.nova_smartlock.R;
 import com.nova_smartlock.app.SmartLockApp;
 import com.nova_smartlock.constant.Config;
@@ -256,7 +255,7 @@ public class MainActivity extends BaseActivity implements DrawerAdapter.OnItemSe
                         }
 
 
-                    Bundle bundle = new Bundle();
+                   /* Bundle bundle = new Bundle();
                     bundle.putInt("key_data", keys.size());
 
                     Fragment fragment = new Fragment_home();
@@ -265,7 +264,7 @@ public class MainActivity extends BaseActivity implements DrawerAdapter.OnItemSe
                     FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                     fragmentTransaction.replace(R.id.container, fragment);
                     fragmentTransaction.addToBackStack(null);
-                    fragmentTransaction.commit();
+                    fragmentTransaction.commit();*/
 
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -277,6 +276,25 @@ public class MainActivity extends BaseActivity implements DrawerAdapter.OnItemSe
             protected void onPostExecute(String s) {
                 super.onPostExecute(s);
                 progressDialog.cancel();
+
+                if (keys.size() > 0) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+
+                            Bundle bundle = new Bundle();
+                            bundle.putInt("key_data", keys.size());
+
+                            Fragment fragment = new Fragment_home();
+                            fragment.setArguments(bundle);
+                            FragmentManager fragmentManager = getSupportFragmentManager();
+                            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                            fragmentTransaction.replace(R.id.container, fragment);
+                            fragmentTransaction.addToBackStack(null);
+                            fragmentTransaction.commit();
+                        }
+                    });
+                }
 
             }
         }.execute();

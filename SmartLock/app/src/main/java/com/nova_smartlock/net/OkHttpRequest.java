@@ -105,18 +105,19 @@ public final class OkHttpRequest {
 
     public static String sendPost(final String url, final Map<String, String> params) {
         FormBody.Builder formBodyBuilder = new FormBody.Builder();
+        formBodyBuilder.addEncoded("Content-Type", "application/x-www-form-urlencoded;charset=UTF8");
         if (params != null) {
             for (String key : params.keySet()) {
                 String value = params.get(key);
                 if(value == null)
                     value = "";
-                LogUtil.d(String.format("%s:%s", key, value), DBG);
+//                LogUtil.d(String.format("%s:%s", key, value), DBG);
                 formBodyBuilder.add(key, value);
             }
 //			params.forEach((key, value) -> formBodyBuilder.add(key, value));
         }
         RequestBody body = formBodyBuilder.build();
-        Request.Builder requestBuilder = new Request.Builder().url(url).post(body);
+        Request.Builder requestBuilder = new Request.Builder().url(url).post(body).header("Content-Type", "application/x-www-form-urlencoded");
 //		if (headers != null) {
 //			headers.forEach((key, value) -> requestBuilder.addHeader(key, value));
 //		}

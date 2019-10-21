@@ -61,6 +61,7 @@ import static com.nova_smartlock.utils.Constants.AppConst.DEPARTURE_TIME;
 import static com.nova_smartlock.utils.Constants.AppConst.GROUP_CODE;
 import static com.nova_smartlock.utils.Constants.AppConst.GROUP_NAME;
 import static com.nova_smartlock.utils.Constants.AppConst.GUEST_ID;
+import static com.nova_smartlock.utils.Constants.AppConst.GUEST_TYPE;
 import static com.nova_smartlock.utils.Constants.AppConst.IS_FIRST_TIME_LOGIN;
 import static com.nova_smartlock.utils.Constants.AppConst.KIDS;
 import static com.nova_smartlock.utils.Constants.AppConst.ORDER_ID;
@@ -174,6 +175,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                         SharePreferenceUtility.saveStringPreferences(mContext, USER_ID, String.valueOf(loginResponse.response.smoId));
                         SharePreferenceUtility.saveStringPreferences(mContext, ORDER_ID, String.valueOf(loginResponse.response.orderId));
                         SharePreferenceUtility.saveStringPreferences(mContext, GUEST_ID, String.valueOf(loginResponse.response.guestId));
+                        SharePreferenceUtility.saveStringPreferences(mContext, GUEST_TYPE, String.valueOf(loginResponse.response.guest_type));
                         SharePreferenceUtility.saveStringPreferences(mContext, CHECK_IN_DATE, loginResponse.response.checkInDate);
                         SharePreferenceUtility.saveStringPreferences(mContext, CHECK_OUT_DATE, loginResponse.response.checkOutDate);
                         SharePreferenceUtility.saveStringPreferences(mContext, CHECK_IN_TIME, loginResponse.response.checkInTime);
