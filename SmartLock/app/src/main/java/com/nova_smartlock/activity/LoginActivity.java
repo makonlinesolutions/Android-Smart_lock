@@ -62,7 +62,6 @@ import static com.nova_smartlock.utils.Constants.AppConst.GROUP_CODE;
 import static com.nova_smartlock.utils.Constants.AppConst.GROUP_NAME;
 import static com.nova_smartlock.utils.Constants.AppConst.GUEST_ID;
 import static com.nova_smartlock.utils.Constants.AppConst.GUEST_TYPE;
-import static com.nova_smartlock.utils.Constants.AppConst.IS_FIRST_TIME_LOGIN;
 import static com.nova_smartlock.utils.Constants.AppConst.KIDS;
 import static com.nova_smartlock.utils.Constants.AppConst.ORDER_ID;
 import static com.nova_smartlock.utils.Constants.AppConst.ORDER_ON;

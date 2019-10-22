@@ -124,7 +124,7 @@ public class RegistrationActivity extends AppCompatActivity implements View.OnCl
                                 } else if (TextUtils.isEmpty(password)) {
                                     toast("Please enter password");
                                 } else {
-                                    msg = "Invalid login credentials!\nTry again";
+                                    msg = "Incorrect Username or Password! Please Try again";
                                     showMessageDialog(msg, getDrawable(R.drawable.ic_iconfinder_ic_cancel_48px_352263));
                                 }
                             } else {

@@ -175,7 +175,7 @@ public class SettingsActivity extends AppCompatActivity {
                 if (NetworkUtils.isNetworkConnected(mContext)) {
                     deleteLock();
                 } else {
-                    DisplayUtil.showMessageDialog(mContext, "Please check Mobile network connection", getDrawable(R.drawable.ic_no_internet));
+                    DisplayUtil.showMessageDialog(mContext, "Please check mobile network connection", getDrawable(R.drawable.ic_no_internet));
                 }
             }
         });
@@ -198,7 +198,7 @@ public class SettingsActivity extends AppCompatActivity {
             public void onClick(View v) {
                 name_lock = edt_lock_name.getText().toString().trim();
                 if (TextUtils.isEmpty(name_lock)) {
-                    DisplayUtil.showMessageDialog(SettingsActivity.this, "Please enter name", getDrawable(R.drawable.ic_iconfinder_143_attention_183267));
+                    DisplayUtil.showMessageDialog(mContext, "Please Rename the lock", getDrawable(R.drawable.ic_iconfinder_143_attention_183267));
                 } else {
                     dialog.dismiss();
 
@@ -278,7 +278,11 @@ public class SettingsActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        getRequestLockDetails();
+        if (NetworkUtils.isNetworkConnected(mContext)) {
+            getRequestLockDetails();
+        } else {
+            DisplayUtil.showMessageDialog(mContext, "Please check Mobile network connection", getDrawable(R.drawable.ic_no_internet));
+        }
     }
 
     @Override

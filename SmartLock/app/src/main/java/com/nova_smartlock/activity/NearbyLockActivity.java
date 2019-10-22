@@ -23,6 +23,8 @@ import com.nova_smartlock.db.LockDetails;
 import com.nova_smartlock.model.Key;
 import com.nova_smartlock.model.KeyObj;
 import com.nova_smartlock.net.ResponseService;
+import com.nova_smartlock.utils.DisplayUtil;
+import com.nova_smartlock.utils.NetworkUtils;
 import com.nova_smartlock.utils.SharePreferenceUtility;
 import com.ttlock.bl.sdk.util.GsonUtil;
 import com.ttlock.bl.sdk.util.LogUtil;
@@ -86,7 +88,11 @@ public class NearbyLockActivity extends BaseActivity {
 
 //        accessToken = MyPreference.getStr(this, MyPreference.ACCESS_TOKEN);
         keys = new ArrayList<>();
-        syncData();
+        if (NetworkUtils.isNetworkConnected(mContext)) {
+            syncData();
+        } else {
+            DisplayUtil.showMessageDialog(mContext, "Please check Mobile network connection", getDrawable(R.drawable.ic_no_internet));
+        }
     }
 
     @Override

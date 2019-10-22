@@ -661,23 +661,83 @@ public class Fragment_home extends Fragment implements View.OnClickListener, Unl
             is_first_time_login = (boolean) SharePreferenceUtility.getPreferences(getContext(), IS_FIRST_TIME_LOGIN, SharePreferenceUtility.PREFTYPE_BOOLEAN);
             if (is_first_time_login) {
                 if (!NetworkUtils.isNetworkConnected(mContext)) {
-                    if (isCheckInDate()) {
-                        if (isCheckInTime()) {
+                    boolean is_admin_login = (boolean) SharePreferenceUtility.getPreferences(getContext(), Config.IS_ADMIN_LOGIN, SharePreferenceUtility.PREFTYPE_BOOLEAN);
+                    if (is_admin_login) {
+
 //                        Fragment_home.getInstance().showMessageDialog("Please check Mobile network connection", getActivity().getDrawable(R.drawable.ic_no_internet));
-                            mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-                            if (mBluetoothAdapter == null) {
-                                // Device does not support Bluetooth
+                        mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+                        if (mBluetoothAdapter == null) {
+                            // Device does not support Bluetooth
+                        } else {
+                            if (!mBluetoothAdapter.isEnabled()) {
+                                mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+                                if (mBluetoothAdapter.disable()) {
+                                    mBluetoothAdapter.enable();
+                                    showMessageDialog("Bluetooth  is successfully enabled / ON", getActivity().getDrawable(R.drawable.ic_iconfinder_ok_2639876));
+                                }
                             } else {
-                                if (!mBluetoothAdapter.isEnabled()) {
-                                    mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-                                    if (mBluetoothAdapter.disable()) {
-                                        mBluetoothAdapter.enable();
-                                        showMessageDialog("Bluetooth  is successfully enabled / ON", getActivity().getDrawable(R.drawable.ic_iconfinder_ok_2639876));
-                                    }
+
+                                if (mKey == null) {
+                                    startActivity(new Intent(getContext(), AddLockActivity.class).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
                                 } else {
-                                    boolean is_admin_login = (boolean) SharePreferenceUtility.getPreferences(getContext(), Config.IS_ADMIN_LOGIN, SharePreferenceUtility.PREFTYPE_BOOLEAN);
-                                    /*if (is_admin_login)*/
-                                    {
+
+                                    if (mKey != null && mKey.getLockMac() != null && mTTLockAPI.isConnected(mKey.getLockMac())) {//If the lock is connected, you can call interface directly
+                                        img_lock.setBackgroundResource(R.drawable.ic_unlock_color);
+                                        if (mKey.isAdmin())
+                                            mTTLockAPI.unlockByAdministrator(null, openid, mKey.getLockVersion(), mKey.getAdminPwd(), mKey.getLockKey(), mKey.getLockFlagPos(), System.currentTimeMillis(), mKey.getAesKeyStr(), mKey.getTimezoneRawOffset());
+                                        else
+                                            mTTLockAPI.unlockByUser(null, openid, mKey.getLockVersion(), mKey.getStartDate(), mKey.getEndDate(), mKey.getLockKey(), mKey.getLockFlagPos(), mKey.getAesKeyStr(), mKey.getTimezoneRawOffset());
+                                    } else {//to connect the lock
+                                        if (isDeviceNearBy(mKey.getLockMac())) {
+                                            progressView.setVisibility(View.VISIBLE);
+                                            progressView.startAnimation();
+                                            new Handler().postDelayed(
+                                                    new Runnable() {
+                                                        @Override
+                                                        public void run() {
+                                                            progressView.stopAnimation();
+                                                            progressView.setVisibility(View.GONE);
+                                                            img_lock.setVisibility(View.GONE);
+                                                            mIvUnLock.setVisibility(View.VISIBLE);
+                                                        }
+                                                    }, 5000);
+                                            new Handler().postDelayed(
+                                                    new Runnable() {
+                                                        @Override
+                                                        public void run() {
+                                                            img_lock.setVisibility(View.VISIBLE);
+                                                            mIvUnLock.setVisibility(View.GONE);
+                                                        }
+                                                    }, 8000);
+                                            progressView.setVisibility(View.VISIBLE);
+                                            progressView.startAnimation();
+                                            mTTLockAPI.connect(mKey.getLockMac());
+                                            bleSession.setOperation(Operation.CLICK_UNLOCK);
+                                            bleSession.setLockmac(mKey.getLockMac());
+                                        } else {
+                                            Log.d("operation failed", "operation  684");
+                                            showMessageDialog(mContext.getString(R.string.operation_failed), getContext().getDrawable(R.drawable.ic_iconfinder_ic_cancel_48px_352263));
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    } else {
+                        if (isCheckInDate()) {
+                            if (isCheckInTime()) {
+//                        Fragment_home.getInstance().showMessageDialog("Please check Mobile network connection", getActivity().getDrawable(R.drawable.ic_no_internet));
+                                mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+                                if (mBluetoothAdapter == null) {
+                                    // Device does not support Bluetooth
+                                } else {
+                                    if (!mBluetoothAdapter.isEnabled()) {
+                                        mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+                                        if (mBluetoothAdapter.disable()) {
+                                            mBluetoothAdapter.enable();
+                                            showMessageDialog("Bluetooth  is successfully enabled / ON", getActivity().getDrawable(R.drawable.ic_iconfinder_ok_2639876));
+                                        }
+                                    } else {
+
                                         if (mKey == null) {
                                             startActivity(new Intent(getContext(), AddLockActivity.class).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
                                         } else {
@@ -723,12 +783,12 @@ public class Fragment_home extends Fragment implements View.OnClickListener, Unl
                                         }
                                     }
                                 }
+                            } else {
+                                Fragment_home.getInstance().showMessageDialog("Please check your checkIn/checkOut Time", getActivity().getDrawable(R.drawable.ic_warning_black_48dp));
                             }
                         } else {
-                            Fragment_home.getInstance().showMessageDialog("Please check your checkIn/checkOut Time", getActivity().getDrawable(R.drawable.ic_warning_black_48dp));
+                            Fragment_home.getInstance().showMessageDialog("Please check your checkIn/checkOut Date", getActivity().getDrawable(R.drawable.ic_warning_black_48dp));
                         }
-                    } else {
-                        Fragment_home.getInstance().showMessageDialog("Please check your checkIn/checkOut Date", getActivity().getDrawable(R.drawable.ic_warning_black_48dp));
                     }
                 } else {
                     mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
@@ -836,21 +896,26 @@ public class Fragment_home extends Fragment implements View.OnClickListener, Unl
     }
 
     private boolean isCheckInDate() {
-        boolean isCorrectDate = false ;
-        String checkInDate = (String) SharePreferenceUtility.getPreferences(mContext, CHECK_IN_DATE, SharePreferenceUtility.PREFTYPE_STRING);
-        String checkOutDate = (String) SharePreferenceUtility.getPreferences(mContext, CHECK_OUT_DATE, SharePreferenceUtility.PREFTYPE_STRING);
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
-        Date checkIn = null,checkOut = null , todaysDate = null;
-        String today = sdf.format(new Date());
-        try{
-            checkIn = sdf.parse(checkInDate);
-            checkOut = sdf.parse(checkOutDate);
-            todaysDate = sdf.parse(today);
-        }catch(Exception e) {
+        boolean isCorrectDate = false;
+        try {
+            String checkInDate = (String) SharePreferenceUtility.getPreferences(mContext, CHECK_IN_DATE, SharePreferenceUtility.PREFTYPE_STRING);
+            String checkOutDate = (String) SharePreferenceUtility.getPreferences(mContext, CHECK_OUT_DATE, SharePreferenceUtility.PREFTYPE_STRING);
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
+            Date checkIn = null, checkOut = null, todaysDate = null;
+            String today = sdf.format(new Date());
+            try {
+                checkIn = sdf.parse(checkInDate);
+                checkOut = sdf.parse(checkOutDate);
+                todaysDate = sdf.parse(today);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            if ((todaysDate.compareTo(checkIn) >= 0) && (todaysDate.compareTo(checkOut) <= 0)) {
+                isCorrectDate = true;
+            }
+
+        } catch (NullPointerException e) {
             e.printStackTrace();
-        }
-        if((todaysDate.compareTo(checkIn)>=0) && (todaysDate.compareTo(checkOut)<=0)){
-            isCorrectDate = true ;
         }
         return isCorrectDate;
     }

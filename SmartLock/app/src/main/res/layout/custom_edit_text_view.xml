@@ -34,6 +34,7 @@
                 android:fontFamily="serif"
             android:maxLines="1"
             android:minLines="1"
+            android:maxLength="20"
             android:singleLine="true"
             android:layout_below="@id/view1"
             android:background="@drawable/semi_round_editext"
