@@ -25,16 +25,16 @@ public class Pager_GeneratePasscode extends FragmentStatePagerAdapter {
                 Onetime_GeneratePasscodeFragment onetime_generatePasscodeFragment=new Onetime_GeneratePasscodeFragment();
                 return onetime_generatePasscodeFragment;
 
-            case 3:
+          /*  case 3:
                 Erase_GeneatePasscodeFragment eraseFragment=new Erase_GeneatePasscodeFragment();
-                return eraseFragment;
+                return eraseFragment;*/
 
-            case 4:
+            case 3:
                 Custom_GeneratePasscodeFragment custom_generatePasscodeFragment=new Custom_GeneratePasscodeFragment();
                 return custom_generatePasscodeFragment;
-            case 5:
+           /* case 5:
                 Cyclic_GeneatePasscodeFragment cyclicFragment=new Cyclic_GeneatePasscodeFragment();
-                return cyclicFragment;
+                return cyclicFragment;*/
             default:
                 return null;
         }
@@ -57,12 +57,12 @@ public class Pager_GeneratePasscode extends FragmentStatePagerAdapter {
                 return "Timed";
             case 2:
                 return "One-Time";
+           /* case 3:
+                return "Erase";*/
             case 3:
-                return "Erase";
-            case 4:
                 return "Custom";
-            case 5:
-                return "Cyclic";
+           /* case 5:
+                return "Cyclic";*/
             default:
                 return null;
         }

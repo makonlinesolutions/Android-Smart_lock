@@ -184,8 +184,8 @@ public class Fragment_home extends Fragment implements View.OnClickListener, Unl
         }
         init();
         ll_ekeys.setVisibility(View.GONE);
-        ll_passcode.setVisibility(View.GONE);
-        ll_generate_passcode.setVisibility(View.GONE);
+//        ll_passcode.setVisibility(View.GONE);
+//        ll_generate_passcode.setVisibility(View.GONE);
         DatabaseHelper databaseHelper = new DatabaseHelper(getContext());
         arrKeyDetails = databaseHelper.getAllLock();
         services = new ApiServiceProvider(mContext).apiServices;

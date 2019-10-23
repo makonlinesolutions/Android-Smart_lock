@@ -1,5 +1,8 @@
 package com.nova_smartlock.activity;
 
+import android.annotation.SuppressLint;
+import android.content.Context;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -7,15 +10,82 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 
 import com.nova_smartlock.R;
+import com.nova_smartlock.dao.DbService;
+import com.nova_smartlock.model.Key;
+import com.nova_smartlock.net.ResponseService;
+import com.nova_smartlock.utils.DisplayUtil;
+import com.nova_smartlock.utils.SharePreferenceUtility;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.List;
+
+import static com.nova_smartlock.utils.Const.KEY_VALUE;
 
 public class Onetime_GeneratePasscodeFragment extends Fragment {
+
+    private Button mBtGeneratePasscode;
+    private View mParentView;
+    private List<Key> arrKey;
+    private Key mKey;
+    private Context mContext;
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view= inflater.inflate(R.layout.fragment_onetime_generatepasscode, container, false);
-        return view;
+        mParentView = inflater.inflate(R.layout.fragment_onetime_generatepasscode, container, false);
+        mBtGeneratePasscode = mParentView.findViewById(R.id.btn_generate_passcode_one_time);
+        mContext = getContext();
+        arrKey = DbService.getKeyListKey();
+        mKey = (Key) SharePreferenceUtility.getPreferences(getContext(), KEY_VALUE, SharePreferenceUtility.PREFTYPE_OBJECT);
+        mBtGeneratePasscode.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getRequestGeneratePasscode();
+            }
+        });
+        return mParentView;
 
+    }
+
+    private void getRequestGeneratePasscode() {
+        new AsyncTask<Void, Integer, String>() {
+
+            @Override
+            protected String doInBackground(Void... params) {
+                return ResponseService.getKeyboardPwdPermanent(mKey.getLockId(), 4, 1, System.currentTimeMillis(), Long.parseLong("1923244200000"));
+            }
+
+            @SuppressLint("NewApi")
+            @Override
+            protected void onPostExecute(String json) {
+                String msg = getContext().getString(R.string.words_authorize_successed);
+                try {
+                    JSONObject jsonObject = new JSONObject(json);
+                    if (jsonObject.has("errcode")) {
+                        msg = "Operation failed!";
+                        if (jsonObject.getInt("errcode") == 0) {
+                            DisplayUtil.showMessageDialog(getContext(), msg, getActivity().getDrawable(R.drawable.ic_iconfinder_143_attention_183267)); //ToDo change mesage
+                            //Toast.makeText(mContext, "Now you can the credentials", Toast.LENGTH_SHORT).show();
+                        } else {
+                            DisplayUtil.showMessageDialog(getContext(), msg, getActivity().getDrawable(R.drawable.ic_iconfinder_143_attention_183267)); //ToDo change mesage
+                            //Toast.makeText(mContext, "Now you can the credentials", Toast.LENGTH_SHORT).show();
+                        }
+                    } else {
+                        String keyboardPwd = jsonObject.getString("keyboardPwd");
+                        String keyboardPwdId = jsonObject.getString("keyboardPwdId");
+
+                        DisplayUtil.showMessageDialog(getContext(), "Passcode generated successfully. Your Passcode is: " + keyboardPwd, getActivity().getDrawable(R.drawable.ic_iconfinder_ok_2639876));
+                        //Toast.makeText(mContext, "E-Key sent successfully", Toast.LENGTH_SHORT).show();
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }.execute();
     }
 }

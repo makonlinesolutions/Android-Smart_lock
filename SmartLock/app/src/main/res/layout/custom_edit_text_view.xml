@@ -7,11 +7,11 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="200dp"
+        android:layout_centerInParent="true"
         android:layout_marginLeft="10dp"
-        android:gravity="center"
-        android:padding="10dp"
         android:layout_marginRight="10dp"
-        android:layout_centerInParent="true">
+        android:gravity="center"
+        android:padding="10dp">
 
         <View
             android:id="@+id/view1"
@@ -29,18 +29,18 @@
                     android:layout_marginTop="10dp">-->
 
         <EditText
-                android:id="@+id/edt_lockName"
-                android:layout_width="match_parent"
-                android:fontFamily="serif"
-            android:maxLines="1"
-            android:minLines="1"
-            android:maxLength="20"
-            android:singleLine="true"
+            android:id="@+id/edt_lockName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:layout_below="@id/view1"
             android:background="@drawable/semi_round_editext"
-                android:layout_height="wrap_content"
-                android:hint="Change Lock Name"
-                android:padding="15dp" />
+            android:fontFamily="serif"
+            android:hint="Change Lock Name"
+            android:maxLength="20"
+            android:maxLines="1"
+            android:minLines="1"
+            android:padding="15dp"
+            android:singleLine="true" />
 
         <!--</android.support.design.widget.TextInputLayout>-->
 
@@ -53,8 +53,8 @@
             android:backgroundTint="@color/cpv_default_color"
             android:fontFamily="serif"
             android:text="Submit"
-            android:textSize="18dp"
             android:textColor="@android:color/white"
+            android:textSize="18dp"
             custom:pb_colorNormal="@android:color/holo_blue_light"
             custom:pb_colorPressed="@android:color/holo_blue_dark" />
     </RelativeLayout>

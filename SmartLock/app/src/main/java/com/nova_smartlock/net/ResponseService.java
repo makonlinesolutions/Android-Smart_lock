@@ -167,7 +167,7 @@ public class ResponseService {
      * @param endDate
      * @return
      */
-    public static String getKeyboardPwd(int lockId, int keyboardPwdVersion, int keyboardPwdType, long startDate, long endDate) {
+    public static String getKeyboardPwdPermanent(int lockId, int keyboardPwdVersion, int keyboardPwdType, long startDate, long endDate) {
         String url = actionUrlV3 + "/keyboardPwd/get";
         HashMap params = new HashMap();
         params.put("clientId", Config.CLIENT_ID);
@@ -175,6 +175,37 @@ public class ResponseService {
         params.put("lockId", String.valueOf(lockId));
         params.put("keyboardPwdVersion", String.valueOf(keyboardPwdVersion));
         params.put("keyboardPwdType", String.valueOf(keyboardPwdType));
+        params.put("startDate", String.valueOf(startDate));
+        params.put("endDate", String.valueOf(endDate));
+        params.put("date", String.valueOf(System.currentTimeMillis()));
+        return OkHttpRequest.sendPost(url, params);
+    }
+
+
+    /**
+     * For locks of non-v4 passcode, if you get the prompt of "passcode is used out" or "no passcode data", please reset the passcode.
+     * The valid time of the passcode should be defined in HOUR,set the minute and second to 0. If the valid period is longer than one year, the end time should be XX months later than the start time, without any difference in DAY,HOUR.
+     * Earlier passcode version，reference：https://open.sciener.cn/doc/api/keyboardPwdType
+     *
+     * @param lockId
+     * @param keyboardPwdVersion
+     * @param keyboardPwdType
+     * @param startDate
+     * @param endDate
+     * @param custom_name
+     * @param addType
+     * @return
+     */
+    public static String getKeyboardPwdCustom(int lockId, int keyboardPwdVersion, int keyboardPwdType, long startDate, long endDate, String custom_name, String addType) {
+        String url = actionUrlV3 + "/keyboardPwd/add";
+        HashMap params = new HashMap();
+        params.put("clientId", Config.CLIENT_ID);
+        params.put("accessToken", MyPreference.getStr(SmartLockApp.mContext, MyPreference.ACCESS_TOKEN));
+        params.put("lockId", String.valueOf(lockId));
+        params.put("keyboardPwd", custom_name);
+        params.put("keyboardPwdVersion", String.valueOf(keyboardPwdVersion));
+        params.put("keyboardPwdType", String.valueOf(keyboardPwdType));
+        params.put("addType", addType);
         params.put("startDate", String.valueOf(startDate));
         params.put("endDate", String.valueOf(endDate));
         params.put("date", String.valueOf(System.currentTimeMillis()));
@@ -370,7 +401,7 @@ public class ResponseService {
         params.put("keyboardPwdId", String.valueOf(keyboardPwdId));
         params.put("deleteType", String.valueOf(deleteType));
         params.put("date", String.valueOf(System.currentTimeMillis()));
-        return OkHttpRequest.sendPost(url, params);
+        return OkHttpRequest.get(url, params);
     }
 
     /**

@@ -26,7 +26,7 @@ public class GeneratePasscodeActivity extends AppCompatActivity implements TabLa
         viewPager=findViewById(R.id.pager);
         tabLayout=findViewById(R.id.tablayout);
 
-        Pager_GeneratePasscode adapter=new Pager_GeneratePasscode(getSupportFragmentManager(),6);
+        Pager_GeneratePasscode adapter=new Pager_GeneratePasscode(getSupportFragmentManager(),4);
         viewPager.setAdapter(adapter);
         tabLayout.setupWithViewPager(viewPager);
         tabLayout.setOnTabSelectedListener(this);
