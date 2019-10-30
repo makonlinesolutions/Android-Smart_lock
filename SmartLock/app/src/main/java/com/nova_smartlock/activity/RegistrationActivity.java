@@ -152,39 +152,6 @@ public class RegistrationActivity extends AppCompatActivity implements View.OnCl
             }
         }
     }
-/*
-    private void showMessageDialog(final String msg, final String user_id, int resId){
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        LayoutInflater layoutInflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View view = layoutInflater.inflate(R.layout.custom_unlock_dialog, null, false);
-        builder.setView(view);
-        final Dialog dialog = builder.create();
-        TextView textView = view.findViewById(R.id.tv_unlock);
-        TextView tv_message = view.findViewById(R.id.tv_message);
-        ImageView imageView = view.findViewById(R.id.iv_lock);
-        tv_message.setText(msg);
-        imageView.setBackgroundResource(resId);
-        textView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                dialog.dismiss();
-
-                if (msg.equalsIgnoreCase(getString(R.string.words_registration_successed))) {
-                    Intent intent = new Intent(mContext, MainActivity.class);
-                    intent.putExtra("user_id", user_id);
-                    startActivity(intent);
-                    overridePendingTransition(R.anim.fade_out, R.anim.fade_in);
-                    onResume();
-                }else {
-                    dialog.dismiss();
-                }
-            }
-        });
-        dialog.setCanceledOnTouchOutside(false);
-        dialog.show();
-    }*/
-
-
 
     private void showMessageDialog(final String msg, Drawable drawable) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);

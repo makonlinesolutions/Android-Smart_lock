@@ -1,6 +1,7 @@
 package com.nova_smartlock.activity;
 
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -17,12 +18,15 @@ import com.nova_smartlock.dao.DbService;
 import com.nova_smartlock.model.Key;
 import com.nova_smartlock.net.ResponseService;
 import com.nova_smartlock.utils.DisplayUtil;
+import com.nova_smartlock.utils.NetworkUtils;
 import com.nova_smartlock.utils.SharePreferenceUtility;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.List;
+
+import dmax.dialog.SpotsDialog;
 
 import static com.nova_smartlock.utils.Const.KEY_VALUE;
 
@@ -33,6 +37,7 @@ public class Permanent_GeneratePasscodeFragment extends Fragment {
     private List<Key> arrKey;
     private Key mKey;
     private Context mContext;
+    private AlertDialog alertDialog;
 
     @Nullable
     @Override
@@ -40,18 +45,24 @@ public class Permanent_GeneratePasscodeFragment extends Fragment {
         mParentView = inflater.inflate(R.layout.fragment_permanent_generatepasscode, container, false);
         mBtGeneratePasscode = mParentView.findViewById(R.id.btn_generate_passcode);
         mContext = getContext();
+        alertDialog = new SpotsDialog.Builder().setContext(mContext).setMessage("Loading").build();
         arrKey = DbService.getKeyListKey();
         mKey = (Key) SharePreferenceUtility.getPreferences(getContext(), KEY_VALUE, SharePreferenceUtility.PREFTYPE_OBJECT);
         mBtGeneratePasscode.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                getRequestGeneratePasscode();
+                if (NetworkUtils.isNetworkConnected(mContext)) {
+                    getRequestGeneratePasscode();
+                }else {
+                    DisplayUtil.showMessageDialog(mContext, "Please check mobile network connection", getActivity().getDrawable(R.drawable.ic_no_internet));
+                }
             }
         });
         return mParentView;
     }
 
     private void getRequestGeneratePasscode() {
+        alertDialog.show();
         new AsyncTask<Void, Integer, String>() {
 
             @Override
@@ -62,6 +73,7 @@ public class Permanent_GeneratePasscodeFragment extends Fragment {
             @SuppressLint("NewApi")
             @Override
             protected void onPostExecute(String json) {
+                alertDialog.dismiss();
                 String msg = getContext().getString(R.string.words_authorize_successed);
                 try {
                     JSONObject jsonObject = new JSONObject(json);

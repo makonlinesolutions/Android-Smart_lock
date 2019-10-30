@@ -96,7 +96,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         btn_login.setOnClickListener(this);
 
         txt_label = findViewById(R.id.text_label);
-        txt_label.setText("LOGIN");
+        txt_label.setText("GUEST");
 
         ((TextView)findViewById(R.id.tv_version)).setText("Version Name: "+BuildConfig.VERSION_NAME);
 

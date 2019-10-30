@@ -97,6 +97,7 @@
         android:layout_alignParentRight="true"
         android:layout_centerInParent="true"
         android:layout_marginRight="15dp"
+        android:visibility="gone"
         android:background="@drawable/ic_delete"
         android:backgroundTint="@color/colorPrimary" />
 

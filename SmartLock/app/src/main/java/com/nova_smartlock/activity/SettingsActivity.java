@@ -69,7 +69,7 @@ public class SettingsActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if (NetworkUtils.isNetworkConnected(mContext)) {
-                    openDialogForChangeKeyName();
+//                    openDialogForChangeKeyName();
                 } else {
                     DisplayUtil.showMessageDialog(mContext, "Please check Mobile network connection", getDrawable(R.drawable.ic_no_internet));
                 }

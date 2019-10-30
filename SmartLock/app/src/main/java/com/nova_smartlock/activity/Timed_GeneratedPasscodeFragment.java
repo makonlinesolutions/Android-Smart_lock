@@ -20,6 +20,7 @@ import com.nova_smartlock.dao.DbService;
 import com.nova_smartlock.model.Key;
 import com.nova_smartlock.net.ResponseService;
 import com.nova_smartlock.utils.DisplayUtil;
+import com.nova_smartlock.utils.NetworkUtils;
 import com.nova_smartlock.utils.SharePreferenceUtility;
 
 import org.json.JSONException;
@@ -131,7 +132,11 @@ public class Timed_GeneratedPasscodeFragment extends Fragment {
         mBtGeneratePasscode.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                getRequestGeneratePasscode();
+                if (NetworkUtils.isNetworkConnected(mContext)) {
+                    getRequestGeneratePasscode();
+                } else {
+                    DisplayUtil.showMessageDialog(mContext, "Please check mobile network connection", getActivity().getDrawable(R.drawable.ic_no_internet));
+                }
             }
         });
         return view;

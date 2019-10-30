@@ -21,7 +21,7 @@
             android:layout_marginTop="10dp"
             android:padding="10dp"
             android:fontFamily="serif"
-            android:text="LOGIN"
+            android:text="GUEST"
             android:textColor="@color/white"
             android:textSize="20dp" />
 

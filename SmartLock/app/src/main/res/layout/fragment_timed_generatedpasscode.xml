@@ -74,7 +74,7 @@
                 android:layout_centerVertical="true"
                 android:layout_marginRight="10dp"
                 style="@style/settings_text"
-                android:text="2019.04.11 11.36"/>
+                android:text="0000.00.00 00:00"/>
         </RelativeLayout>
     </LinearLayout>
 

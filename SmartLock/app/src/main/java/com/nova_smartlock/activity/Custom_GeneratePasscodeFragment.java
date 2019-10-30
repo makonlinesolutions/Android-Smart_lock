@@ -26,6 +26,7 @@ import com.nova_smartlock.dao.DbService;
 import com.nova_smartlock.model.Key;
 import com.nova_smartlock.net.ResponseService;
 import com.nova_smartlock.utils.DisplayUtil;
+import com.nova_smartlock.utils.NetworkUtils;
 import com.nova_smartlock.utils.SharePreferenceUtility;
 
 import org.json.JSONException;
@@ -197,6 +198,7 @@ public class Custom_GeneratePasscodeFragment extends Fragment {
         final EditText edt_lock_name = dia_view.findViewById(R.id.edt_lockName);
         FlatButton button = dia_view.findViewById(R.id.fb_ChangeName);
 //        final String name = "ADJ";
+        edt_lock_name.setHint("Enter Passcode ");
         edt_lock_name.setInputType(InputType.TYPE_CLASS_NUMBER);
 
         final Dialog dialog = builder.create();
@@ -207,8 +209,12 @@ public class Custom_GeneratePasscodeFragment extends Fragment {
                 if (TextUtils.isEmpty(passcode)) {
                     DisplayUtil.showMessageDialog(getContext(), "Please enter the passcode", getActivity().getDrawable(R.drawable.ic_iconfinder_143_attention_183267));
                 } else {
-                    getRequestGeneratePasscode(passcode);
-                    dialog.dismiss();
+                    if (NetworkUtils.isNetworkConnected(mContext)) {
+                        getRequestGeneratePasscode(passcode);
+                        dialog.dismiss();
+                    } else {
+                        DisplayUtil.showMessageDialog(mContext, "Please check mobile network connection", getActivity().getDrawable(R.drawable.ic_no_internet));
+                    }
                 }
             }
         });

@@ -10,19 +10,24 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.gson.reflect.TypeToken;
 import com.nova_smartlock.R;
 import com.nova_smartlock.app.SmartLockApp;
 import com.nova_smartlock.constant.Config;
+import com.nova_smartlock.dao.DbService;
 import com.nova_smartlock.db.DatabaseHelper;
 import com.nova_smartlock.db.LockDetails;
 import com.nova_smartlock.model.Key;
 import com.nova_smartlock.model.KeyObj;
 import com.nova_smartlock.net.ResponseService;
+import com.nova_smartlock.sp.MyPreference;
+import com.nova_smartlock.utils.Const;
 import com.nova_smartlock.utils.DisplayUtil;
 import com.nova_smartlock.utils.NetworkUtils;
 import com.nova_smartlock.utils.SharePreferenceUtility;
@@ -36,6 +41,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.nova_smartlock.utils.Const.KEY_VALUE;
+import static com.nova_smartlock.utils.Const.USER_KEY_VALUE;
 
 public class NearbyLockActivity extends BaseActivity {
     Toolbar toolbar;
@@ -73,7 +79,13 @@ public class NearbyLockActivity extends BaseActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         init();
+    }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.main_menu, menu);
+        return true;
     }
 
     private void init() {
@@ -100,6 +112,37 @@ public class NearbyLockActivity extends BaseActivity {
         switch (item.getItemId()) {
             case android.R.id.home:
                 onBackPressed();
+                return true;
+            case R.id.add_door_lock:
+                startActivity(new Intent(mContext, AddLockActivity.class));
+                return true;
+            case R.id.logout:
+
+                new AlertDialog.Builder(this)
+                        .setMessage("Are you sure you want to logout?")
+                        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                DbService.deleteAllKey();
+                                Toast.makeText(mContext, "Logout Successfully", Toast.LENGTH_SHORT).show();
+                                MyPreference.putStr(mContext, MyPreference.ACCESS_TOKEN, "");
+                                MyPreference.putStr(mContext, MyPreference.OPEN_ID, "");
+                                SharePreferenceUtility.saveBooleanPreferences(mContext, Config.IS_ADMIN_LOGIN, false);
+                                SharePreferenceUtility.saveObjectPreferences(mContext, KEY_VALUE, null);
+                                SharePreferenceUtility.saveObjectPreferences(mContext, USER_KEY_VALUE, null);
+                                SharePreferenceUtility.saveBooleanPreferences(mContext, Const.IS_LOGIN, false);
+                                Intent intent = new Intent(mContext, SplashScreenActivity.class);
+                                startActivity(intent);
+                                overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+                                finish();
+                            }
+                        })
+                        .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                            }
+                        }).create().show();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

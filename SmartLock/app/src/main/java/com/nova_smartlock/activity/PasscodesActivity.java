@@ -19,6 +19,7 @@ import com.nova_smartlock.model.PasscodeListItem;
 import com.nova_smartlock.model.PasscodeListResponse;
 import com.nova_smartlock.net.ResponseService;
 import com.nova_smartlock.utils.DisplayUtil;
+import com.nova_smartlock.utils.NetworkUtils;
 import com.nova_smartlock.utils.SharePreferenceUtility;
 
 import org.json.JSONArray;
@@ -53,8 +54,11 @@ public class PasscodesActivity extends AppCompatActivity {
         mRvPasscode.setLayoutManager(linearLayoutManager);
         arrKey = DbService.getKeyListKey();
         mKey = (Key) SharePreferenceUtility.getPreferences(mContext, KEY_VALUE, SharePreferenceUtility.PREFTYPE_OBJECT);
-
-        getRequestPasscode();
+        if (NetworkUtils.isNetworkConnected(mContext)) {
+            getRequestPasscode();
+        } else {
+            DisplayUtil.showMessageDialog(mContext, "Please check mobile network connection", getDrawable(R.drawable.ic_no_internet));
+        }
     }
 
     private void getRequestPasscode() {
@@ -104,9 +108,12 @@ public class PasscodesActivity extends AppCompatActivity {
                             arListItems.add(passcodeListItem);
                         }
                         PasscodeListResponse passcodeListResponse = new PasscodeListResponse(arListItems, page_number, pageSize, pages, total);
-                        PasscodeListAdapter passcodeListAdapter = new PasscodeListAdapter(mContext, passcodeListResponse.mPasscodeListItem);
-                        mRvPasscode.setAdapter(passcodeListAdapter);
-
+                        if (passcodeListResponse.mPasscodeListItem.size() > 0) {
+                            PasscodeListAdapter passcodeListAdapter = new PasscodeListAdapter(mContext, passcodeListResponse.mPasscodeListItem);
+                            mRvPasscode.setAdapter(passcodeListAdapter);
+                        } else {
+                            DisplayUtil.showMessageDialog(mContext, "No any passcode, Pleasee generate the passcode", getDrawable(R.drawable.ic_iconfinder_ic_cancel_48px_352263));
+                        }
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
