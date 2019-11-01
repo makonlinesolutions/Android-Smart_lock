@@ -1,5 +1,6 @@
 package com.nova_smartlock.activity;
 
+import android.app.Dialog;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
@@ -12,7 +13,9 @@ import com.nova_smartlock.R;
 public class GeneratePasscodeActivity extends AppCompatActivity implements TabLayout.OnTabSelectedListener{
     private ViewPager viewPager;
     private TabLayout tabLayout;
-    Toolbar toolbar;
+    private Toolbar toolbar;
+    private Dialog dialog;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -22,11 +25,12 @@ public class GeneratePasscodeActivity extends AppCompatActivity implements TabLa
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
+        dialog = new Dialog(GeneratePasscodeActivity.this);
 
         viewPager=findViewById(R.id.pager);
         tabLayout=findViewById(R.id.tablayout);
 
-        Pager_GeneratePasscode adapter=new Pager_GeneratePasscode(getSupportFragmentManager(),4);
+        Pager_GeneratePasscode adapter=new Pager_GeneratePasscode(getSupportFragmentManager(),3);
         viewPager.setAdapter(adapter);
         tabLayout.setupWithViewPager(viewPager);
         tabLayout.setOnTabSelectedListener(this);
@@ -59,5 +63,18 @@ public class GeneratePasscodeActivity extends AppCompatActivity implements TabLa
     @Override
     public void onTabReselected(TabLayout.Tab tab) {
 
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (dialog.isShowing()) {
+            dialog.dismiss();
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
     }
 }

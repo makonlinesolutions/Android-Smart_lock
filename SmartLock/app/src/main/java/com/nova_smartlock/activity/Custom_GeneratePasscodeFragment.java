@@ -61,7 +61,13 @@ public class Custom_GeneratePasscodeFragment extends Fragment {
         mBtGeneratePasscode.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                openDialogForChangeKeyName();
+                if (start_time_milisecond == 0) {
+                    DisplayUtil.showMessageDialog(getContext(), "Please select start date and time", getActivity().getDrawable(R.drawable.ic_iconfinder_143_attention_183267)); //ToDo change mesage
+                } else if (end_time_milisecond == 0) {
+                    DisplayUtil.showMessageDialog(getContext(), "Please select end date and time", getActivity().getDrawable(R.drawable.ic_iconfinder_143_attention_183267)); //ToDo change mesage
+                } else {
+                    openDialogForChangeKeyName();
+                }
             }
         });
         tv_start_time = mParentView.findViewById(R.id.tv_start_time);
@@ -145,49 +151,66 @@ public class Custom_GeneratePasscodeFragment extends Fragment {
 
 
     private void getRequestGeneratePasscode(final String passcode) {
+        new AsyncTask<Void, Integer, String>() {
 
-        if (start_time_milisecond == 0) {
-            DisplayUtil.showMessageDialog(getContext(), "Please select start date &amp; time", getActivity().getDrawable(R.drawable.ic_iconfinder_143_attention_183267)); //ToDo change mesage
-        } else if (end_time_milisecond == 0) {
-            DisplayUtil.showMessageDialog(getContext(), "Please select end date &amp; time", getActivity().getDrawable(R.drawable.ic_iconfinder_143_attention_183267)); //ToDo change mesage
+            @Override
+            protected String doInBackground(Void... params) {
+                return ResponseService.getKeyboardPwdCustom(mKey.getLockId(), start_time_milisecond, end_time_milisecond, passcode, "1");
+            }
 
-        } else {
-            new AsyncTask<Void, Integer, String>() {
-
-                @Override
-                protected String doInBackground(Void... params) {
-                    return ResponseService.getKeyboardPwdCustom(mKey.getLockId(), 4, 1, System.currentTimeMillis(), Long.parseLong("1923244200000"), passcode, "1");
-                }
-
-                @SuppressLint("NewApi")
-                @Override
-                protected void onPostExecute(String json) {
-                    String msg = getContext().getString(R.string.words_authorize_successed);
-                    try {
-                        JSONObject jsonObject = new JSONObject(json);
-                        if (jsonObject.has("errcode")) {
-                            msg = "Operation failed!";
-                            if (jsonObject.getInt("errcode") == 0) {
-                                DisplayUtil.showMessageDialog(getContext(), msg, getActivity().getDrawable(R.drawable.ic_iconfinder_143_attention_183267)); //ToDo change mesage
-                                //Toast.makeText(mContext, "Now you can the credentials", Toast.LENGTH_SHORT).show();
-                            } else {
-                                DisplayUtil.showMessageDialog(getContext(), msg, getActivity().getDrawable(R.drawable.ic_iconfinder_143_attention_183267)); //ToDo change mesage
-                                //Toast.makeText(mContext, "Now you can the credentials", Toast.LENGTH_SHORT).show();
-                            }
+            @SuppressLint("NewApi")
+            @Override
+            protected void onPostExecute(String json) {
+                String msg = getContext().getString(R.string.words_authorize_successed);
+                try {
+                    JSONObject jsonObject = new JSONObject(json);
+                    if (jsonObject.has("errcode")) {
+                        msg = "Operation failed!";
+                        if (jsonObject.getInt("errcode") == 0) {
+                            DisplayUtil.showMessageDialog(getContext(), msg, getActivity().getDrawable(R.drawable.ic_iconfinder_143_attention_183267)); //ToDo change mesage
+                            //Toast.makeText(mContext, "Now you can the credentials", Toast.LENGTH_SHORT).show();
                         } else {
+                            DisplayUtil.showMessageDialog(getContext(), msg, getActivity().getDrawable(R.drawable.ic_iconfinder_143_attention_183267)); //ToDo change mesage
+                            //Toast.makeText(mContext, "Now you can the credentials", Toast.LENGTH_SHORT).show();
+                        }
+                    } else {
 //                            String keyboardPwd = jsonObject.getString("keyboardPwdId");
 //                            String keyboardPwdId = jsonObject.getString("keyboardPwdId");
 
-                            DisplayUtil.showMessageDialog(getContext(), "Passcode generated successfully. Your Passcode is: " + passcode, getActivity().getDrawable(R.drawable.ic_iconfinder_ok_2639876));
-                            //Toast.makeText(mContext, "E-Key sent successfully", Toast.LENGTH_SHORT).show();
-                        }
-                    } catch (JSONException e) {
-                        e.printStackTrace();
+                        DisplayUtil.showMessageDialog(getContext(), "Passcode generated successfully. Your Passcode is: " + passcode, getActivity().getDrawable(R.drawable.ic_iconfinder_ok_2639876));
+                        //Toast.makeText(mContext, "E-Key sent successfully", Toast.LENGTH_SHORT).show();
                     }
+                } catch (JSONException e) {
+                    e.printStackTrace();
                 }
-            }.execute();
-        }
+            }
+        }.execute();
+
     }
+/*
+
+    private void createCustomPasscode(long startDate,long endDate,String passcode){
+//        ensureBluetoothIsEnabled();
+//        showConnectLockToast();
+        if(TextUtils.isEmpty(passcode)){
+            Toast.makeText(mContext, "passcode is required", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        TTLockClient.getDefault().createCustomPasscode(passcode, startDate, endDate, mKey.getLockKey(), mKey.getLockMac(), new CreateCustomPasscodeCallback() {
+            @Override
+            public void onCreateCustomPasscodeSuccess(String passcode) {
+                Toast.makeText(mContext, " passcode is created : " + passcode + " you can try it on lock now", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), "passcode is created.", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onFail(LockError error) {
+                Toast.makeText(mContext, error.getCommand(), Toast.LENGTH_SHORT).show();
+//                makeErrorToast(error);
+            }
+        });
+    }*/
 
 
     private void openDialogForChangeKeyName() {
@@ -211,6 +234,7 @@ public class Custom_GeneratePasscodeFragment extends Fragment {
                 } else {
                     if (NetworkUtils.isNetworkConnected(mContext)) {
                         getRequestGeneratePasscode(passcode);
+//                        getRequestGeneratePasscode(passcode);
                         dialog.dismiss();
                     } else {
                         DisplayUtil.showMessageDialog(mContext, "Please check mobile network connection", getActivity().getDrawable(R.drawable.ic_no_internet));

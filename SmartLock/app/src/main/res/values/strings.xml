@@ -159,4 +159,9 @@
     <string name="contact_admin">No data found, Please contact to administrator!!!</string>
 
     <string name="terms_condition">By tapping the \"Yes, I agree\", I acknowledge that I read and understand this <font color='#00ccff'>important information</font></string>
+    <string name="passcode">Passcode: </string>
+    <string name="passcode_start_date">Start Date: </string>
+    <string name="passcode_expire_date">End Date: </string>
+    <string name="passcode_type">Passcode Type: </string>
+    <string name="no_passcode">No any passcode, Please generate the passcode</string>
 </resources>

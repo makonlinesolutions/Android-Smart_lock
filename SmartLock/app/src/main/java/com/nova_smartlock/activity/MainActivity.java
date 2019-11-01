@@ -67,12 +67,12 @@ import static com.nova_smartlock.utils.Const.USER_KEY_VALUE;
 import static com.nova_smartlock.utils.Constants.AppConst.IS_FIRST_TIME_LOGIN;
 
 public class MainActivity extends BaseActivity implements DrawerAdapter.OnItemSelectedListener {
-    private static final int POS_DASHBOARD = 0;
-    private static final int POS_ADDLOCK = 1;
-    private static final int POS_CUSTOMER_SERVICE = 3;
-    private static final int POS_SETTINGS = 4;
-    private static final int POS_LOGOUT = 2;
-    private static final int ADD_LOCK = 6;
+    private  int POS_DASHBOARD = 0;
+    private  int POS_ADDLOCK = 1;
+    private  int PRIVACY_POLICY = 1;
+    private  int POS_SETTINGS = 4;
+    private  int POS_LOGOUT = 2;
+    private  int ADD_LOCK = 6;
     private String[] screenTitles;
     private Drawable[] screenIcons;
     SlidingRootNav slidingRootNav;
@@ -92,11 +92,20 @@ public class MainActivity extends BaseActivity implements DrawerAdapter.OnItemSe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        is_admin_login = (boolean) SharePreferenceUtility.getPreferences(mContext, Config.IS_ADMIN_LOGIN, SharePreferenceUtility.PREFTYPE_BOOLEAN);
 
         final boolean is_first_time_login = (boolean) SharePreferenceUtility.getPreferences(MainActivity.this, IS_FIRST_TIME_LOGIN, SharePreferenceUtility.PREFTYPE_BOOLEAN);
 
         if (!is_first_time_login) {
             dialog = CommonUtils.showProgressDialog(MainActivity.this);
+        }
+
+        if (is_admin_login) {
+            POS_DASHBOARD = 0;
+            POS_ADDLOCK = 1;
+            PRIVACY_POLICY = 1;
+            POS_SETTINGS = 4;
+            POS_LOGOUT = 2;
         }
 
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -125,7 +134,6 @@ public class MainActivity extends BaseActivity implements DrawerAdapter.OnItemSe
         mIvLock = findViewById(R.id.ivLockLock);
         DrawerAdapter adapter;
 
-        is_admin_login = (boolean) SharePreferenceUtility.getPreferences(mContext, Config.IS_ADMIN_LOGIN, SharePreferenceUtility.PREFTYPE_BOOLEAN);
 
         if (is_admin_login) {
             adapter = new DrawerAdapter(Arrays.asList(
@@ -136,6 +144,7 @@ public class MainActivity extends BaseActivity implements DrawerAdapter.OnItemSe
         } else {
             adapter = new DrawerAdapter(Arrays.asList(
                     createItemFor(POS_DASHBOARD).setChecked(true),
+                    createItemFor(PRIVACY_POLICY).setChecked(true),
                     createItemFor(POS_LOGOUT).setChecked(true)));
         }
         adapter.setListener(this);
@@ -446,10 +455,19 @@ public class MainActivity extends BaseActivity implements DrawerAdapter.OnItemSe
             Intent intent = new Intent(MainActivity.this, MessagesActivity.class);
             startActivity(intent);
         }*/
-        if (position == POS_CUSTOMER_SERVICE) {
-            Intent intent = new Intent(MainActivity.this, CustomerServiceActivity.class);
+        if (position == PRIVACY_POLICY) {
+          /*  Intent intent = new Intent(MainActivity.this, CustomerServiceActivity.class);
             startActivity(intent);
-            overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+            overridePendingTransition(R.anim.fade_in, R.anim.fade_out);*/
+            boolean is_admin_login = (boolean) SharePreferenceUtility.getPreferences(mContext, Config.IS_ADMIN_LOGIN, SharePreferenceUtility.PREFTYPE_BOOLEAN);
+
+            Fragment fragment = new FragmentTermsCondition();
+            FragmentManager fragmentManager = ((MainActivity) mContext).getSupportFragmentManager();
+            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+            fragmentTransaction.replace(R.id.container, fragment);
+            fragmentTransaction.addToBackStack(null);
+            fragmentTransaction.commit();
+
         }
 
         slidingRootNav.closeMenu();

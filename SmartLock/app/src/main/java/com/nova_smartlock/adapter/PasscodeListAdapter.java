@@ -53,19 +53,24 @@ public class PasscodeListAdapter extends RecyclerView.Adapter<PasscodeListAdapte
     @Override
     public void onBindViewHolder(@NonNull PassCodeViewHolder passCodeViewHolder, final int i) {
 
+        if (!compareTwoDate(arrPasscodeListItems.get(i).getStartDate(), arrPasscodeListItems.get(i).getEndDate())) {
+            getRequestDeletePasscode(arrPasscodeListItems.get(i).keyboardPwdId, i, 0);
+        }
         passCodeViewHolder.mIvImageLock.setVisibility(View.GONE);
 //        passCodeViewHolder.createDate.setVisibility(View.GONE);
         passCodeViewHolder.passcode_value.setTextColor(Color.parseColor("#000000"));
         passCodeViewHolder.createDate.setTextColor(Color.parseColor("#808080"));
         passCodeViewHolder.createDate.setTextSize(13);
-        passCodeViewHolder.passcode_value.setText("Passcode: " + arrPasscodeListItems.get(i).getKeyboardPwd());
-        passCodeViewHolder.createDate.setText("Created date: " + getDate(arrPasscodeListItems.get(i).getSendDate()));
+        passCodeViewHolder.passcode_value.setText(mContext.getString(R.string.passcode) + " " + arrPasscodeListItems.get(i).getKeyboardPwd());
+        passCodeViewHolder.start_date.setText(mContext.getString(R.string.passcode_start_date) + " " + getDate(arrPasscodeListItems.get(i).getStartDate()));
+        passCodeViewHolder.end_date.setText(mContext.getString(R.string.passcode_expire_date) + " " + getDate(arrPasscodeListItems.get(i).getStartDate()));
+        passCodeViewHolder.passcode_code_type.setText(mContext.getString(R.string.passcode_type) + " " + getPasscodeVersion(arrPasscodeListItems.get(i).keyboardPwdType));
 
         passCodeViewHolder.passcode_delete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 //                Toast.makeText(mContext, arrPasscodeListItems.get(i).keyboardPwd.toString(), Toast.LENGTH_SHORT).show();
-                getRequestDeletePasscode(arrPasscodeListItems.get(i).keyboardPwdId, i);
+                getRequestDeletePasscode(arrPasscodeListItems.get(i).keyboardPwdId, i, 1);
             }
         });
     }
@@ -78,27 +83,36 @@ public class PasscodeListAdapter extends RecyclerView.Adapter<PasscodeListAdapte
 
     public class PassCodeViewHolder extends RecyclerView.ViewHolder {
 
-        TextView passcode_value, createDate, passcode_delete;
+        TextView passcode_value, createDate, passcode_delete, passcode_code_type, start_date, end_date;
         RelativeLayout mIvImageLock;
 
         public PassCodeViewHolder(@NonNull View itemView) {
             super(itemView);
             passcode_value = itemView.findViewById(R.id.device_name);
+            start_date = itemView.findViewById(R.id.passcode_start_date);
+            end_date = itemView.findViewById(R.id.passcode_end_date);
+            passcode_code_type = itemView.findViewById(R.id.passcode_type);
             createDate = itemView.findViewById(R.id.device_address);
             mIvImageLock = itemView.findViewById(R.id.rl_img);
             passcode_delete = itemView.findViewById(R.id.passcode_delete_able);
             passcode_delete.setVisibility(View.VISIBLE);
+            passcode_code_type.setVisibility(View.VISIBLE);
+            start_date.setVisibility(View.VISIBLE);
+            end_date.setVisibility(View.VISIBLE);
+            createDate.setVisibility(View.GONE);
 
 
         }
     }
 
     public String getDate(long milliSeconds) {
-        SimpleDateFormat sdf = new SimpleDateFormat("EEE MMM  dd HH:mm:ss z yyyy");
+//        SimpleDateFormat sdf = new SimpleDateFormat("EEE MMM  dd HH:mm:ss z yyyy");
+        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss dd MMM, yyyy");
+        Log.d("time :", sdf.format(new Date(milliSeconds)));
         return sdf.format(new Date(milliSeconds));
     }
 
-    private void getRequestDeletePasscode(final int passkeyboardpasswordId, final int position) {
+    private void getRequestDeletePasscode(final int passkeyboardpasswordId, final int position, final int from_where) {
 
         new AsyncTask<Void, Integer, String>() {
 
@@ -118,9 +132,13 @@ public class PasscodeListAdapter extends RecyclerView.Adapter<PasscodeListAdapte
                         msg = "Operation failed!";
                         if (jsonObject.getInt("errcode") == 0) {
                             deleteItemFromList(position);
-                            DisplayUtil.showMessageDialog(mContext, "Passcode delete successfully", mContext.getDrawable(R.drawable.ic_iconfinder_ok_2639876)); //ToDo change mesage
+                            if (from_where == 1) {
+                                DisplayUtil.showMessageDialog(mContext, "Passcode delete successfully", mContext.getDrawable(R.drawable.ic_iconfinder_ok_2639876)); //ToDo change mesage
+                            }
                         } else {
-                            DisplayUtil.showMessageDialog(mContext, msg, mContext.getDrawable(R.drawable.ic_iconfinder_143_attention_183267)); //ToDo change mesage
+                            if (from_where == 1) {
+                                DisplayUtil.showMessageDialog(mContext, msg, mContext.getDrawable(R.drawable.ic_iconfinder_143_attention_183267)); //ToDo change mesage
+                            }
                         }
                     } else {
                     }
@@ -132,8 +150,55 @@ public class PasscodeListAdapter extends RecyclerView.Adapter<PasscodeListAdapte
     }
 
     private void deleteItemFromList(int position) {
-        arrPasscodeListItems.remove(position);
-        notifyItemRemoved(position);
-        notifyItemRangeChanged(position, arrPasscodeListItems.size());
+        try {
+            arrPasscodeListItems.remove(position);
+            notifyItemRemoved(position);
+            notifyItemRangeChanged(position, arrPasscodeListItems.size());
+        } catch (ArrayIndexOutOfBoundsException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private String getPasscodeVersion(int keyboardPwdType) {
+        switch (keyboardPwdType) {
+            case 1:
+                return "One-time";
+            case 2:
+                return "Permanent";
+            case 3:
+                return "Period";
+            case 4:
+                return "Delete";
+            case 5:
+                return "Weekend Cyclic";
+            case 6:
+                return "Daily Cyclic";
+            case 7:
+                return "Wordday Cyclic";
+            case 8:
+                return "Monday Cyclic";
+            case 9:
+                return "Tuesday Cyclic";
+            case 10:
+                return "Wednesday Cyclic";
+            case 11:
+                return "Thursday Cyclic";
+            case 12:
+                return "Friday Cyclic";
+            case 13:
+                return "Saturday Cyclic";
+            case 14:
+                return "Sunday Cyclic";
+            default:
+                return "null";
+        }
+    }
+
+    private boolean compareTwoDate(long start_date, long end_date) {
+        if (end_date - System.currentTimeMillis() > 0) {
+            return true;
+        } else {
+            return false;
+        }
     }
 }

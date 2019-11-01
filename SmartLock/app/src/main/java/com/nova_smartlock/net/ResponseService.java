@@ -16,6 +16,7 @@ public class ResponseService {
     private static final String TAG = "ResponseService";
     private static String actionUrl = "https://api.ttlock.com.cn";
     private static String actionUrlV3 = actionUrl + "/v3";
+    private static String actionUrlV4 = actionUrl + "/v4";
     private static String pmsServerUrl = "http://3.14.132.47/api";
 
     /**
@@ -196,15 +197,14 @@ public class ResponseService {
      * @param addType
      * @return
      */
-    public static String getKeyboardPwdCustom(int lockId, int keyboardPwdVersion, int keyboardPwdType, long startDate, long endDate, String custom_name, String addType) {
-        String url = actionUrlV3 + "/keyboardPwd/add";
+    public static String getKeyboardPwdCustom(int lockId, long startDate, long endDate, String custom_name, String addType) {
+        String url = actionUrlV4 + "/keyboardPwd/add";
         HashMap params = new HashMap();
         params.put("clientId", Config.CLIENT_ID);
         params.put("accessToken", MyPreference.getStr(SmartLockApp.mContext, MyPreference.ACCESS_TOKEN));
         params.put("lockId", String.valueOf(lockId));
         params.put("keyboardPwd", custom_name);
-        params.put("keyboardPwdVersion", String.valueOf(keyboardPwdVersion));
-        params.put("keyboardPwdType", String.valueOf(keyboardPwdType));
+        params.put("keyboardPwdName", "smart lock");
         params.put("addType", addType);
         params.put("startDate", String.valueOf(startDate));
         params.put("endDate", String.valueOf(endDate));

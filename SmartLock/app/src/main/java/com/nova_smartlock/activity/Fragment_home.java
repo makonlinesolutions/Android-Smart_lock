@@ -421,9 +421,14 @@ public class Fragment_home extends Fragment implements View.OnClickListener, Unl
         ll_generate_passcode.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getActivity(), GeneratePasscodeActivity.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                startActivity(intent);
+                is_first_time_login = (boolean) SharePreferenceUtility.getPreferences(getContext(), IS_FIRST_TIME_LOGIN, SharePreferenceUtility.PREFTYPE_BOOLEAN);
+                if (is_first_time_login) {
+                    Intent intent = new Intent(getActivity(), GeneratePasscodeActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    startActivity(intent);
+                } else {
+                    CommonUtils.showProgressDialog(getContext());
+                }
             }
         });
 
@@ -929,13 +934,12 @@ public class Fragment_home extends Fragment implements View.OnClickListener, Unl
 
         if (alertDialog!=null && !alertDialog.isShowing()) {
             alertDialog.show();
-
             new Handler().postDelayed(new Runnable() {
                 @Override
                 public void run() {
                     alertDialog.dismiss();
                 }
-            },4000);
+            },2000);
         }
     }
 

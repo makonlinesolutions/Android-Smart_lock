@@ -99,4 +99,5 @@ public class Permanent_GeneratePasscodeFragment extends Fragment {
             }
         }.execute();
     }
+
 }

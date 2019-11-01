@@ -68,6 +68,7 @@ public class Timed_GeneratedPasscodeFragment extends Fragment {
                 new SingleDateAndTimePickerDialog.Builder(getActivity())
                         .bottomSheet()
                         .curved()
+                        .mustBeOnFuture()
                         .displayDays(false)
                         .displayMonth(true)
                         .displayYears(true)
@@ -102,6 +103,7 @@ public class Timed_GeneratedPasscodeFragment extends Fragment {
                 new SingleDateAndTimePickerDialog.Builder(getActivity())
                         .bottomSheet()
                         .curved()
+                        .mustBeOnFuture()
                         .displayDays(false)
                         .displayMonth(true)
                         .displayYears(true)
@@ -146,16 +148,16 @@ public class Timed_GeneratedPasscodeFragment extends Fragment {
     private void getRequestGeneratePasscode() {
 
         if (start_time_milisecond == 0) {
-            DisplayUtil.showMessageDialog(getContext(), "Please select start date &amp; time", getActivity().getDrawable(R.drawable.ic_iconfinder_143_attention_183267)); //ToDo change mesage
+            DisplayUtil.showMessageDialog(getContext(), "Please select start date and time", getActivity().getDrawable(R.drawable.ic_iconfinder_143_attention_183267)); //ToDo change mesage
         } else if (end_time_milisecond == 0) {
-            DisplayUtil.showMessageDialog(getContext(), "Please select end date &amp; time", getActivity().getDrawable(R.drawable.ic_iconfinder_143_attention_183267)); //ToDo change mesage
+            DisplayUtil.showMessageDialog(getContext(), "Please select end date and time", getActivity().getDrawable(R.drawable.ic_iconfinder_143_attention_183267)); //ToDo change mesage
 
         } else {
             new AsyncTask<Void, Integer, String>() {
 
                 @Override
                 protected String doInBackground(Void... params) {
-                    return ResponseService.getKeyboardPwdPermanent(mKey.getLockId(), 4, 2, start_time_milisecond, end_time_milisecond);
+                    return ResponseService.getKeyboardPwdPermanent(mKey.getLockId(), 4, 3, start_time_milisecond, end_time_milisecond);
                 }
 
                 @SuppressLint("NewApi")

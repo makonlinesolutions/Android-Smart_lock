@@ -67,9 +67,6 @@ public class NearbyLockActivity extends BaseActivity {
         mContext = NearbyLockActivity.this;
         layoutManager = new LinearLayoutManager(mContext);
 
-      /*  Nearby_model list = new Nearby_model();
-        list.setName("Cottage-CTH");
-        nearby_models.add(list);*/
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(layoutManager);
         nearby_models = new ArrayList<>();
@@ -85,6 +82,13 @@ public class NearbyLockActivity extends BaseActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main_menu, menu);
+        boolean is_admin = (boolean) SharePreferenceUtility.getPreferences(mContext, Config.IS_ADMIN_LOGIN, SharePreferenceUtility.PREFTYPE_BOOLEAN);
+        MenuItem item = menu.findItem(R.id.add_door_lock);
+        MenuItem item_logout = menu.findItem(R.id.logout);
+        if (!is_admin) {
+            item.setVisible(false);
+            item_logout.setVisible(false);
+        }
         return true;
     }
 

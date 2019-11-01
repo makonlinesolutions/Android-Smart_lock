@@ -112,7 +112,7 @@ public class PasscodesActivity extends AppCompatActivity {
                             PasscodeListAdapter passcodeListAdapter = new PasscodeListAdapter(mContext, passcodeListResponse.mPasscodeListItem);
                             mRvPasscode.setAdapter(passcodeListAdapter);
                         } else {
-                            DisplayUtil.showMessageDialog(mContext, "No any passcode, Pleasee generate the passcode", getDrawable(R.drawable.ic_iconfinder_ic_cancel_48px_352263));
+                            DisplayUtil.showMessageDialog(mContext, getString(R.string.no_passcode), getDrawable(R.drawable.ic_iconfinder_ic_cancel_48px_352263));
                         }
                     }
                 } catch (JSONException e) {

@@ -764,10 +764,10 @@ public class SmartLockApp extends Application {
     public void onCreate() {
         super.onCreate();
         LogUtil.d("init application", DBG);
-        AutoErrorReporter.get(this)
+       /* AutoErrorReporter.get(this)
                 .setEmailAddresses("abhay@adjinfotech.com")
                 .setEmailSubject("Crash report of SmartLock App")
-                .start();
+                .start();*/
         init();
     }
 
