@@ -68,10 +68,10 @@ import static com.nova_smartlock.utils.Constants.AppConst.IS_FIRST_TIME_LOGIN;
 
 public class MainActivity extends BaseActivity implements DrawerAdapter.OnItemSelectedListener {
     private  int POS_DASHBOARD = 0;
-    private  int POS_ADDLOCK = 1;
-    private  int PRIVACY_POLICY = 1;
+    private  int POS_ADDLOCK ;
+    private  int PRIVACY_POLICY = 2;
     private  int POS_SETTINGS = 4;
-    private  int POS_LOGOUT = 2;
+    private  int POS_LOGOUT = 3;
     private  int ADD_LOCK = 6;
     private String[] screenTitles;
     private Drawable[] screenIcons;
@@ -92,6 +92,7 @@ public class MainActivity extends BaseActivity implements DrawerAdapter.OnItemSe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        mContext = MainActivity.this;
         is_admin_login = (boolean) SharePreferenceUtility.getPreferences(mContext, Config.IS_ADMIN_LOGIN, SharePreferenceUtility.PREFTYPE_BOOLEAN);
 
         final boolean is_first_time_login = (boolean) SharePreferenceUtility.getPreferences(MainActivity.this, IS_FIRST_TIME_LOGIN, SharePreferenceUtility.PREFTYPE_BOOLEAN);
@@ -103,9 +104,9 @@ public class MainActivity extends BaseActivity implements DrawerAdapter.OnItemSe
         if (is_admin_login) {
             POS_DASHBOARD = 0;
             POS_ADDLOCK = 1;
-            PRIVACY_POLICY = 1;
+//            PRIVACY_POLICY = 1;
             POS_SETTINGS = 4;
-            POS_LOGOUT = 2;
+            POS_LOGOUT = 3;
         }
 
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -121,7 +122,6 @@ public class MainActivity extends BaseActivity implements DrawerAdapter.OnItemSe
             }
         }
 
-        mContext = MainActivity.this;
         slidingRootNav = new SlidingRootNavBuilder(this)
                 .withToolbarMenuToggle(toolbar)
                 .withMenuLayout(R.layout.menulayout)
@@ -137,15 +137,15 @@ public class MainActivity extends BaseActivity implements DrawerAdapter.OnItemSe
 
         if (is_admin_login) {
             adapter = new DrawerAdapter(Arrays.asList(
-                    createItemFor(POS_DASHBOARD).setChecked(true),
-                    createItemFor(POS_ADDLOCK).setChecked(true),
-                    createItemFor(POS_LOGOUT).setChecked(true)));
+                    createItemFor(0).setChecked(true),
+                    createItemFor(1).setChecked(true),
+                    createItemFor(3).setChecked(true)));
 
         } else {
             adapter = new DrawerAdapter(Arrays.asList(
-                    createItemFor(POS_DASHBOARD).setChecked(true),
-                    createItemFor(PRIVACY_POLICY).setChecked(true),
-                    createItemFor(POS_LOGOUT).setChecked(true)));
+                    createItemFor(0).setChecked(true),
+                    createItemFor(2).setChecked(true),
+                    createItemFor(3).setChecked(true)));
         }
         adapter.setListener(this);
         RecyclerView list = findViewById(R.id.list);
@@ -373,7 +373,7 @@ public class MainActivity extends BaseActivity implements DrawerAdapter.OnItemSe
 
     @Override
     public void onItemSelected(int position) {
-        if (position == POS_LOGOUT) {
+        if (position == 2) {
             new AlertDialog.Builder(this)
                     .setMessage("Are you sure you want to logout?")
                     .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
@@ -399,11 +399,21 @@ public class MainActivity extends BaseActivity implements DrawerAdapter.OnItemSe
                             dialog.dismiss();
                         }
                     }).create().show();
-        }
-        if (position == POS_ADDLOCK) {
+        }else if (position == 1) {
             boolean is_admin_login = (boolean) SharePreferenceUtility.getPreferences(mContext, Config.IS_ADMIN_LOGIN, SharePreferenceUtility.PREFTYPE_BOOLEAN);
+            if(is_admin_login && POS_ADDLOCK == 1){
+                Intent intent = new Intent(MainActivity.this, AddLockActivity.class);
+                startActivity(intent);
+            }else if(PRIVACY_POLICY == 2 && !is_admin_login){
+                Fragment fragment = new FragmentTermsCondition();
+                FragmentManager fragmentManager = ((MainActivity) mContext).getSupportFragmentManager();
+                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                fragmentTransaction.replace(R.id.container, fragment);
+                fragmentTransaction.addToBackStack(null);
+                fragmentTransaction.commit();
+            }
 
-            if (is_admin_login) {
+            /*if (is_admin_login) {
                 Intent intent = new Intent(MainActivity.this, AddLockActivity.class);
                 startActivity(intent);
             } else {
@@ -431,9 +441,8 @@ public class MainActivity extends BaseActivity implements DrawerAdapter.OnItemSe
                                 dialog.dismiss();
                             }
                         }).create().show();
-            }
-        }
-        if (position == POS_DASHBOARD) {
+            }*/
+        }else if (position == 0) {
            /* Fragment home_fragment = new Fragment_home();
             FragmentManager fragmentManager_home = getSupportFragmentManager();
             FragmentTransaction fragmentTransaction = fragmentManager_home.beginTransaction();
@@ -446,19 +455,23 @@ public class MainActivity extends BaseActivity implements DrawerAdapter.OnItemSe
             overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
             finish();
         }
-        if (position == POS_SETTINGS) {
+
+        /*if (position == POS_SETTINGS) {
             Intent intent = new Intent(MainActivity.this, SettingsNavActivity.class);
             startActivity(intent);
             overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
-        }
+        }*/
+
         /*if (position == POS_MESSAGES) {
             Intent intent = new Intent(MainActivity.this, MessagesActivity.class);
             startActivity(intent);
         }*/
-        if (position == PRIVACY_POLICY) {
-          /*  Intent intent = new Intent(MainActivity.this, CustomerServiceActivity.class);
+
+       /* if (position == PRIVACY_POLICY) {
+          *//*  Intent intent = new Intent(MainActivity.this, CustomerServiceActivity.class);
             startActivity(intent);
-            overridePendingTransition(R.anim.fade_in, R.anim.fade_out);*/
+            overridePendingTransition(R.anim.fade_in, R.anim.fade_out);*//*
+
             boolean is_admin_login = (boolean) SharePreferenceUtility.getPreferences(mContext, Config.IS_ADMIN_LOGIN, SharePreferenceUtility.PREFTYPE_BOOLEAN);
 
             Fragment fragment = new FragmentTermsCondition();
@@ -468,7 +481,7 @@ public class MainActivity extends BaseActivity implements DrawerAdapter.OnItemSe
             fragmentTransaction.addToBackStack(null);
             fragmentTransaction.commit();
 
-        }
+        }*/
 
         slidingRootNav.closeMenu();
     }
