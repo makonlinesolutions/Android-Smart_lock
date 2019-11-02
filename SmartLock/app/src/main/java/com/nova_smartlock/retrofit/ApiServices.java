@@ -1,6 +1,7 @@
 package com.nova_smartlock.retrofit;
 
 import com.nova_smartlock.model.AddLockResponse;
+import com.nova_smartlock.model.AdminDataGetDetailsResponse;
 import com.nova_smartlock.model.CheckoutCheckResponse;
 import com.nova_smartlock.model.KeyDetailsResponse;
 import com.nova_smartlock.model.LockTimeUpdateResponse;
@@ -97,5 +98,8 @@ public interface ApiServices {
 
     @POST("policy-doc")
     Call<TermConditionResponse> TERM_CONDITION_RESPONSE_CALL ();
+
+    @POST("login-admin")
+    Call<AdminDataGetDetailsResponse> ADMIN_DATA_GET_DETAILS_RESPONSE_CALL ();
 
 }
