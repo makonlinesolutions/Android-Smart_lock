@@ -1,4 +1,4 @@
-package com.smartlock;
+package com.nova_smartlock;
 
 import org.junit.Test;
 
