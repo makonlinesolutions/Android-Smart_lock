@@ -28,7 +28,6 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.google.gson.reflect.TypeToken;
-
 import com.nova_smartlock.R;
 import com.nova_smartlock.app.SmartLockApp;
 import com.nova_smartlock.constant.Config;
@@ -68,12 +67,12 @@ import static com.nova_smartlock.utils.Const.USER_KEY_VALUE;
 import static com.nova_smartlock.utils.Constants.AppConst.IS_FIRST_TIME_LOGIN;
 
 public class MainActivity extends BaseActivity implements DrawerAdapter.OnItemSelectedListener {
-    private static final int POS_DASHBOARD = 0;
-    private static final int POS_ADDLOCK = 1;
-    private static final int POS_CUSTOMER_SERVICE = 3;
-    private static final int POS_SETTINGS = 4;
-    private static final int POS_LOGOUT = 2;
-    private static final int ADD_LOCK = 6;
+    private  int POS_DASHBOARD = 0;
+    private  int POS_ADDLOCK ;
+    private  int PRIVACY_POLICY = 2;
+    private  int POS_SETTINGS = 4;
+    private  int POS_LOGOUT = 3;
+    private  int ADD_LOCK = 6;
     private String[] screenTitles;
     private Drawable[] screenIcons;
     SlidingRootNav slidingRootNav;
@@ -93,11 +92,21 @@ public class MainActivity extends BaseActivity implements DrawerAdapter.OnItemSe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        mContext = MainActivity.this;
+        is_admin_login = (boolean) SharePreferenceUtility.getPreferences(mContext, Config.IS_ADMIN_LOGIN, SharePreferenceUtility.PREFTYPE_BOOLEAN);
 
         final boolean is_first_time_login = (boolean) SharePreferenceUtility.getPreferences(MainActivity.this, IS_FIRST_TIME_LOGIN, SharePreferenceUtility.PREFTYPE_BOOLEAN);
 
         if (!is_first_time_login) {
             dialog = CommonUtils.showProgressDialog(MainActivity.this);
+        }
+
+        if (is_admin_login) {
+            POS_DASHBOARD = 0;
+            POS_ADDLOCK = 1;
+//            PRIVACY_POLICY = 1;
+            POS_SETTINGS = 4;
+            POS_LOGOUT = 3;
         }
 
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -113,7 +122,6 @@ public class MainActivity extends BaseActivity implements DrawerAdapter.OnItemSe
             }
         }
 
-        mContext = MainActivity.this;
         slidingRootNav = new SlidingRootNavBuilder(this)
                 .withToolbarMenuToggle(toolbar)
                 .withMenuLayout(R.layout.menulayout)
@@ -126,18 +134,18 @@ public class MainActivity extends BaseActivity implements DrawerAdapter.OnItemSe
         mIvLock = findViewById(R.id.ivLockLock);
         DrawerAdapter adapter;
 
-        is_admin_login = (boolean) SharePreferenceUtility.getPreferences(mContext, Config.IS_ADMIN_LOGIN, SharePreferenceUtility.PREFTYPE_BOOLEAN);
 
         if (is_admin_login) {
             adapter = new DrawerAdapter(Arrays.asList(
-                    createItemFor(POS_DASHBOARD).setChecked(true),
-                    createItemFor(POS_ADDLOCK).setChecked(true),
-                    createItemFor(POS_LOGOUT).setChecked(true)));
+                    createItemFor(0).setChecked(true),
+                    createItemFor(1).setChecked(true),
+                    createItemFor(3).setChecked(true)));
 
         } else {
             adapter = new DrawerAdapter(Arrays.asList(
-                    createItemFor(POS_DASHBOARD).setChecked(true),
-                    createItemFor(POS_LOGOUT).setChecked(true)));
+                    createItemFor(0).setChecked(true),
+                    createItemFor(2).setChecked(true),
+                    createItemFor(3).setChecked(true)));
         }
         adapter.setListener(this);
         RecyclerView list = findViewById(R.id.list);
@@ -256,7 +264,7 @@ public class MainActivity extends BaseActivity implements DrawerAdapter.OnItemSe
                         }
 
 
-                    Bundle bundle = new Bundle();
+                   /* Bundle bundle = new Bundle();
                     bundle.putInt("key_data", keys.size());
 
                     Fragment fragment = new Fragment_home();
@@ -265,7 +273,7 @@ public class MainActivity extends BaseActivity implements DrawerAdapter.OnItemSe
                     FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                     fragmentTransaction.replace(R.id.container, fragment);
                     fragmentTransaction.addToBackStack(null);
-                    fragmentTransaction.commit();
+                    fragmentTransaction.commit();*/
 
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -277,6 +285,25 @@ public class MainActivity extends BaseActivity implements DrawerAdapter.OnItemSe
             protected void onPostExecute(String s) {
                 super.onPostExecute(s);
                 progressDialog.cancel();
+
+                if (keys.size() > 0) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+
+                            Bundle bundle = new Bundle();
+                            bundle.putInt("key_data", keys.size());
+
+                            Fragment fragment = new Fragment_home();
+                            fragment.setArguments(bundle);
+                            FragmentManager fragmentManager = getSupportFragmentManager();
+                            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                            fragmentTransaction.replace(R.id.container, fragment);
+                            fragmentTransaction.addToBackStack(null);
+                            fragmentTransaction.commit();
+                        }
+                    });
+                }
 
             }
         }.execute();
@@ -346,43 +373,76 @@ public class MainActivity extends BaseActivity implements DrawerAdapter.OnItemSe
 
     @Override
     public void onItemSelected(int position) {
-        if (position == POS_LOGOUT) {
-            DbService.deleteAllKey();
-            Toast.makeText(mContext, "Logout Successfully", Toast.LENGTH_SHORT).show();
-            MyPreference.putStr(mContext, MyPreference.ACCESS_TOKEN, "");
-            MyPreference.putStr(mContext, MyPreference.OPEN_ID, "");
-            SharePreferenceUtility.saveBooleanPreferences(mContext, Config.IS_ADMIN_LOGIN, false);
-            SharePreferenceUtility.saveObjectPreferences(mContext, KEY_VALUE, null);
-            SharePreferenceUtility.saveObjectPreferences(mContext, USER_KEY_VALUE, null);
-            SharePreferenceUtility.saveBooleanPreferences(mContext, Const.IS_LOGIN, false);
-            Intent intent = new Intent(MainActivity.this, SplashScreenActivity.class);
-            startActivity(intent);
-            overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
-            finish();
-        }
-        if (position == POS_ADDLOCK) {
-            Intent intent;
+        if (position == 2) {
+            new AlertDialog.Builder(this)
+                    .setMessage("Are you sure you want to logout?")
+                    .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            DbService.deleteAllKey();
+                            Toast.makeText(mContext, "Logout Successfully", Toast.LENGTH_SHORT).show();
+                            MyPreference.putStr(mContext, MyPreference.ACCESS_TOKEN, "");
+                            MyPreference.putStr(mContext, MyPreference.OPEN_ID, "");
+                            SharePreferenceUtility.saveBooleanPreferences(mContext, Config.IS_ADMIN_LOGIN, false);
+                            SharePreferenceUtility.saveObjectPreferences(mContext, KEY_VALUE, null);
+                            SharePreferenceUtility.saveObjectPreferences(mContext, USER_KEY_VALUE, null);
+                            SharePreferenceUtility.saveBooleanPreferences(mContext, Const.IS_LOGIN, false);
+                            Intent intent = new Intent(MainActivity.this, SplashScreenActivity.class);
+                            startActivity(intent);
+                            overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+                            finish();
+                        }
+                    })
+                    .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+                    }).create().show();
+        }else if (position == 1) {
             boolean is_admin_login = (boolean) SharePreferenceUtility.getPreferences(mContext, Config.IS_ADMIN_LOGIN, SharePreferenceUtility.PREFTYPE_BOOLEAN);
-
-            if (is_admin_login) {
-                intent = new Intent(MainActivity.this, AddLockActivity.class);
-            } else {
-                DbService.deleteAllKey();
-                Toast.makeText(mContext, "Logout Successfully", Toast.LENGTH_SHORT).show();
-                MyPreference.putStr(mContext, MyPreference.ACCESS_TOKEN, "");
-                MyPreference.putStr(mContext, MyPreference.OPEN_ID, "");
-                SharePreferenceUtility.saveBooleanPreferences(mContext, Config.IS_ADMIN_LOGIN, false);
-                SharePreferenceUtility.saveObjectPreferences(mContext, KEY_VALUE, null);
-                SharePreferenceUtility.saveBooleanPreferences(mContext, Const.IS_LOGIN, false);
-                intent = new Intent(MainActivity.this, SplashScreenActivity.class);
+            if(is_admin_login && POS_ADDLOCK == 1){
+                Intent intent = new Intent(MainActivity.this, AddLockActivity.class);
                 startActivity(intent);
-                overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
-                finish();
+            }else if(PRIVACY_POLICY == 2 && !is_admin_login){
+                Fragment fragment = new FragmentTermsCondition();
+                FragmentManager fragmentManager = ((MainActivity) mContext).getSupportFragmentManager();
+                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                fragmentTransaction.replace(R.id.container, fragment);
+                fragmentTransaction.addToBackStack(null);
+                fragmentTransaction.commit();
             }
-            startActivity(intent);
-            overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
-        }
-        if (position == POS_DASHBOARD) {
+
+            /*if (is_admin_login) {
+                Intent intent = new Intent(MainActivity.this, AddLockActivity.class);
+                startActivity(intent);
+            } else {
+                new AlertDialog.Builder(this)
+                        .setMessage("Are you sure you want to logout?")
+                        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                DbService.deleteAllKey();
+                                Toast.makeText(mContext, "Logout Successfully", Toast.LENGTH_SHORT).show();
+                                MyPreference.putStr(mContext, MyPreference.ACCESS_TOKEN, "");
+                                MyPreference.putStr(mContext, MyPreference.OPEN_ID, "");
+                                SharePreferenceUtility.saveBooleanPreferences(mContext, Config.IS_ADMIN_LOGIN, false);
+                                SharePreferenceUtility.saveObjectPreferences(mContext, KEY_VALUE, null);
+                                SharePreferenceUtility.saveBooleanPreferences(mContext, Const.IS_LOGIN, false);
+                                Intent intent_ = new Intent(MainActivity.this, SplashScreenActivity.class);
+                                startActivity(intent_);
+                                overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+                                finish();
+                            }
+                        })
+                        .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                            }
+                        }).create().show();
+            }*/
+        }else if (position == 0) {
            /* Fragment home_fragment = new Fragment_home();
             FragmentManager fragmentManager_home = getSupportFragmentManager();
             FragmentTransaction fragmentTransaction = fragmentManager_home.beginTransaction();
@@ -395,20 +455,33 @@ public class MainActivity extends BaseActivity implements DrawerAdapter.OnItemSe
             overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
             finish();
         }
-        if (position == POS_SETTINGS) {
+
+        /*if (position == POS_SETTINGS) {
             Intent intent = new Intent(MainActivity.this, SettingsNavActivity.class);
             startActivity(intent);
             overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
-        }
+        }*/
+
         /*if (position == POS_MESSAGES) {
             Intent intent = new Intent(MainActivity.this, MessagesActivity.class);
             startActivity(intent);
         }*/
-        if (position == POS_CUSTOMER_SERVICE) {
-            Intent intent = new Intent(MainActivity.this, CustomerServiceActivity.class);
+
+       /* if (position == PRIVACY_POLICY) {
+          *//*  Intent intent = new Intent(MainActivity.this, CustomerServiceActivity.class);
             startActivity(intent);
-            overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
-        }
+            overridePendingTransition(R.anim.fade_in, R.anim.fade_out);*//*
+
+            boolean is_admin_login = (boolean) SharePreferenceUtility.getPreferences(mContext, Config.IS_ADMIN_LOGIN, SharePreferenceUtility.PREFTYPE_BOOLEAN);
+
+            Fragment fragment = new FragmentTermsCondition();
+            FragmentManager fragmentManager = ((MainActivity) mContext).getSupportFragmentManager();
+            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+            fragmentTransaction.replace(R.id.container, fragment);
+            fragmentTransaction.addToBackStack(null);
+            fragmentTransaction.commit();
+
+        }*/
 
         slidingRootNav.closeMenu();
     }
@@ -472,7 +545,7 @@ public class MainActivity extends BaseActivity implements DrawerAdapter.OnItemSe
             if (NetworkUtils.isNetworkConnected(mContext)) {
                 syncData();
             } else {
-                DisplayUtil.showMessageDialog(mContext, "Please check internet connection", getDrawable(R.drawable.ic_no_internet));
+                DisplayUtil.showMessageDialog(mContext, "Please check Mobile network connection", getDrawable(R.drawable.ic_no_internet));
             }
         }
     }

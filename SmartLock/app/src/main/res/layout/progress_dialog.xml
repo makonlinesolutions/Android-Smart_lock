@@ -20,7 +20,7 @@
 				android:background="@color/white"
 				android:textColor="@color/textColor3"
 				android:textAlignment="center"
-				android:text="Would you like to use this phone to unlock your assigned room door at Maccrady Training Center?"
+				android:text="Would you like to use this phone to unlock your assigned room door at Mccrady Training Center?"
 				android:padding="15dp"/>
 		</RelativeLayout>
 	</android.support.v7.widget.CardView>

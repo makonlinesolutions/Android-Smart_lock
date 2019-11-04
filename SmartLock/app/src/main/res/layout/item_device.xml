@@ -1,84 +1,137 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<RelativeLayout
     android:orientation="vertical"
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="3dp"
     xmlns:app="http://schemas.android.com/apk/res-auto">
-    <android.support.v7.widget.CardView
-        android:id="@+id/cardview"
+
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="5dp"
-        app:cardBackgroundColor="@color/white">
+        android:orientation="vertical">
 
-
-        <LinearLayout
+        <android.support.v7.widget.CardView
+            android:id="@+id/cardview"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:weightSum="1"
-            android:paddingTop="15dp"
-            android:paddingBottom="15dp">
+            android:layout_height="wrap_content"
+            android:padding="5dp"
+            app:cardBackgroundColor="@color/white">
 
-            <RelativeLayout
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="0.2">
-
-                <de.hdodenhof.circleimageview.CircleImageView
-                    android:id="@+id/img_user"
-                    android:layout_width="35dp"
-                    android:layout_height="35dp"
-                    android:layout_centerInParent="true"
-                    android:src="@drawable/log_mast_lock"
-                    app:civ_border_color="@color/light_gray"
-                    app:civ_border_width="1dp" />
-            </RelativeLayout>
 
             <LinearLayout
-                android:layout_width="0dp"
+                android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_weight="0.8"
-                android:gravity="center"
-                android:orientation="vertical">
+                android:paddingTop="5dp"
+                android:paddingBottom="5dp"
+                android:weightSum="1">
+
+                <RelativeLayout
+                    android:id="@+id/rl_img"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="0.2">
+
+                    <de.hdodenhof.circleimageview.CircleImageView
+                        android:id="@+id/img_user"
+                        android:layout_width="35dp"
+                        android:layout_height="35dp"
+                        android:layout_centerInParent="true"
+                        android:src="@drawable/log_mast_lock"
+                        app:civ_border_color="@color/light_gray"
+                        app:civ_border_width="1dp" />
+                </RelativeLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="0.8"
+                    android:gravity="center"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/device_name"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:paddingLeft="3dp"
+                        android:paddingRight="3dp"
+                        android:text="S210_0d8C39"
+                        android:textColor="@color/colorPrimary"
+                        android:textSize="16dp" />
+
+                    <TextView
+                        android:id="@+id/passcode_type"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:paddingLeft="3dp"
+                        android:paddingRight="3dp"
+                        android:visibility="gone"
+                        android:text="S210_0d8C39"
+                        android:textColor="#DA3C3B3B"
+                        android:textSize="12dp" />
+
+                    <TextView
+                        android:id="@+id/passcode_start_date"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:paddingLeft="3dp"
+                        android:paddingRight="3dp"
+                        android:visibility="gone"
+                        android:text="S210_0d8C39"
+                        android:textColor="#DA3C3B3B"
+                        android:textSize="12dp" />
+
+                    <TextView
+                        android:id="@+id/passcode_end_date"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:paddingLeft="3dp"
+                        android:paddingRight="3dp"
+                        android:visibility="gone"
+                        android:text="S210_0d8C39"
+                        android:textColor="#DA3C3B3B"
+                        android:textSize="12dp" />
+
+                    <TextView
+                        android:id="@+id/device_address"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:paddingLeft="3dp"
+                        android:paddingRight="3dp"
+                        android:text="S210_0d8C39"
+                        android:textColor="@color/black"
+                        android:textSize="12dp" />
+                </LinearLayout>
 
                 <TextView
-                    android:id="@+id/device_name"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:paddingLeft="3dp"
-                    android:paddingRight="3dp"
-                    android:text="S210_0d8C39"
-                    android:textColor="@color/colorPrimary"
-                    android:textSize="16dp" />
-                <TextView
-                    android:id="@+id/device_address"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:paddingLeft="3dp"
-                    android:paddingRight="3dp"
-                    android:text="S210_0d8C39"
-                    android:textColor="@color/black"
-                    android:textSize="12dp" />
+                    android:id="@+id/device_add_able"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerInParent="true"
+                    android:layout_marginRight="15dp"
+                    android:background="@drawable/ic_add_black_24dp"
+                    android:backgroundTint="@color/colorPrimary"
+                    android:visibility="gone" />
             </LinearLayout>
-
-            <TextView
-                android:id="@+id/device_add_able"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:background="@drawable/ic_add_black_24dp"
-                android:visibility="gone"
-                android:backgroundTint="@color/colorPrimary"
-                android:layout_alignParentRight="true"
-                android:layout_marginRight="15dp"
-                android:layout_centerInParent="true"/>
-        </LinearLayout>
-    </android.support.v7.widget.CardView>
-
+        </android.support.v7.widget.CardView>
+    </LinearLayout>
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:background="@color/dark_gray"
         android:labelFor="@+id/cardview" />
-</LinearLayout>
+
+    <TextView
+        android:id="@+id/passcode_delete_able"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="8dp"
+        android:layout_marginTop="8dp"
+        android:visibility="gone"
+        android:background="@drawable/ic_delete"
+        android:backgroundTint="@color/colorPrimary" />
+
+</RelativeLayout>

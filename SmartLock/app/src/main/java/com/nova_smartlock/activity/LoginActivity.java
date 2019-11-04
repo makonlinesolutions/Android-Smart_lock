@@ -33,7 +33,6 @@ import com.nova_smartlock.retrofit.ApiServiceProvider;
 import com.nova_smartlock.retrofit.ApiServices;
 import com.nova_smartlock.sp.MyPreference;
 import com.nova_smartlock.utils.Const;
-import com.nova_smartlock.utils.Constants;
 import com.nova_smartlock.utils.DisplayUtil;
 import com.nova_smartlock.utils.NetworkUtils;
 import com.nova_smartlock.utils.SharePreferenceUtility;
@@ -61,7 +60,7 @@ import static com.nova_smartlock.utils.Constants.AppConst.DEPARTURE_TIME;
 import static com.nova_smartlock.utils.Constants.AppConst.GROUP_CODE;
 import static com.nova_smartlock.utils.Constants.AppConst.GROUP_NAME;
 import static com.nova_smartlock.utils.Constants.AppConst.GUEST_ID;
-import static com.nova_smartlock.utils.Constants.AppConst.IS_FIRST_TIME_LOGIN;
+import static com.nova_smartlock.utils.Constants.AppConst.GUEST_TYPE;
 import static com.nova_smartlock.utils.Constants.AppConst.KIDS;
 import static com.nova_smartlock.utils.Constants.AppConst.ORDER_ID;
 import static com.nova_smartlock.utils.Constants.AppConst.ORDER_ON;
@@ -96,7 +95,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         btn_login.setOnClickListener(this);
 
         txt_label = findViewById(R.id.text_label);
-        txt_label.setText("LOGIN");
+        txt_label.setText("GUEST");
 
         ((TextView)findViewById(R.id.tv_version)).setText("Version Name: "+BuildConfig.VERSION_NAME);
 
@@ -155,7 +154,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             if (NetworkUtils.isNetworkConnected(mContext)) {
                 getRequestPMSLogin(username, password);
             }else {
-                DisplayUtil.showMessageDialog(mContext, "Please check internet connection", getDrawable(R.drawable.ic_no_internet));
+                DisplayUtil.showMessageDialog(mContext, "Please check Mobile network connection", getDrawable(R.drawable.ic_no_internet));
             }
         }
     }
@@ -174,6 +173,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                         SharePreferenceUtility.saveStringPreferences(mContext, USER_ID, String.valueOf(loginResponse.response.smoId));
                         SharePreferenceUtility.saveStringPreferences(mContext, ORDER_ID, String.valueOf(loginResponse.response.orderId));
                         SharePreferenceUtility.saveStringPreferences(mContext, GUEST_ID, String.valueOf(loginResponse.response.guestId));
+                        SharePreferenceUtility.saveStringPreferences(mContext, GUEST_TYPE, String.valueOf(loginResponse.response.guest_type));
                         SharePreferenceUtility.saveStringPreferences(mContext, CHECK_IN_DATE, loginResponse.response.checkInDate);
                         SharePreferenceUtility.saveStringPreferences(mContext, CHECK_OUT_DATE, loginResponse.response.checkOutDate);
                         SharePreferenceUtility.saveStringPreferences(mContext, CHECK_IN_TIME, loginResponse.response.checkInTime);
@@ -208,7 +208,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
             @Override
             protected String doInBackground(Void... params) {
-                return ResponseService.auth(Constants.AppConst.NOVA_LOCK_ADMIN_USER_ID, Constants.AppConst.NOVA_LOCK_ADMIN_USER_PASSWORD);
+                return ResponseService.auth((String) SharePreferenceUtility.getPreferences(mContext, Const.ADMIN_LOGIN, SharePreferenceUtility.PREFTYPE_STRING), (String) SharePreferenceUtility.getPreferences(mContext, Const.ADMIN_PASSWORD, SharePreferenceUtility.PREFTYPE_STRING));
             }
 
             @SuppressLint("NewApi")
@@ -224,7 +224,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                         } else if (TextUtils.isEmpty(password)) {
                             toast("Please enter password");
                         } else {
-                            msg = "Invalid login credentials!\nTry again";
+                            msg = "Incorrect Username or Password! Please Try again";
                             showMessageDialog(msg, getDrawable(R.drawable.ic_iconfinder_ic_cancel_48px_352263));
                         }
                     } else {
@@ -282,13 +282,13 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                             List<LockDetails> tmp_data = databaseHelper.getAllLock();
                             if (tmp_data.size() > 0) {
                                 alertDialog.dismiss();
-                                Toast.makeText(mContext, "Login Successfully", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(mContext, "Access Validated! - Login successful!", Toast.LENGTH_SHORT).show();
                                 SharePreferenceUtility.saveBooleanPreferences(mContext, Const.IS_LOGIN, true);
                                 SharePreferenceUtility.saveBooleanPreferences(mContext, IS_ADMIN_LOGIN, false);
                                 Intent intent = new Intent(mContext, MainActivity.class);
                                 startActivity(intent);
                                 overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
-//                                showMessageDialog("Login Successfully", getDrawable(R.drawable.ic_iconfinder_ok_2639876));
+//                                showMessageDialog("Access Validated! - Login successful!", getDrawable(R.drawable.ic_iconfinder_ok_2639876));
                             } else {
                                 alertDialog.dismiss();
                                 showMessageDialog("Oops, No Any Lock assign!!!", getDrawable(R.drawable.ic_iconfinder_ok_2639876));
@@ -299,7 +299,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                         if (alertDialog!=null && alertDialog.isShowing()) {
                             alertDialog.dismiss();
                         }
-                        showMessageDialog("No data found, Please contact to administrator!!!", getDrawable(R.drawable.ic_iconfinder_ok_2639876));
+                        showMessageDialog(getResources().getString(R.string.contact_admin), getDrawable(R.drawable.ic_iconfinder_ok_2639876));
                     }
                 } else {
                     if (alertDialog!=null && alertDialog.isShowing()) {
@@ -359,7 +359,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             public void onClick(View v) {
                 dialog.dismiss();
 
-                if (msg.equals("Login Successfully")) {
+                if (msg.equals("Access Validated! - Login successful!")) {
                     SharePreferenceUtility.saveBooleanPreferences(mContext, IS_ADMIN_LOGIN, false);
                     Intent intent = new Intent(mContext, MainActivity.class);
                     startActivity(intent);

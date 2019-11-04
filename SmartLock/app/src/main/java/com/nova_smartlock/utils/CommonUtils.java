@@ -68,6 +68,7 @@ public class CommonUtils {
             @Override
             public void onClick(View view) {
                 dialog.dismiss();
+                SharePreferenceUtility.saveBooleanPreferences(mContext, IS_FIRST_TIME_LOGIN, false);
             }
         });
 

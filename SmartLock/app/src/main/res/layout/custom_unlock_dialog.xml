@@ -46,10 +46,10 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:fontFamily="serif"
-                    android:visibility="gone"
+                    android:layout_below="@id/tv_message"
                     android:gravity="center"
                     android:padding="10dp"
-                    android:layout_above="@id/tv_unlock"
+                    android:visibility="gone"
                     android:text="27 Aug, 22:10"
                     android:textColor="@color/gray"
                     android:textSize="12dp" />
@@ -62,7 +62,7 @@
                     android:fontFamily="serif"
                     android:background="@drawable/button_bg"
                     android:gravity="center"
-                    android:layout_below="@id/tv_message"
+                    android:layout_below="@id/tv_time"
                     android:padding="15dp"
                     android:text="OK"
                     android:textColor="@color/white" />

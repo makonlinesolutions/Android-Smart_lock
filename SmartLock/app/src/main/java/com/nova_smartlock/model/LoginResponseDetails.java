@@ -13,6 +13,9 @@ public class LoginResponseDetails {
     @SerializedName("smo_id")
     @Expose
     public int smoId;
+    @SerializedName("guest_type")
+    @Expose
+    public int guest_type;
     @SerializedName("order_id")
     @Expose
     public int orderId;

@@ -21,7 +21,7 @@
             android:layout_marginTop="10dp"
             android:padding="10dp"
             android:fontFamily="serif"
-            android:text="LOGIN"
+            android:text="GUEST"
             android:textColor="@color/white"
             android:textSize="20dp" />
 
@@ -103,6 +103,7 @@
                 android:layout_marginRight="25dp"
                 android:layout_marginLeft="25dp"
                 android:layout_marginTop="5dp"
+                android:maxLength="20"
                 android:textColor="@color/colorPrimaryDark"
                 android:backgroundTint="@color/colorPrimaryDark"
                 android:drawableLeft="@drawable/ic_user_id"
@@ -130,13 +131,14 @@
                 android:layout_marginRight="25dp"
                 android:layout_marginLeft="25dp"
                 android:layout_marginTop="5dp"
+                android:maxLength="20"
                 android:textColor="@color/colorPrimaryDark"
                 android:backgroundTint="@color/colorPrimaryDark"
                 android:drawableLeft="@drawable/ic_password"
                 android:drawablePadding="10dp"/>
             <android.support.design.widget.FloatingActionButton
                 android:layout_marginTop="20dp"
-            android:layout_marginRight="25dp"
+                android:layout_marginRight="25dp"
                 android:id="@+id/btn_login"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

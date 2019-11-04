@@ -4,6 +4,7 @@
     <string-array name="ld_activityScreenTitles">
         <item>Dashboard</item>
         <item>Add Door Lock</item>
+        <item>Privacy Policy</item>
         <item>Logout</item>
     </string-array>
 
@@ -21,10 +22,10 @@
     <array name="ld_activityScreenIcons">
         <item>@drawable/ic_home_black_24dp</item>
         <item>@drawable/ic_add_black_24dp</item>
-        <item>@drawable/ic_settings_black_24dp</item>
+        <item>@drawable/privacy_policy</item>
+        <item>@drawable/ic_exit_to_app_black_24dp</item>
         <item>@drawable/ic_info_black_24dp</item>
         <item>@drawable/ic_settings_black_24dp</item>
         <item>0</item>
-        <item>@drawable/ic_exit_to_app_black_24dp</item>
     </array>
 </resources>

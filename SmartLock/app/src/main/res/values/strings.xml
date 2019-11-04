@@ -5,7 +5,7 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
 
-    <string name="words_unlock_successed">Door unlocked successfully!</string>
+    <string name="words_unlock_successed">Door unlocked! - Access Granted</string>
     <string name="words_lock_successed">Door locked successfully</string>
     <string name="words_error_lock">Unable to unlock door</string>
     <string name="words_set_lock_time_successed">Lock time set successfully</string>
@@ -154,8 +154,14 @@
     <string name="dialog_cancel">Cancel</string>
     <string name="dialog_sure">OK</string>
 
-    <string name="operation_failed">Operation failed. Please ensure the lock is within 2 meters of the phone. Also, on your Phone- Switch Bluetooth OFF wait for 15 seconds and Turn Bluetooth ON</string>
+    <string name="operation_failed">Operation failed. Please ensure : \n 1. The mobile device is within 6 Feet of the Keyless lock.\n2.On the mobile device - switch Bluetooth OFF,  wait for 15 seconds and then turn it back on</string>
     <string name="room_details">Room Details</string>
+    <string name="contact_admin">No data found, Please contact to administrator!!!</string>
 
     <string name="terms_condition">By tapping the \"Yes, I agree\", I acknowledge that I read and understand this <font color='#00ccff'>important information</font></string>
+    <string name="passcode">Passcode: </string>
+    <string name="passcode_start_date">Start Date: </string>
+    <string name="passcode_expire_date">End Date: </string>
+    <string name="passcode_type">Passcode Type: </string>
+    <string name="no_passcode">No any passcode, Please generate the passcode</string>
 </resources>

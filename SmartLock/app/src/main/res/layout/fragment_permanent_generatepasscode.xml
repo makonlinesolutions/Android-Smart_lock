@@ -14,7 +14,7 @@
 
 
     <Button
-        android:id="@+id/btn_send"
+        android:id="@+id/btn_generate_passcode"
         android:layout_width="match_parent"
         android:layout_height="55dp"
         android:layout_below="@+id/rl_mobile_num"

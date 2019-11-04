@@ -41,7 +41,7 @@
                 android:layout_centerVertical="true"
                 android:layout_marginRight="10dp"
                 style="@style/settings_text"
-                android:text="2019.04.11 09.36"
+                android:text="0000.00.00 00.00"
                 />
         </RelativeLayout>
 
@@ -74,7 +74,7 @@
                 android:layout_centerVertical="true"
                 android:layout_marginRight="10dp"
                 style="@style/settings_text"
-                android:text="2019.04.11 11.36"/>
+                android:text="0000.00.00 00:00"/>
         </RelativeLayout>
     </LinearLayout>
 
@@ -88,7 +88,7 @@
         android:textColor="@color/light_gray" />
 
     <Button
-        android:id="@+id/btn_send"
+        android:id="@+id/btn_generate_passcode_time"
         android:layout_width="match_parent"
         android:layout_height="55dp"
         android:layout_below="@+id/rl_mobile_num"

@@ -37,12 +37,14 @@ import com.github.rahatarmanahmed.cpv.CircularProgressView;
 import com.nova_smartlock.R;
 import com.nova_smartlock.constant.BleConstant;
 import com.nova_smartlock.constant.Config;
+import com.nova_smartlock.constant.UnlockTimeInterface;
 import com.nova_smartlock.dao.DbService;
 import com.nova_smartlock.db.DatabaseHelper;
 import com.nova_smartlock.db.LockDetails;
 import com.nova_smartlock.enumtype.Operation;
 import com.nova_smartlock.model.CheckoutCheckResponse;
 import com.nova_smartlock.model.Key;
+import com.nova_smartlock.model.LockTimeUpdateResponse;
 import com.nova_smartlock.model.UnlockKeyNameResponse;
 import com.nova_smartlock.net.ResponseService;
 import com.nova_smartlock.retrofit.ApiServiceProvider;
@@ -88,6 +90,7 @@ import static com.nova_smartlock.utils.Constants.AppConst.CHECK_OUT_TIME;
 import static com.nova_smartlock.utils.Constants.AppConst.DEPARTURE_TIME;
 import static com.nova_smartlock.utils.Constants.AppConst.GROUP_CODE;
 import static com.nova_smartlock.utils.Constants.AppConst.GROUP_NAME;
+import static com.nova_smartlock.utils.Constants.AppConst.GUEST_TYPE;
 import static com.nova_smartlock.utils.Constants.AppConst.IS_FIRST_TIME_LOGIN;
 import static com.nova_smartlock.utils.Constants.AppConst.KIDS;
 import static com.nova_smartlock.utils.Constants.AppConst.ORDER_ON;
@@ -96,7 +99,7 @@ import static com.nova_smartlock.utils.Constants.AppConst.ROOM_SHORT;
 import static com.nova_smartlock.utils.Constants.AppConst.ROOM_TYPE;
 import static com.nova_smartlock.utils.Constants.AppConst.TOKEN;
 
-public class Fragment_home extends Fragment implements View.OnClickListener {
+public class Fragment_home extends Fragment implements View.OnClickListener, UnlockTimeInterface {
     private ImageView img_lock, img_circular, mIvLockName, mIvUnLock;
     private CircularProgressView progressView;
     private LinearLayout ll_records, ll_settings, ll_send_key, ll_generate_passcode, ll_ekeys, ll_passcode, ll_options;
@@ -114,14 +117,11 @@ public class Fragment_home extends Fragment implements View.OnClickListener {
     private boolean from_near_by_activity = false;
     private ApiServices services;
     private BluetoothAdapter mBluetoothAdapter;
-
     private List<ExtendedBluetoothDevice> mLeDevices ;
     private ExtendedBluetoothDevice device ;
     private android.app.AlertDialog alertDialog;
-
+    private View view;
     private boolean is_first_time_login;
-
-    /*Bottom Sheet*/
     private BottomSheetBehavior behavior ;
     private MaterialCardView linearBottomLayout ;
     private ImageView iv_arrow ;
@@ -143,7 +143,7 @@ public class Fragment_home extends Fragment implements View.OnClickListener {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_home, container, false);
+        view = inflater.inflate(R.layout.fragment_home, container, false);
         instance = this;
         mLeDevices = new ArrayList<>();
         img_lock = view.findViewById(R.id.img_lock);
@@ -184,8 +184,11 @@ public class Fragment_home extends Fragment implements View.OnClickListener {
         }
         init();
         ll_ekeys.setVisibility(View.GONE);
-        ll_passcode.setVisibility(View.GONE);
-        ll_generate_passcode.setVisibility(View.GONE);
+        boolean is_admin = (boolean) SharePreferenceUtility.getPreferences(getContext(), Config.IS_ADMIN_LOGIN, SharePreferenceUtility.PREFTYPE_BOOLEAN);
+        if (!is_admin) {
+            ll_passcode.setVisibility(View.GONE);
+            ll_generate_passcode.setVisibility(View.GONE);
+        }
         DatabaseHelper databaseHelper = new DatabaseHelper(getContext());
         arrKeyDetails = databaseHelper.getAllLock();
         services = new ApiServiceProvider(mContext).apiServices;
@@ -194,23 +197,23 @@ public class Fragment_home extends Fragment implements View.OnClickListener {
             @Override
             public void onStateChanged(@NonNull View view, int newState) {
 
-                    switch (newState) {
-                        case BottomSheetBehavior.STATE_HIDDEN:
-                            break;
-                        case BottomSheetBehavior.STATE_EXPANDED: {
-                            iv_arrow.setImageDrawable(getContext().getResources().getDrawable(R.drawable.ic_keyboard_arrow_down_black_24dp));
-                        }
+                switch (newState) {
+                    case BottomSheetBehavior.STATE_HIDDEN:
                         break;
-                        case BottomSheetBehavior.STATE_COLLAPSED: {
-                            setRoomDetails();
-                            iv_arrow.setImageDrawable(getContext().getResources().getDrawable(R.drawable.ic_keyboard_arrow_up_black_24dp));
-                        }
-                        break;
-                        case BottomSheetBehavior.STATE_DRAGGING:
-                            break;
-                        case BottomSheetBehavior.STATE_SETTLING:
-                            break;
+                    case BottomSheetBehavior.STATE_EXPANDED: {
+                        iv_arrow.setImageDrawable(getContext().getResources().getDrawable(R.drawable.ic_keyboard_arrow_down_black_24dp));
                     }
+                    break;
+                    case BottomSheetBehavior.STATE_COLLAPSED: {
+                        setRoomDetails();
+                        iv_arrow.setImageDrawable(getContext().getResources().getDrawable(R.drawable.ic_keyboard_arrow_up_black_24dp));
+                    }
+                    break;
+                    case BottomSheetBehavior.STATE_DRAGGING:
+                        break;
+                    case BottomSheetBehavior.STATE_SETTLING:
+                        break;
+                }
 
             }
 
@@ -229,7 +232,7 @@ public class Fragment_home extends Fragment implements View.OnClickListener {
                         setRoomDetails();
                         behavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
                     }
-                }else {
+                } else {
                     CommonUtils.showProgressDialog(getContext());
                 }
             }
@@ -257,7 +260,7 @@ public class Fragment_home extends Fragment implements View.OnClickListener {
                         viewLine.setVisibility(View.VISIBLE);
                     } else {
                         SharePreferenceUtility.saveObjectPreferences(getContext(), KEY_VALUE, null);
-                        startActivity(new Intent(getContext(), NearbyLockActivity.class));
+                        startActivity(new Intent(getContext(), NearbyLockActivity.class).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
                         getActivity().finish();
                     }
                 } else {
@@ -291,7 +294,7 @@ public class Fragment_home extends Fragment implements View.OnClickListener {
                         viewLine.setVisibility(View.VISIBLE);
                     } else {
                         SharePreferenceUtility.saveObjectPreferences(getContext(), KEY_VALUE, null);
-                        startActivity(new Intent(getContext(), NearbyLockActivity.class));
+                        startActivity(new Intent(getContext(), NearbyLockActivity.class).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
                         getActivity().finish();
                     }
 
@@ -355,7 +358,7 @@ public class Fragment_home extends Fragment implements View.OnClickListener {
                     } else {
                         Toast.makeText(getContext(), "Please select key", Toast.LENGTH_SHORT).show();
                         SharePreferenceUtility.saveObjectPreferences(getContext(), KEY_VALUE, null);
-                        startActivity(new Intent(getContext(), NearbyLockActivity.class));
+                        startActivity(new Intent(getContext(), NearbyLockActivity.class).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
                         getActivity().finish();
                     }
                 }else {
@@ -387,77 +390,65 @@ public class Fragment_home extends Fragment implements View.OnClickListener {
         ll_records.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //if ((boolean) SharePreferenceUtility.getPreferences(getContext(), IS_FIRST_TIME_LOGIN, SharePreferenceUtility.PREFTYPE_BOOLEAN)) {
-                    Intent intent = new Intent(getActivity(), RecordsActivity.class);
-                    startActivity(intent);
-                    ((Activity) getContext()).overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
-                /*}else {
-                    CommonUtils.showProgressDialog(getContext());
-                }*/
+                Intent intent = new Intent(getActivity(), RecordsActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
+                ((Activity) getContext()).overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+
             }
         });
 
         ll_settings.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //if ((boolean) SharePreferenceUtility.getPreferences(getContext(), IS_FIRST_TIME_LOGIN, SharePreferenceUtility.PREFTYPE_BOOLEAN)) {
-                    Intent intent = new Intent(getActivity(), SettingsActivity.class);
-                    startActivity(intent);
-                    ((Activity) getContext()).overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
-                /*}else {
-                    CommonUtils.showProgressDialog(getContext());
-                }*/
+                Intent intent = new Intent(getActivity(), SettingsActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
+                ((Activity) getContext()).overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
             }
         });
 
         ll_send_key.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //if ((boolean) SharePreferenceUtility.getPreferences(getContext(), IS_FIRST_TIME_LOGIN, SharePreferenceUtility.PREFTYPE_BOOLEAN)) {
-                    Intent intent = new Intent(getActivity(), SendeKeyActivity.class);
-                    startActivity(intent);
-                    ((Activity) getContext()).overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
-                /*}else {
-                    CommonUtils.showProgressDialog(getContext());
-                }*/
+                Intent intent = new Intent(getActivity(), SendeKeyActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
+                ((Activity) getContext()).overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
             }
         });
 
         ll_generate_passcode.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //if ((boolean) SharePreferenceUtility.getPreferences(getContext(), IS_FIRST_TIME_LOGIN, SharePreferenceUtility.PREFTYPE_BOOLEAN)) {
+                is_first_time_login = (boolean) SharePreferenceUtility.getPreferences(getContext(), IS_FIRST_TIME_LOGIN, SharePreferenceUtility.PREFTYPE_BOOLEAN);
+                if (is_first_time_login) {
                     Intent intent = new Intent(getActivity(), GeneratePasscodeActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     startActivity(intent);
-                /*}else {
+                } else {
                     CommonUtils.showProgressDialog(getContext());
-                }*/
+                }
             }
         });
 
         ll_ekeys.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //if ((boolean) SharePreferenceUtility.getPreferences(getContext(), IS_FIRST_TIME_LOGIN, SharePreferenceUtility.PREFTYPE_BOOLEAN)) {
-                    Intent intent = new Intent(getActivity(), EkeysActivity.class);
-                    startActivity(intent);
-                    ((Activity) getContext()).overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
-                /*}else {
-                    CommonUtils.showProgressDialog(getContext());
-                }*/
+                Intent intent = new Intent(getActivity(), EkeysActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
+                ((Activity) getContext()).overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
             }
         });
 
         ll_passcode.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //if ((boolean) SharePreferenceUtility.getPreferences(getContext(), IS_FIRST_TIME_LOGIN, SharePreferenceUtility.PREFTYPE_BOOLEAN)) {
-                    Intent intent = new Intent(getActivity(), PasscodesActivity.class);
-                    startActivity(intent);
-                    ((Activity) getContext()).overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
-                /*}else {
-                    CommonUtils.showProgressDialog(getContext());
-                }*/
+                Intent intent = new Intent(getActivity(), PasscodesActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
+                ((Activity) getContext()).overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
             }
         });
 
@@ -465,7 +456,7 @@ public class Fragment_home extends Fragment implements View.OnClickListener {
             @Override
             public void onClick(View v) {
                 //if ((boolean) SharePreferenceUtility.getPreferences(getContext(), IS_FIRST_TIME_LOGIN, SharePreferenceUtility.PREFTYPE_BOOLEAN)) {
-                    openDialogForChangeKeyName();
+                openDialogForChangeKeyName();
                 /*}else {
                     CommonUtils.showProgressDialog(getContext());
                 }*/
@@ -529,11 +520,10 @@ public class Fragment_home extends Fragment implements View.OnClickListener {
             tv_adults.setVisibility(View.VISIBLE);
         }
         int kids = (Integer) SharePreferenceUtility.getPreferences(getContext(), KIDS, SharePreferenceUtility.PREFTYPE_INT);
-        if(kids == 0){
-            tv_kids.setVisibility(View.GONE);
+        if (String.valueOf(kids).isEmpty() || kids == 0) {
+            tv_kids.setText(String.valueOf(0));
         }else {
-            tv_kids.setText(""+kids);
-            tv_kids.setVisibility(View.VISIBLE);
+            tv_kids.setText(String.valueOf(kids));
         }
         String order_on = (String) SharePreferenceUtility.getPreferences(getContext(), ORDER_ON, SharePreferenceUtility.PREFTYPE_STRING);
         if(order_on.equalsIgnoreCase("")){
@@ -558,20 +548,20 @@ public class Fragment_home extends Fragment implements View.OnClickListener {
         }
         String group_name = (String) SharePreferenceUtility.getPreferences(getContext(), GROUP_NAME, SharePreferenceUtility.PREFTYPE_STRING);
         String group_code = (String) SharePreferenceUtility.getPreferences(getContext(), GROUP_CODE, SharePreferenceUtility.PREFTYPE_STRING);
-        if(group_name.equalsIgnoreCase("")) {
-            tv_group_name_code.setVisibility(View.GONE);
+        if (group_name.isEmpty()) {
+            view.findViewById(R.id.ll_group_name).setVisibility(View.GONE);
         }else{
-            tv_group_name_code.setVisibility(View.VISIBLE);
-            if(group_code.equalsIgnoreCase("")){
+            view.findViewById(R.id.ll_group_name).setVisibility(View.VISIBLE);
+            if (group_code.isEmpty()) {
                 tv_group_name_code.setText(group_name);
             }else {
                 tv_group_name_code.setText(group_name + " (" + group_code + ")");
             }
         }
         String room_type = (String) SharePreferenceUtility.getPreferences(getContext(), ROOM_TYPE, SharePreferenceUtility.PREFTYPE_STRING);
-        if(room_type.equalsIgnoreCase("")){
+        if (room_type.equalsIgnoreCase("")) {
             tv_room_id.setVisibility(View.GONE);
-        }else {
+        } else {
             tv_room_id.setText(room_type);
             tv_room_id.setVisibility(View.VISIBLE);
         }
@@ -596,42 +586,42 @@ public class Fragment_home extends Fragment implements View.OnClickListener {
             @SuppressLint("NewApi")
             @Override
             public void onClick(View v) {
-                //if ((boolean) SharePreferenceUtility.getPreferences(getContext(), IS_FIRST_TIME_LOGIN, SharePreferenceUtility.PREFTYPE_BOOLEAN)) {
-                    name_lock = edt_lock_name.getText().toString().trim();
-                    if (TextUtils.isEmpty(name_lock)) {
-                        DisplayUtil.showMessageDialog(getContext(), "Please Rename the lock", getActivity().getDrawable(R.drawable.ic_iconfinder_143_attention_183267));
-                        //Toast.makeText(getContext(), "Please enter name", Toast.LENGTH_SHORT).show();
-                    } else {
-                        if (NetworkUtils.isNetworkConnected(getContext())) {
-                            Call<UnlockKeyNameResponse> unlockKeyNameResponseCall = services.UNLOCK_KEY_NAME_RESPONSE_CALL(String.valueOf(mKey.getLockId()), name_lock);
-                            unlockKeyNameResponseCall.enqueue(new Callback<UnlockKeyNameResponse>() {
-                                @Override
-                                public void onResponse(Call<UnlockKeyNameResponse> call, Response<UnlockKeyNameResponse> response) {
-                                    if (response.isSuccessful()) {
-                                        if (response.body().response.statusCode == 200) {
-                                            if (TextUtils.isEmpty(name_lock)) {
-                                                DisplayUtil.showMessageDialog(getContext(), "Please Rename the lock\n", getActivity().getDrawable(R.drawable.ic_iconfinder_143_attention_183267));
-                                                //Toast.makeText(getContext(), "Please enter name", Toast.LENGTH_SHORT).show();
-                                            } else {
-                                                getRequestToChangeName(name_lock);
-                                                dialog.dismiss();
-                                            }
+                name_lock = edt_lock_name.getText().toString().trim();
+                if (TextUtils.isEmpty(name_lock)) {
+                    DisplayUtil.showMessageDialog(getContext(), "Please Rename the lock", getActivity().getDrawable(R.drawable.ic_iconfinder_143_attention_183267));
+                    //Toast.makeText(getContext(), "Please enter name", Toast.LENGTH_SHORT).show();
+                } else {
+                    if (NetworkUtils.isNetworkConnected(getContext())) {
+                        Call<UnlockKeyNameResponse> unlockKeyNameResponseCall = services.UNLOCK_KEY_NAME_RESPONSE_CALL(String.valueOf(mKey.getLockId()), name_lock);
+                        unlockKeyNameResponseCall.enqueue(new Callback<UnlockKeyNameResponse>() {
+                            @Override
+                            public void onResponse(Call<UnlockKeyNameResponse> call, Response<UnlockKeyNameResponse> response) {
+                                if (response.isSuccessful()) {
+                                    if (response.body().response.statusCode == 200) {
+                                        if (TextUtils.isEmpty(name_lock)) {
+                                            DisplayUtil.showMessageDialog(getContext(), "Please Rename the lock\n", getActivity().getDrawable(R.drawable.ic_iconfinder_143_attention_183267));
+                                            //Toast.makeText(getContext(), "Please enter name", Toast.LENGTH_SHORT).show();
+                                        } else {
+                                            getRequestToChangeName(name_lock);
+                                            dialog.dismiss();
                                         }
                                     }
                                 }
+                            }
 
-                                @Override
-                                public void onFailure(Call<UnlockKeyNameResponse> call, Throwable t) {
+                            @Override
+                            public void onFailure
+                                    (Call<UnlockKeyNameResponse> call, Throwable t) {
 
-                                }
-                            });
-                        } else {
-                            Fragment_home.getInstance().showMessageDialog("Please check Mobile network connection", getActivity().getDrawable(R.drawable.ic_no_internet));
-                        }
+                            }
+                        });
+                    } else {
+                        Fragment_home.getInstance().showMessageDialog("Please check Mobile network connection", getActivity().getDrawable(R.drawable.ic_no_internet));
                     }
                 /*}else {
                     CommonUtils.showProgressDialog(getContext());
                 }*/
+                }
             }
         });
         dialog.setCancelable(true);
@@ -675,27 +665,89 @@ public class Fragment_home extends Fragment implements View.OnClickListener {
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     public void onClick(View v) {
-        if ((boolean) SharePreferenceUtility.getPreferences(getContext(), IS_FIRST_TIME_LOGIN, SharePreferenceUtility.PREFTYPE_BOOLEAN)){
-            if (v.getId() == R.id.img_lock) {
+        if (v.getId() == R.id.img_lock) {
+            is_first_time_login = (boolean) SharePreferenceUtility.getPreferences(getContext(), IS_FIRST_TIME_LOGIN, SharePreferenceUtility.PREFTYPE_BOOLEAN);
+            if (is_first_time_login) {
                 if (!NetworkUtils.isNetworkConnected(mContext)) {
-                    if(isCheckInDate()) {
-                        if(isCheckInTime()) {
+                    boolean is_admin_login = (boolean) SharePreferenceUtility.getPreferences(getContext(), Config.IS_ADMIN_LOGIN, SharePreferenceUtility.PREFTYPE_BOOLEAN);
+                    if (is_admin_login) {
+
 //                        Fragment_home.getInstance().showMessageDialog("Please check Mobile network connection", getActivity().getDrawable(R.drawable.ic_no_internet));
-                            mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-                            if (mBluetoothAdapter == null) {
-                                // Device does not support Bluetooth
+                        mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+                        if (mBluetoothAdapter == null) {
+                            // Device does not support Bluetooth
+                        } else {
+                            if (!mBluetoothAdapter.isEnabled()) {
+                                mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+                                if (mBluetoothAdapter.disable()) {
+                                    mBluetoothAdapter.enable();
+                                    showMessageDialog("Bluetooth  is successfully enabled / ON", getActivity().getDrawable(R.drawable.ic_iconfinder_ok_2639876));
+                                }
                             } else {
-                                if (!mBluetoothAdapter.isEnabled()) {
-                                    mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-                                    if (mBluetoothAdapter.disable()) {
-                                        mBluetoothAdapter.enable();
-                                        showMessageDialog("Bluetooth  is successfully enabled / ON", getActivity().getDrawable(R.drawable.ic_iconfinder_ok_2639876));
-                                    }
+
+                                if (mKey == null) {
+                                    startActivity(new Intent(getContext(), AddLockActivity.class).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
                                 } else {
-                                    boolean is_admin_login = (boolean) SharePreferenceUtility.getPreferences(getContext(), Config.IS_ADMIN_LOGIN, SharePreferenceUtility.PREFTYPE_BOOLEAN);
-                                    /*if (is_admin_login)*/ {
+
+                                    if (mKey != null && mKey.getLockMac() != null && mTTLockAPI.isConnected(mKey.getLockMac())) {//If the lock is connected, you can call interface directly
+                                        img_lock.setBackgroundResource(R.drawable.ic_unlock_color);
+                                        if (mKey.isAdmin())
+                                            mTTLockAPI.unlockByAdministrator(null, openid, mKey.getLockVersion(), mKey.getAdminPwd(), mKey.getLockKey(), mKey.getLockFlagPos(), System.currentTimeMillis(), mKey.getAesKeyStr(), mKey.getTimezoneRawOffset());
+                                        else
+                                            mTTLockAPI.unlockByUser(null, openid, mKey.getLockVersion(), mKey.getStartDate(), mKey.getEndDate(), mKey.getLockKey(), mKey.getLockFlagPos(), mKey.getAesKeyStr(), mKey.getTimezoneRawOffset());
+                                    } else {//to connect the lock
+                                        if (isDeviceNearBy(mKey.getLockMac())) {
+                                            progressView.setVisibility(View.VISIBLE);
+                                            progressView.startAnimation();
+                                            new Handler().postDelayed(
+                                                    new Runnable() {
+                                                        @Override
+                                                        public void run() {
+                                                            progressView.stopAnimation();
+                                                            progressView.setVisibility(View.GONE);
+                                                            img_lock.setVisibility(View.GONE);
+                                                            mIvUnLock.setVisibility(View.VISIBLE);
+                                                        }
+                                                    }, 5000);
+                                            new Handler().postDelayed(
+                                                    new Runnable() {
+                                                        @Override
+                                                        public void run() {
+                                                            img_lock.setVisibility(View.VISIBLE);
+                                                            mIvUnLock.setVisibility(View.GONE);
+                                                        }
+                                                    }, 8000);
+                                            progressView.setVisibility(View.VISIBLE);
+                                            progressView.startAnimation();
+                                            mTTLockAPI.connect(mKey.getLockMac());
+                                            bleSession.setOperation(Operation.CLICK_UNLOCK);
+                                            bleSession.setLockmac(mKey.getLockMac());
+                                        } else {
+                                            Log.d("operation failed", "operation  684");
+                                            showMessageDialog(mContext.getString(R.string.operation_failed), getContext().getDrawable(R.drawable.ic_iconfinder_ic_cancel_48px_352263));
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    } else {
+                        if (isCheckInDate()) {
+                            if (isCheckInTime()) {
+//                        Fragment_home.getInstance().showMessageDialog("Please check Mobile network connection", getActivity().getDrawable(R.drawable.ic_no_internet));
+                                mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+                                if (mBluetoothAdapter == null) {
+                                    // Device does not support Bluetooth
+                                } else {
+                                    if (!mBluetoothAdapter.isEnabled()) {
+                                        mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+                                        if (mBluetoothAdapter.disable()) {
+                                            mBluetoothAdapter.enable();
+                                            showMessageDialog("Bluetooth  is successfully enabled / ON", getActivity().getDrawable(R.drawable.ic_iconfinder_ok_2639876));
+                                        }
+                                    } else {
+
                                         if (mKey == null) {
-                                            startActivity(new Intent(getContext(), AddLockActivity.class));
+                                            startActivity(new Intent(getContext(), AddLockActivity.class).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
                                         } else {
 
                                             if (mKey != null && mKey.getLockMac() != null && mTTLockAPI.isConnected(mKey.getLockMac())) {//If the lock is connected, you can call interface directly
@@ -739,12 +791,12 @@ public class Fragment_home extends Fragment implements View.OnClickListener {
                                         }
                                     }
                                 }
+                            } else {
+                                Fragment_home.getInstance().showMessageDialog("Please check your checkIn/checkOut Time", getActivity().getDrawable(R.drawable.ic_warning_black_48dp));
                             }
-                        }else{
-                            Fragment_home.getInstance().showMessageDialog("Please check your checkIn/checkOut Time", getActivity().getDrawable(R.drawable.ic_warning_black_48dp));
+                        } else {
+                            Fragment_home.getInstance().showMessageDialog("Please check your checkIn/checkOut Date", getActivity().getDrawable(R.drawable.ic_warning_black_48dp));
                         }
-                    }else{
-                        Fragment_home.getInstance().showMessageDialog("Please check your checkIn/checkOut Date", getActivity().getDrawable(R.drawable.ic_warning_black_48dp));
                     }
                 } else {
                     mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
@@ -761,7 +813,7 @@ public class Fragment_home extends Fragment implements View.OnClickListener {
                             boolean is_admin_login = (boolean) SharePreferenceUtility.getPreferences(getContext(), Config.IS_ADMIN_LOGIN, SharePreferenceUtility.PREFTYPE_BOOLEAN);
                             if (is_admin_login) {
                                 if (mKey == null) {
-                                    startActivity(new Intent(getContext(), AddLockActivity.class));
+                                    startActivity(new Intent(getContext(), AddLockActivity.class).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
                                 } else {
 
                                     if (mKey != null && mKey.getLockMac() != null && mTTLockAPI.isConnected(mKey.getLockMac())) {//If the lock is connected, you can call interface directly
@@ -815,9 +867,9 @@ public class Fragment_home extends Fragment implements View.OnClickListener {
                         }
                     }
                 }
+            }else {
+                CommonUtils.showProgressDialog(getContext());
             }
-        }else {
-            CommonUtils.showProgressDialog(getContext());
         }
     }
 
@@ -852,21 +904,26 @@ public class Fragment_home extends Fragment implements View.OnClickListener {
     }
 
     private boolean isCheckInDate() {
-        boolean isCorrectDate = false ;
-        String checkInDate = (String) SharePreferenceUtility.getPreferences(mContext, CHECK_IN_DATE, SharePreferenceUtility.PREFTYPE_STRING);
-        String checkOutDate = (String) SharePreferenceUtility.getPreferences(mContext, CHECK_OUT_DATE, SharePreferenceUtility.PREFTYPE_STRING);
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
-        Date checkIn = null,checkOut = null , todaysDate = null;
-        String today = sdf.format(new Date());
-        try{
-            checkIn = sdf.parse(checkInDate);
-            checkOut = sdf.parse(checkOutDate);
-            todaysDate = sdf.parse(today);
-        }catch(Exception e) {
+        boolean isCorrectDate = false;
+        try {
+            String checkInDate = (String) SharePreferenceUtility.getPreferences(mContext, CHECK_IN_DATE, SharePreferenceUtility.PREFTYPE_STRING);
+            String checkOutDate = (String) SharePreferenceUtility.getPreferences(mContext, CHECK_OUT_DATE, SharePreferenceUtility.PREFTYPE_STRING);
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
+            Date checkIn = null, checkOut = null, todaysDate = null;
+            String today = sdf.format(new Date());
+            try {
+                checkIn = sdf.parse(checkInDate);
+                checkOut = sdf.parse(checkOutDate);
+                todaysDate = sdf.parse(today);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            if ((todaysDate.compareTo(checkIn) >= 0) && (todaysDate.compareTo(checkOut) <= 0)) {
+                isCorrectDate = true;
+            }
+
+        } catch (NullPointerException e) {
             e.printStackTrace();
-        }
-        if((todaysDate.compareTo(checkIn)>=0) && (todaysDate.compareTo(checkOut)<=0)){
-            isCorrectDate = true ;
         }
         return isCorrectDate;
     }
@@ -877,29 +934,12 @@ public class Fragment_home extends Fragment implements View.OnClickListener {
 
         if (alertDialog!=null && !alertDialog.isShowing()) {
             alertDialog.show();
-
             new Handler().postDelayed(new Runnable() {
                 @Override
                 public void run() {
                     alertDialog.dismiss();
                 }
-            },4000);
-        }
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-        if (!mBluetoothAdapter.isEnabled()) {
-            if (mBluetoothAdapter.disable()) {
-                mBluetoothAdapter.enable();
-                Log.d("BLUETOOTH", String.valueOf(mBluetoothAdapter.isEnabled()));
-            }
-        }
-
-        if (alertDialog!=null && alertDialog.isShowing()) {
-            alertDialog.dismiss();
+            },2000);
         }
     }
 
@@ -940,57 +980,73 @@ public class Fragment_home extends Fragment implements View.OnClickListener {
             @Override
             public void onResponse(Call<CheckoutCheckResponse> call, Response<CheckoutCheckResponse> response) {
                 if (response.isSuccessful()) {
-                    if (response.body().response.isCheckout != null) {
-                        if (response.body().response.isCheckout) {
-                            showMessageDialog("You have already checked-out", getActivity().getDrawable(R.drawable.ic_iconfinder_ok_2639876));
-                        } else {
-                            if (mKey == null) {
-                                startActivity(new Intent(getContext(), AddLockActivity.class));
-                            } else {
-                                if (mKey != null && mKey.getLockMac() != null && mTTLockAPI.isConnected(mKey.getLockMac())) {//If the lock is connected, you can call interface directly
-                                    img_lock.setBackgroundResource(R.drawable.ic_unlock_color);
-                                    if (mKey.isAdmin()) {
-                                        mTTLockAPI.unlockByAdministrator(null, openid, mKey.getLockVersion(), mKey.getAdminPwd(), mKey.getLockKey(), mKey.getLockFlagPos(), System.currentTimeMillis(), mKey.getAesKeyStr(), mKey.getTimezoneRawOffset());
-                                    } else {
-                                        mTTLockAPI.unlockByUser(null, openid, mKey.getLockVersion(), mKey.getStartDate(), mKey.getEndDate(), mKey.getLockKey(), mKey.getLockFlagPos(), mKey.getAesKeyStr(), mKey.getTimezoneRawOffset());
-                                    }
-                                } else {//to connect the lock
-                                    if (isDeviceNearBy(mKey.getLockMac())) {
-                                        progressView.setVisibility(View.VISIBLE);
-                                        progressView.startAnimation();
-                                        new Handler().postDelayed(
-                                                new Runnable() {
-                                                    @Override
-                                                    public void run() {
-                                                        progressView.stopAnimation();
-                                                        progressView.setVisibility(View.GONE);
-                                                        img_lock.setVisibility(View.GONE);
-                                                        mIvUnLock.setVisibility(View.VISIBLE);
-                                                    }
-                                                }, 5000);
+                    if (response.body().response.statusCode == 200) {
+                        if (response.body().response.isCheckout != null) {
+                            if (response.body().response.orderStatus != 5) {
+                              /*  if (response.body().response.orderStatus == 0) {
+                                }else if (response.body().response.orderStatus == 3) {
+                                    showMessageDialog("You have already checked-out", getActivity().getDrawable(R.drawable.ic_iconfinder_ok_2639876));
 
-                                        new Handler().postDelayed(
-                                                new Runnable() {
-                                                    @Override
-                                                    public void run() {
-                                                        img_lock.setVisibility(View.VISIBLE);
-                                                        mIvUnLock.setVisibility(View.GONE);
-                                                    }
-                                                }, 8000);
-                                        progressView.setVisibility(View.VISIBLE);
-                                        progressView.startAnimation();
-                                        mTTLockAPI.connect(mKey.getLockMac());
-                                        bleSession.setOperation(Operation.CLICK_UNLOCK);
-                                        bleSession.setLockmac(mKey.getLockMac());
-                                    } else {
-                                        Log.d("operation failed", "operation  887");
-                                        showMessageDialog(mContext.getString(R.string.operation_failed), getContext().getDrawable(R.drawable.ic_iconfinder_ic_cancel_48px_352263));
+                                }*/
+
+                                showMessageDialog(response.body().response.message, getActivity().getDrawable(R.drawable.ic_iconfinder_ic_cancel_48px_352263));
+
+                            } else {
+                                if (mKey == null) {
+                                    startActivity(new Intent(getContext(), AddLockActivity.class).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+                                } else {
+                                    SharePreferenceUtility.saveStringPreferences(mContext, CHECK_IN, response.body().response.checkInDate);
+                                    SharePreferenceUtility.saveStringPreferences(mContext, CHECK_OUT, response.body().response.checkOutDate);
+                                    SharePreferenceUtility.saveStringPreferences(mContext, ARRIVE_TIME, response.body().response.checkInTime);
+                                    SharePreferenceUtility.saveStringPreferences(mContext, DEPARTURE_TIME, response.body().response.checkOutTime);
+
+                                    if (mKey != null && mKey.getLockMac() != null && mTTLockAPI.isConnected(mKey.getLockMac())) {//If the lock is connected, you can call interface directly
+                                        img_lock.setBackgroundResource(R.drawable.ic_unlock_color);
+                                        if (mKey.isAdmin()) {
+                                            mTTLockAPI.unlockByAdministrator(null, openid, mKey.getLockVersion(), mKey.getAdminPwd(), mKey.getLockKey(), mKey.getLockFlagPos(), System.currentTimeMillis(), mKey.getAesKeyStr(), mKey.getTimezoneRawOffset());
+                                        } else {
+                                            mTTLockAPI.unlockByUser(null, openid, mKey.getLockVersion(), mKey.getStartDate(), mKey.getEndDate(), mKey.getLockKey(), mKey.getLockFlagPos(), mKey.getAesKeyStr(), mKey.getTimezoneRawOffset());
+                                        }
+                                    } else {//to connect the lock
+                                        if (isDeviceNearBy(mKey.getLockMac())) {
+                                            progressView.setVisibility(View.VISIBLE);
+                                            progressView.startAnimation();
+                                            new Handler().postDelayed(
+                                                    new Runnable() {
+                                                        @Override
+                                                        public void run() {
+                                                            progressView.stopAnimation();
+                                                            progressView.setVisibility(View.GONE);
+                                                            img_lock.setVisibility(View.GONE);
+                                                            mIvUnLock.setVisibility(View.VISIBLE);
+                                                        }
+                                                    }, 5000);
+
+                                            new Handler().postDelayed(
+                                                    new Runnable() {
+                                                        @Override
+                                                        public void run() {
+                                                            img_lock.setVisibility(View.VISIBLE);
+                                                            mIvUnLock.setVisibility(View.GONE);
+                                                        }
+                                                    }, 8000);
+                                            progressView.setVisibility(View.VISIBLE);
+                                            progressView.startAnimation();
+                                            mTTLockAPI.connect(mKey.getLockMac());
+                                            bleSession.setOperation(Operation.CLICK_UNLOCK);
+                                            bleSession.setLockmac(mKey.getLockMac());
+                                        } else {
+                                            Log.d("operation failed", "operation  887");
+                                            showMessageDialog(mContext.getString(R.string.operation_failed), getContext().getDrawable(R.drawable.ic_iconfinder_ic_cancel_48px_352263));
+                                        }
                                     }
                                 }
                             }
+                        } else {
+                            showMessageDialog(" Something went wrong. Please try again!!!", getContext().getDrawable(R.drawable.ic_iconfinder_ic_cancel_48px_352263));
                         }
-                    } else {
-                        showMessageDialog(" Something went wrong. Please try again!!!", getContext().getDrawable(R.drawable.ic_iconfinder_ic_cancel_48px_352263));
+                    } else if (response.body().response.statusCode == 400) {
+                        showMessageDialog("Access Denied. Someone is using your credentials!!!", getContext().getDrawable(R.drawable.ic_iconfinder_ic_cancel_48px_352263));
                     }
                 } else {
                     DbService.deleteAllKey();
@@ -1002,6 +1058,7 @@ public class Fragment_home extends Fragment implements View.OnClickListener {
                     SharePreferenceUtility.saveObjectPreferences(mContext, USER_KEY_VALUE, null);
                     SharePreferenceUtility.saveBooleanPreferences(mContext, Const.IS_LOGIN, false);
                     Intent intent = new Intent(mContext, SplashScreenActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     mContext.startActivity(intent);
 //                    Toast.makeText(mContext, "Something went wrong", Toast.LENGTH_SHORT).show();
                 }
@@ -1055,5 +1112,32 @@ public class Fragment_home extends Fragment implements View.OnClickListener {
         if (alertDialog!=null && alertDialog.isShowing()) {
             alertDialog.dismiss();
         }
+    }
+
+    @Override
+    public void sendUnlockTime() {
+        String guest_id = (String) SharePreferenceUtility.getPreferences(mContext, Constants.AppConst.GUEST_ID, SharePreferenceUtility.PREFTYPE_STRING);
+        String smo_id = (String) SharePreferenceUtility.getPreferences(mContext, Constants.AppConst.USER_ID, SharePreferenceUtility.PREFTYPE_STRING);
+        String guest_type = (String) SharePreferenceUtility.getPreferences(getContext(), GUEST_TYPE, SharePreferenceUtility.PREFTYPE_STRING);
+        String token = (String) SharePreferenceUtility.getPreferences(mContext, TOKEN, SharePreferenceUtility.PREFTYPE_STRING);
+
+
+        Call<LockTimeUpdateResponse> checkoutCheckResponseCall = services.LOCK_TIME_UPDATE_RESPONSE_CALL(smo_id, guest_id, guest_type, String.valueOf(System.currentTimeMillis()), token);
+        checkoutCheckResponseCall.enqueue(new Callback<LockTimeUpdateResponse>() {
+            @Override
+            public void onResponse(Call<LockTimeUpdateResponse> call, Response<LockTimeUpdateResponse> response) {
+                if (response.isSuccessful()) {
+                    if (response.body().response.statusCode == 200) {
+                        Log.d("Send Unlock", response.body().response.response);
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<LockTimeUpdateResponse> call, Throwable t) {
+                Log.d("Send Unlock", t.getMessage());
+            }
+        });
+
     }
 }
