@@ -49,12 +49,11 @@ public class Onetime_GeneratePasscodeFragment extends Fragment {
                 if (NetworkUtils.isNetworkConnected(mContext)) {
                     getRequestGeneratePasscode();
                 } else {
-                    DisplayUtil.showMessageDialog(mContext, "Please check mobile network connection", getActivity().getDrawable(R.drawable.ic_no_internet));
+                    DisplayUtil.showMessageDialog(mContext, "Please check mobile network connection", getActivity().getResources().getDrawable(R.drawable.ic_no_internet));
                 }
             }
         });
         return mParentView;
-
     }
 
     private void getRequestGeneratePasscode() {
@@ -68,8 +67,8 @@ public class Onetime_GeneratePasscodeFragment extends Fragment {
             @SuppressLint("NewApi")
             @Override
             protected void onPostExecute(String json) {
-                String msg = getContext().getString(R.string.words_authorize_successed);
                 try {
+                    String msg = getContext().getResources().getString(R.string.words_authorize_successed);
                     JSONObject jsonObject = new JSONObject(json);
                     if (jsonObject.has("errcode")) {
                         msg = "Operation failed!";

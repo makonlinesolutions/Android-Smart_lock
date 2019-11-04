@@ -137,7 +137,7 @@ public class Timed_GeneratedPasscodeFragment extends Fragment {
                 if (NetworkUtils.isNetworkConnected(mContext)) {
                     getRequestGeneratePasscode();
                 } else {
-                    DisplayUtil.showMessageDialog(mContext, "Please check mobile network connection", getActivity().getDrawable(R.drawable.ic_no_internet));
+                    DisplayUtil.showMessageDialog(mContext, "Please check mobile network connection", getActivity().getResources().getDrawable(R.drawable.ic_no_internet));
                 }
             }
         });
@@ -148,9 +148,9 @@ public class Timed_GeneratedPasscodeFragment extends Fragment {
     private void getRequestGeneratePasscode() {
 
         if (start_time_milisecond == 0) {
-            DisplayUtil.showMessageDialog(getContext(), "Please select start date and time", getActivity().getDrawable(R.drawable.ic_iconfinder_143_attention_183267)); //ToDo change mesage
+            DisplayUtil.showMessageDialog(getContext(), "Please select start date and time", getActivity().getResources().getDrawable(R.drawable.ic_iconfinder_143_attention_183267)); //ToDo change mesage
         } else if (end_time_milisecond == 0) {
-            DisplayUtil.showMessageDialog(getContext(), "Please select end date and time", getActivity().getDrawable(R.drawable.ic_iconfinder_143_attention_183267)); //ToDo change mesage
+            DisplayUtil.showMessageDialog(getContext(), "Please select end date and time", getActivity().getResources().getDrawable(R.drawable.ic_iconfinder_143_attention_183267)); //ToDo change mesage
 
         } else {
             new AsyncTask<Void, Integer, String>() {
@@ -163,8 +163,8 @@ public class Timed_GeneratedPasscodeFragment extends Fragment {
                 @SuppressLint("NewApi")
                 @Override
                 protected void onPostExecute(String json) {
-                    String msg = getContext().getString(R.string.words_authorize_successed);
                     try {
+                        String msg = getContext().getString(R.string.words_authorize_successed);
                         JSONObject jsonObject = new JSONObject(json);
                         if (jsonObject.has("errcode")) {
                             msg = "Operation failed!";

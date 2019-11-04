@@ -54,7 +54,7 @@ public class Permanent_GeneratePasscodeFragment extends Fragment {
                 if (NetworkUtils.isNetworkConnected(mContext)) {
                     getRequestGeneratePasscode();
                 }else {
-                    DisplayUtil.showMessageDialog(mContext, "Please check mobile network connection", getActivity().getDrawable(R.drawable.ic_no_internet));
+                    DisplayUtil.showMessageDialog(mContext, "Please check mobile network connection", getActivity().getResources().getDrawable(R.drawable.ic_no_internet));
                 }
             }
         });
@@ -62,20 +62,22 @@ public class Permanent_GeneratePasscodeFragment extends Fragment {
     }
 
     private void getRequestGeneratePasscode() {
-        alertDialog.show();
+        if(alertDialog!=null) {
+            alertDialog.show();
+        }
         new AsyncTask<Void, Integer, String>() {
-
             @Override
             protected String doInBackground(Void... params) {
                 return ResponseService.getKeyboardPwdPermanent(mKey.getLockId(), 4, 2, System.currentTimeMillis(), Long.parseLong("1923244200000"));
             }
-
             @SuppressLint("NewApi")
             @Override
             protected void onPostExecute(String json) {
-                alertDialog.dismiss();
-                String msg = getContext().getString(R.string.words_authorize_successed);
                 try {
+                    if(alertDialog!=null && alertDialog.isShowing()) {
+                        alertDialog.dismiss();
+                    }
+                    String msg = getContext().getResources().getString(R.string.words_authorize_successed);
                     JSONObject jsonObject = new JSONObject(json);
                     if (jsonObject.has("errcode")) {
                         msg = "Operation failed!";
@@ -95,6 +97,12 @@ public class Permanent_GeneratePasscodeFragment extends Fragment {
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
+                }catch (final IllegalArgumentException e) {
+                    // Handle or log or ignore
+                } catch (final Exception e) {
+                    // Handle or log or ignore
+                } finally {
+                    alertDialog = null;
                 }
             }
         }.execute();
