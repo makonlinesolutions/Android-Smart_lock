@@ -19,3 +19,45 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+
+# keep everything in this package from being removed or renamed
+-keep class okhttp3.** { *; }
+
+# keep everything in this package from being renamed only
+-keepnames class okhttp3.** { *; }
+
+# keep everything in this package from being removed or renamed
+-keep class retrofit2.** { *; }
+
+# keep everything in this package from being renamed only
+-keepnames class retrofit2.** { *; }
+
+# keep everything in this package from being removed or renamed
+-keep class butterknife.** { *; }
+
+# keep everything in this package from being renamed only
+-keepnames class butterknife.** { *; }
+
+# keep everything in this package from being removed or renamed
+-keep class rx.** { *; }
+
+# keep everything in this package from being renamed only
+-keepnames class rx.** { *; }
+
+# keep everything in this package from being removed or renamed
+-keep class net.** { *; }
+
+# keep everything in this package from being renamed only
+-keepnames class net.** { *; }
+
+# keep everything in this package from being removed or renamed
+-keep class org.** { *; }
+
+# keep everything in this package from being renamed only
+-keepnames class org.** { *; }
+
+# keep everything in this package from being removed or renamed
+-keep class java.** { *; }
+
+# keep everything in this package from being renamed only
+-keepnames class java.** { *; }
