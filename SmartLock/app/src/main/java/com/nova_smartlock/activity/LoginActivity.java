@@ -80,7 +80,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     String a;
     int keyDel;
     private Context mContext;
-    //    String user_name = "";
     private ApiServices services;
     private AlertDialog alertDialog;
 
@@ -98,13 +97,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         txt_label = findViewById(R.id.text_label);
         txt_label.setText("GUEST");
 
-        ((TextView)findViewById(R.id.tv_version)).setText("Version Name: "+BuildConfig.VERSION_NAME);
+        ((TextView)findViewById(R.id.tv_version)).setText("Version Name: "  + BuildConfig.VERSION_NAME);
 
-      /*  Intent intent = getIntent();
-        if (intent != null && intent.hasExtra("user_id")) {
-            user_name = intent.getStringExtra("user_id");
-        }
-        mEtLoginId.setText(user_name);*/
         ((TextView) findViewById(R.id.tv_register)).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -130,27 +124,22 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     public void onClick(View v) {
         final String username = mEtLoginId.getText().toString();
         final String password = mEtPassword.getText().toString();
-
         validateEntries(username, password);
-
     }
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     private void validateEntries(String username, String password) {
         boolean IS_ENTRY = true;
-
         if (TextUtils.isEmpty(username)) {
             Toast.makeText(mContext, "Please enter user name", Toast.LENGTH_SHORT).show();
             IS_ENTRY = false;
             return;
         }
-
         if (TextUtils.isEmpty(password)) {
             Toast.makeText(mContext, "Please enter password", Toast.LENGTH_SHORT).show();
             IS_ENTRY = false;
             return;
         }
-
         if (IS_ENTRY) {
             if (NetworkUtils.isNetworkConnected(mContext)) {
                 getRequestPMSLogin(username, password);
@@ -168,7 +157,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             @Override
             public void onResponse(Call<LoginResponse> call, Response<LoginResponse> response) {
                 LoginResponse loginResponse = response.body();
-
                 if (loginResponse != null) {
                     if (loginResponse.response.statusCode == 200) {
                         SharePreferenceUtility.saveStringPreferences(mContext, USER_ID, String.valueOf(loginResponse.response.smoId));
@@ -182,20 +170,16 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                         SharePreferenceUtility.saveStringPreferences(mContext, ORDER_TYPE, loginResponse.response.orderType);
                         SharePreferenceUtility.saveIntPreferences(mContext, ORDER_STATUS, loginResponse.response.orderStatus);
                         SharePreferenceUtility.saveStringPreferences(mContext, TOKEN, "Bearer " + String.valueOf(loginResponse.response.token));
-
-
-
                         callTTLogin();
                     } else {
                         alertDialog.dismiss();
                         showMessageDialog(loginResponse.response.message, getDrawable(R.drawable.ic_iconfinder_ic_cancel_48px_352263));
-                    };
+                    }
                 } else {
                     alertDialog.dismiss();
                     Toast.makeText(mContext, "Something went wrong", Toast.LENGTH_SHORT).show();
                 }
             }
-
             @Override
             public void onFailure(Call<LoginResponse> call, Throwable t) {
                 alertDialog.dismiss();
@@ -208,12 +192,10 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         final String username = mEtLoginId.getText().toString();
         final String password = mEtPassword.getText().toString();
         new AsyncTask<Void, Integer, String>() {
-
             @Override
             protected String doInBackground(Void... params) {
                 return ResponseService.auth(Constants.AppConst.NOVA_LOCK_ADMIN_USER_ID, Constants.AppConst.NOVA_LOCK_ADMIN_USER_PASSWORD);
             }
-
             @SuppressLint("NewApi")
             @Override
             protected void onPostExecute(String json) {
@@ -255,7 +237,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             @Override
             public void onResponse(Call<KeyDetailsResponse> call, Response<KeyDetailsResponse> response) {
                 KeyDetailsResponse keyDetailsResponse = response.body();
-
                 if (keyDetailsResponse != null) {
                     if (keyDetailsResponse.response.statusCode == 200) {
                         List<KeyDetails> key_details = keyDetailsResponse.response.response;
@@ -273,12 +254,9 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                             SharePreferenceUtility.saveStringPreferences(LoginActivity.this, GROUP_CODE, keyDetailsResponse.response.orderDetails.groupCode);
                             SharePreferenceUtility.saveStringPreferences(LoginActivity.this, ROOM_TYPE, keyDetailsResponse.response.orderDetails.title);
                         }
-
                         if (key_details.size() > 0) {
-
                             DatabaseHelper databaseHelper = new DatabaseHelper(mContext);
                             databaseHelper.deleteAllData();
-
                             for (int j = 0; j < key_details.size(); j++) {
                                 databaseHelper.insertLock(key_details.get(j));
                             }
@@ -311,7 +289,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                     showMessageDialog("No data found, Please contact to administrator!!!", getDrawable(R.drawable.ic_iconfinder_ok_2639876));
                 }
             }
-
             @Override
             public void onFailure(Call<KeyDetailsResponse> call, Throwable t) {
                 alertDialog.dismiss();
@@ -361,7 +338,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             @Override
             public void onClick(View v) {
                 dialog.dismiss();
-
                 if (msg.equals("Access Validated! - Login successful!")) {
                     SharePreferenceUtility.saveBooleanPreferences(mContext, IS_ADMIN_LOGIN, false);
                     Intent intent = new Intent(mContext, MainActivity.class);
@@ -376,7 +352,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         dialog.setCanceledOnTouchOutside(false);
         dialog.show();
     }
-
 
     private void toast(final String message) {
         runOnUiThread(new Runnable() {
