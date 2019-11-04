@@ -182,13 +182,11 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                         SharePreferenceUtility.saveIntPreferences(mContext, ORDER_STATUS, loginResponse.response.orderStatus);
                         SharePreferenceUtility.saveStringPreferences(mContext, TOKEN, "Bearer " + String.valueOf(loginResponse.response.token));
 
-
-
                         callTTLogin();
                     } else {
                         alertDialog.dismiss();
                         showMessageDialog(loginResponse.response.message, getDrawable(R.drawable.ic_iconfinder_ic_cancel_48px_352263));
-                    };
+                    }
                 } else {
                     alertDialog.dismiss();
                     Toast.makeText(mContext, "Something went wrong", Toast.LENGTH_SHORT).show();
