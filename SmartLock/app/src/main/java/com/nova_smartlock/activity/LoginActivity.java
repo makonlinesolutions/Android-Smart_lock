@@ -33,7 +33,6 @@ import com.nova_smartlock.retrofit.ApiServiceProvider;
 import com.nova_smartlock.retrofit.ApiServices;
 import com.nova_smartlock.sp.MyPreference;
 import com.nova_smartlock.utils.Const;
-import com.nova_smartlock.utils.Constants;
 import com.nova_smartlock.utils.DisplayUtil;
 import com.nova_smartlock.utils.NetworkUtils;
 import com.nova_smartlock.utils.SharePreferenceUtility;
@@ -194,7 +193,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         new AsyncTask<Void, Integer, String>() {
             @Override
             protected String doInBackground(Void... params) {
-                return ResponseService.auth(Constants.AppConst.NOVA_LOCK_ADMIN_USER_ID, Constants.AppConst.NOVA_LOCK_ADMIN_USER_PASSWORD);
+                return ResponseService.auth((String) SharePreferenceUtility.getPreferences(mContext, Const.ADMIN_LOGIN, SharePreferenceUtility.PREFTYPE_STRING), (String) SharePreferenceUtility.getPreferences(mContext, Const.ADMIN_PASSWORD, SharePreferenceUtility.PREFTYPE_STRING));
             }
             @SuppressLint("NewApi")
             @Override

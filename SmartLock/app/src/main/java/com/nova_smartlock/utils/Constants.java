@@ -37,8 +37,8 @@ public class Constants {
         String ORDER_STATUS = "orderStatus";
         String ORDER_TYPE = "orderType";
         String TOKEN = "token";
-        String NOVA_LOCK_ADMIN_USER_ID = "nss_admin";
-        String NOVA_LOCK_ADMIN_USER_PASSWORD = "123456";
+//        String NOVA_LOCK_ADMIN_USER_ID = "nss_admin";
+//        String NOVA_LOCK_ADMIN_USER_PASSWORD = "123456";
         String IS_FIRST_TIME_LOGIN = "first_time_login";
 
         /*Order Details Constants*/
