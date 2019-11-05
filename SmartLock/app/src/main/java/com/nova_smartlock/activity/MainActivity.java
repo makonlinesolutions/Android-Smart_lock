@@ -98,7 +98,9 @@ public class MainActivity extends BaseActivity implements DrawerAdapter.OnItemSe
         final boolean is_first_time_login = (boolean) SharePreferenceUtility.getPreferences(MainActivity.this, IS_FIRST_TIME_LOGIN, SharePreferenceUtility.PREFTYPE_BOOLEAN);
 
         if (!is_first_time_login) {
-            dialog = CommonUtils.showProgressDialog(MainActivity.this);
+            if(!is_admin_login) {
+                dialog = CommonUtils.showProgressDialog(MainActivity.this);
+            }
         }
 
         if (is_admin_login) {
@@ -161,7 +163,9 @@ public class MainActivity extends BaseActivity implements DrawerAdapter.OnItemSe
                     startActivity(new Intent(MainActivity.this, NearbyLockActivity.class));
                     overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
                 }else {
-                    CommonUtils.showProgressDialog(MainActivity.this);
+                    if(!is_admin_login) {
+                        CommonUtils.showProgressDialog(MainActivity.this);
+                    }
                 }
             }
         });
@@ -491,7 +495,9 @@ public class MainActivity extends BaseActivity implements DrawerAdapter.OnItemSe
         Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.container);
 
         if (dialog != null && dialog.isShowing()){
-            dialog = CommonUtils.showProgressDialog(MainActivity.this);
+            if(!is_admin_login) {
+                dialog = CommonUtils.showProgressDialog(MainActivity.this);
+            }
         }else {
             if (fragment instanceof Fragment_home) {
                 new AlertDialog.Builder(this)
