@@ -203,14 +203,15 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                     JSONObject jsonObject = new JSONObject(json);
                     if (jsonObject.has("errmsg")) {
                         alertDialog.dismiss();
-                        if (TextUtils.isEmpty(username)) {
+                       /* if (TextUtils.isEmpty(username)) {
+
                             toast("Please enter mobile number");
                         } else if (TextUtils.isEmpty(password)) {
                             toast("Please enter password");
                         } else {
-                            msg = "Incorrect Username or Password! Please Try again";
-                            showMessageDialog(msg, getDrawable(R.drawable.ic_iconfinder_ic_cancel_48px_352263));
-                        }
+                        }*/
+                        msg = "Incorrect Username or Password! Please Try again";
+                        showMessageDialog(msg, getDrawable(R.drawable.ic_iconfinder_ic_cancel_48px_352263));
                     } else {
                         String access_token = jsonObject.getString("access_token");
                         String openid = jsonObject.getString("openid");
