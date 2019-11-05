@@ -165,6 +165,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                         SharePreferenceUtility.saveStringPreferences(mContext, ORDER_TYPE, loginResponse.response.orderType);
                         SharePreferenceUtility.saveIntPreferences(mContext, ORDER_STATUS, loginResponse.response.orderStatus);
                         SharePreferenceUtility.saveStringPreferences(mContext, TOKEN, "Bearer " + String.valueOf(loginResponse.response.token));
+
                         callTTLogin();
                     } else {
                         alertDialog.dismiss();
