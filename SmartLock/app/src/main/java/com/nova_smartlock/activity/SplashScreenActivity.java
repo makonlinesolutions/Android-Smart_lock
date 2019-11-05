@@ -156,11 +156,12 @@ public class SplashScreenActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<AdminDataGetDetailsResponse> call, Response<AdminDataGetDetailsResponse> response) {
                 if (response.isSuccessful()) {
+                    Log.i("admin_login",response.message());
                     if (response.body().response.statusCode == 200) {
                         SharePreferenceUtility.saveStringPreferences(mContext, Const.ADMIN_LOGIN, response.body().response.details.userName);
-                        SharePreferenceUtility.saveStringPreferences(mContext, ADMIN_PASSWORD, response.body().response.details.password);
-                        SharePreferenceUtility.saveStringPreferences(mContext, APP_ID, response.body().response.details.lockId);
-                        SharePreferenceUtility.saveStringPreferences(mContext, SCRETE_KEY, response.body().response.details.secretKey);
+                        SharePreferenceUtility.saveStringPreferences(mContext, Const.ADMIN_PASSWORD, response.body().response.details.password);
+                        SharePreferenceUtility.saveStringPreferences(mContext, Const.APP_ID, response.body().response.details.lockId);
+                        SharePreferenceUtility.saveStringPreferences(mContext, Const.SCRETE_KEY, response.body().response.details.secretKey);
                         Intent intent = new Intent(SplashScreenActivity.this, LoginActivity.class);
                         startActivity(intent);
                         overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
