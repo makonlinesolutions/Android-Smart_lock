@@ -26,6 +26,8 @@ import com.nova_smartlock.model.KeyObj;
 import com.nova_smartlock.net.ResponseService;
 import com.nova_smartlock.retrofit.ApiServiceProvider;
 import com.nova_smartlock.retrofit.ApiServices;
+import com.nova_smartlock.utils.DisplayUtil;
+import com.nova_smartlock.utils.NetworkUtils;
 import com.ttlock.bl.sdk.scanner.ExtendedBluetoothDevice;
 import com.ttlock.bl.sdk.util.GsonUtil;
 import com.ttlock.bl.sdk.util.LogUtil;
@@ -57,7 +59,6 @@ public class FoundDeviceActivity extends BaseActivity implements AdapterView.OnI
         @Override
         public void onReceive(Context context, Intent intent) {
             final String action = intent.getAction();
-
             if (action.equals(BleConstant.ACTION_BLE_DEVICE)) {
                 Bundle bundle = intent.getExtras();
                 device = bundle.getParcelable(BleConstant.DEVICE);
@@ -103,27 +104,28 @@ public class FoundDeviceActivity extends BaseActivity implements AdapterView.OnI
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        SmartLockApp.bleSession.setOperation(Operation.ADD_ADMIN);
-        SmartLockApp.mTTLockAPI.connect((ExtendedBluetoothDevice) foundDeviceAdapter.getItem(position));
-        showProgressDialog();
-        syncData(((ExtendedBluetoothDevice) foundDeviceAdapter.getItem(position)).getName());
+        if (NetworkUtils.isNetworkConnected(mContext)) {
+            SmartLockApp.bleSession.setOperation(Operation.ADD_ADMIN);
+            SmartLockApp.mTTLockAPI.connect((ExtendedBluetoothDevice) foundDeviceAdapter.getItem(position));
+            showProgressDialog();
+            syncData(((ExtendedBluetoothDevice) foundDeviceAdapter.getItem(position)).getName());
+        }else {
+            DisplayUtil.showMessageDialog(mContext, "Please check Mobile network connection", getResources().getDrawable(R.drawable.ic_no_internet));
+        }
     }
 
     private void getRequestToAddLockToPMSServer(KeyObj keyObj) {
-
         Call<AddLockResponse> addLockResponseCall = services.ADD_LOCK_RESPONSE_CALL("", keyObj.userType, keyObj.keyStatus, String.valueOf(keyObj.lockId),
                 String.valueOf(keyObj.keyId), keyObj.lockVersion.protocolVersion, keyObj.lockName, keyObj.lockAlias, keyObj.lockMac, String.valueOf(keyObj.electricQuantity),
                 String.valueOf(keyObj.lockFlagPos), keyObj.adminPwd, keyObj.lockKey, keyObj.noKeyPwd, "000", keyObj.pwdInfo, String.valueOf(keyObj.timestamp), keyObj.aesKeyStr,
                 String.valueOf(keyObj.startDate), String.valueOf(keyObj.endDate), String.valueOf(keyObj.specialValue), String.valueOf(keyObj.timezoneRawOffset),
                 String.valueOf(keyObj.keyRight), String.valueOf(keyObj.keyboardPwdVersion), String.valueOf(keyObj.remoteEnable), keyObj.remarks);
-
         addLockResponseCall.enqueue(new Callback<AddLockResponse>() {
             @Override
             public void onResponse(Call<AddLockResponse> call, Response<AddLockResponse> response) {
                 if (response.isSuccessful()) {
                     if (response.body().response.statusCode == 200) {
                         Log.d("Lock add", "successfully");
-
                     }
                 } else {
                     Toast.makeText(mContext, "something went wrong", Toast.LENGTH_SHORT).show();
