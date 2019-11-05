@@ -54,7 +54,7 @@ public class Timed_GeneratedPasscodeFragment extends Fragment {
         tv_end_time=view.findViewById(R.id.tv_end_time);
         arrKey = DbService.getKeyListKey();
         mKey = (Key) SharePreferenceUtility.getPreferences(getContext(), KEY_VALUE, SharePreferenceUtility.PREFTYPE_OBJECT);
-        final SimpleDateFormat simpleDateFormat=new SimpleDateFormat("yyyy:MM:dd  HH:mm");
+        final SimpleDateFormat simpleDateFormat=new SimpleDateFormat("MM:dd:yyyy  HH:mm a");
         Calendar calendar=Calendar.getInstance();
 
         String current_time_date= calendar.get(Calendar.YEAR)+ ":" + String.format("%02d",(calendar.get(Calendar.MONTH) + 1)) + ":"  +String.format("%02d",calendar.get(Calendar.DATE)) + "  "+ String.format("%02d",calendar.get(Calendar.HOUR_OF_DAY)) +":" +String.format("%02d",calendar.get(Calendar.MINUTE));

@@ -125,6 +125,7 @@ public class Fragment_home extends Fragment implements View.OnClickListener, Unl
     private BottomSheetBehavior behavior ;
     private MaterialCardView linearBottomLayout ;
     private ImageView iv_arrow ;
+    private boolean is_admin_login;
     private TextView tv_room_no, tv_check_in, tv_check_out, tv_adults, tv_kids, tv_ordered_on, tv_arrive_time, tv_departure_time, tv_group_name_code, tv_room_id;
 
     private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
@@ -177,6 +178,8 @@ public class Fragment_home extends Fragment implements View.OnClickListener, Unl
         tv_room_id = view.findViewById(R.id.tv_room_id);
 
         is_first_time_login = (boolean) SharePreferenceUtility.getPreferences(getContext(), IS_FIRST_TIME_LOGIN, SharePreferenceUtility.PREFTYPE_BOOLEAN);
+        is_admin_login = (boolean) SharePreferenceUtility.getPreferences(mContext, Config.IS_ADMIN_LOGIN, SharePreferenceUtility.PREFTYPE_BOOLEAN);
+
 
         if (is_first_time_login) {
             alertDialog = new SpotsDialog.Builder().setContext(getActivity()).setMessage("Loading").build();
@@ -184,7 +187,7 @@ public class Fragment_home extends Fragment implements View.OnClickListener, Unl
         }
         init();
         ll_ekeys.setVisibility(View.GONE);
-        boolean is_admin = (boolean) SharePreferenceUtility.getPreferences(getContext(), Config.IS_ADMIN_LOGIN, SharePreferenceUtility.PREFTYPE_BOOLEAN);
+        final boolean is_admin = (boolean) SharePreferenceUtility.getPreferences(getContext(), Config.IS_ADMIN_LOGIN, SharePreferenceUtility.PREFTYPE_BOOLEAN);
         if (!is_admin) {
             ll_passcode.setVisibility(View.GONE);
             ll_generate_passcode.setVisibility(View.GONE);
@@ -233,7 +236,9 @@ public class Fragment_home extends Fragment implements View.OnClickListener, Unl
                         behavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
                     }
                 } else {
-                    CommonUtils.showProgressDialog(getContext());
+                    if (!is_admin_login) {
+                        CommonUtils.showProgressDialog(getContext());
+                    }
                 }
             }
         });
@@ -372,7 +377,7 @@ public class Fragment_home extends Fragment implements View.OnClickListener, Unl
             }
         }
 
-        boolean is_admin_login = (boolean) SharePreferenceUtility.getPreferences(getContext(), Config.IS_ADMIN_LOGIN, SharePreferenceUtility.PREFTYPE_BOOLEAN);
+//        final boolean is_admin_login = (boolean) SharePreferenceUtility.getPreferences(getContext(), Config.IS_ADMIN_LOGIN, SharePreferenceUtility.PREFTYPE_BOOLEAN);
         if(!is_admin_login){
             linearBottomLayout.setVisibility(View.VISIBLE);
             setRoomDetails();
@@ -427,7 +432,13 @@ public class Fragment_home extends Fragment implements View.OnClickListener, Unl
                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     startActivity(intent);
                 } else {
-                    CommonUtils.showProgressDialog(getContext());
+                    if (!is_admin_login) {
+                        CommonUtils.showProgressDialog(getContext());
+                    } else {
+                        Intent intent = new Intent(getActivity(), GeneratePasscodeActivity.class);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        startActivity(intent);
+                    }
                 }
             }
         });
@@ -868,7 +879,210 @@ public class Fragment_home extends Fragment implements View.OnClickListener, Unl
                     }
                 }
             }else {
-                CommonUtils.showProgressDialog(getContext());
+                if (!is_admin_login) {
+                    CommonUtils.showProgressDialog(getContext());
+                } else {
+
+                    if (!NetworkUtils.isNetworkConnected(mContext)) {
+                        boolean is_admin_login = (boolean) SharePreferenceUtility.getPreferences(getContext(), Config.IS_ADMIN_LOGIN, SharePreferenceUtility.PREFTYPE_BOOLEAN);
+                        if (is_admin_login) {
+
+//                        Fragment_home.getInstance().showMessageDialog("Please check Mobile network connection", getActivity().getDrawable(R.drawable.ic_no_internet));
+                            mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+                            if (mBluetoothAdapter == null) {
+                                // Device does not support Bluetooth
+                            } else {
+                                if (!mBluetoothAdapter.isEnabled()) {
+                                    mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+                                    if (mBluetoothAdapter.disable()) {
+                                        mBluetoothAdapter.enable();
+                                        showMessageDialog("Bluetooth  is successfully enabled / ON", getActivity().getDrawable(R.drawable.ic_iconfinder_ok_2639876));
+                                    }
+                                } else {
+
+                                    if (mKey == null) {
+                                        startActivity(new Intent(getContext(), AddLockActivity.class).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+                                    } else {
+
+                                        if (mKey != null && mKey.getLockMac() != null && mTTLockAPI.isConnected(mKey.getLockMac())) {//If the lock is connected, you can call interface directly
+                                            img_lock.setBackgroundResource(R.drawable.ic_unlock_color);
+                                            if (mKey.isAdmin())
+                                                mTTLockAPI.unlockByAdministrator(null, openid, mKey.getLockVersion(), mKey.getAdminPwd(), mKey.getLockKey(), mKey.getLockFlagPos(), System.currentTimeMillis(), mKey.getAesKeyStr(), mKey.getTimezoneRawOffset());
+                                            else
+                                                mTTLockAPI.unlockByUser(null, openid, mKey.getLockVersion(), mKey.getStartDate(), mKey.getEndDate(), mKey.getLockKey(), mKey.getLockFlagPos(), mKey.getAesKeyStr(), mKey.getTimezoneRawOffset());
+                                        } else {//to connect the lock
+                                            if (isDeviceNearBy(mKey.getLockMac())) {
+                                                progressView.setVisibility(View.VISIBLE);
+                                                progressView.startAnimation();
+                                                new Handler().postDelayed(
+                                                        new Runnable() {
+                                                            @Override
+                                                            public void run() {
+                                                                progressView.stopAnimation();
+                                                                progressView.setVisibility(View.GONE);
+                                                                img_lock.setVisibility(View.GONE);
+                                                                mIvUnLock.setVisibility(View.VISIBLE);
+                                                            }
+                                                        }, 5000);
+                                                new Handler().postDelayed(
+                                                        new Runnable() {
+                                                            @Override
+                                                            public void run() {
+                                                                img_lock.setVisibility(View.VISIBLE);
+                                                                mIvUnLock.setVisibility(View.GONE);
+                                                            }
+                                                        }, 8000);
+                                                progressView.setVisibility(View.VISIBLE);
+                                                progressView.startAnimation();
+                                                mTTLockAPI.connect(mKey.getLockMac());
+                                                bleSession.setOperation(Operation.CLICK_UNLOCK);
+                                                bleSession.setLockmac(mKey.getLockMac());
+                                            } else {
+                                                Log.d("operation failed", "operation  684");
+                                                showMessageDialog(mContext.getString(R.string.operation_failed), getContext().getDrawable(R.drawable.ic_iconfinder_ic_cancel_48px_352263));
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        } else {
+                            if (isCheckInDate()) {
+                                if (isCheckInTime()) {
+//                        Fragment_home.getInstance().showMessageDialog("Please check Mobile network connection", getActivity().getDrawable(R.drawable.ic_no_internet));
+                                    mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+                                    if (mBluetoothAdapter == null) {
+                                        // Device does not support Bluetooth
+                                    } else {
+                                        if (!mBluetoothAdapter.isEnabled()) {
+                                            mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+                                            if (mBluetoothAdapter.disable()) {
+                                                mBluetoothAdapter.enable();
+                                                showMessageDialog("Bluetooth  is successfully enabled / ON", getActivity().getDrawable(R.drawable.ic_iconfinder_ok_2639876));
+                                            }
+                                        } else {
+
+                                            if (mKey == null) {
+                                                startActivity(new Intent(getContext(), AddLockActivity.class).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+                                            } else {
+
+                                                if (mKey != null && mKey.getLockMac() != null && mTTLockAPI.isConnected(mKey.getLockMac())) {//If the lock is connected, you can call interface directly
+                                                    img_lock.setBackgroundResource(R.drawable.ic_unlock_color);
+                                                    if (mKey.isAdmin())
+                                                        mTTLockAPI.unlockByAdministrator(null, openid, mKey.getLockVersion(), mKey.getAdminPwd(), mKey.getLockKey(), mKey.getLockFlagPos(), System.currentTimeMillis(), mKey.getAesKeyStr(), mKey.getTimezoneRawOffset());
+                                                    else
+                                                        mTTLockAPI.unlockByUser(null, openid, mKey.getLockVersion(), mKey.getStartDate(), mKey.getEndDate(), mKey.getLockKey(), mKey.getLockFlagPos(), mKey.getAesKeyStr(), mKey.getTimezoneRawOffset());
+                                                } else {//to connect the lock
+                                                    if (isDeviceNearBy(mKey.getLockMac())) {
+                                                        progressView.setVisibility(View.VISIBLE);
+                                                        progressView.startAnimation();
+                                                        new Handler().postDelayed(
+                                                                new Runnable() {
+                                                                    @Override
+                                                                    public void run() {
+                                                                        progressView.stopAnimation();
+                                                                        progressView.setVisibility(View.GONE);
+                                                                        img_lock.setVisibility(View.GONE);
+                                                                        mIvUnLock.setVisibility(View.VISIBLE);
+                                                                    }
+                                                                }, 5000);
+                                                        new Handler().postDelayed(
+                                                                new Runnable() {
+                                                                    @Override
+                                                                    public void run() {
+                                                                        img_lock.setVisibility(View.VISIBLE);
+                                                                        mIvUnLock.setVisibility(View.GONE);
+                                                                    }
+                                                                }, 8000);
+                                                        progressView.setVisibility(View.VISIBLE);
+                                                        progressView.startAnimation();
+                                                        mTTLockAPI.connect(mKey.getLockMac());
+                                                        bleSession.setOperation(Operation.CLICK_UNLOCK);
+                                                        bleSession.setLockmac(mKey.getLockMac());
+                                                    } else {
+                                                        Log.d("operation failed", "operation  684");
+                                                        showMessageDialog(mContext.getString(R.string.operation_failed), getContext().getDrawable(R.drawable.ic_iconfinder_ic_cancel_48px_352263));
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                } else {
+                                    Fragment_home.getInstance().showMessageDialog("Please check your checkIn/checkOut Time", getActivity().getDrawable(R.drawable.ic_warning_black_48dp));
+                                }
+                            } else {
+                                Fragment_home.getInstance().showMessageDialog("Please check your checkIn/checkOut Date", getActivity().getDrawable(R.drawable.ic_warning_black_48dp));
+                            }
+                        }
+                    } else {
+                        mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+                        if (mBluetoothAdapter == null) {
+                            // Device does not support Bluetooth
+                        } else {
+                            if (!mBluetoothAdapter.isEnabled()) {
+                                mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+                                if (mBluetoothAdapter.disable()) {
+                                    mBluetoothAdapter.enable();
+                                    showMessageDialog("Bluetooth  is successfully enabled / ON", getActivity().getDrawable(R.drawable.ic_iconfinder_ok_2639876));
+                                }
+                            } else {
+                                boolean is_admin_login = (boolean) SharePreferenceUtility.getPreferences(getContext(), Config.IS_ADMIN_LOGIN, SharePreferenceUtility.PREFTYPE_BOOLEAN);
+                                if (is_admin_login) {
+                                    if (mKey == null) {
+                                        startActivity(new Intent(getContext(), AddLockActivity.class).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+                                    } else {
+
+                                        if (mKey != null && mKey.getLockMac() != null && mTTLockAPI.isConnected(mKey.getLockMac())) {//If the lock is connected, you can call interface directly
+                                            img_lock.setBackgroundResource(R.drawable.ic_unlock_color);
+                                            if (mKey.isAdmin())
+                                                mTTLockAPI.unlockByAdministrator(null, openid, mKey.getLockVersion(), mKey.getAdminPwd(), mKey.getLockKey(), mKey.getLockFlagPos(), System.currentTimeMillis(), mKey.getAesKeyStr(), mKey.getTimezoneRawOffset());
+                                            else
+                                                mTTLockAPI.unlockByUser(null, openid, mKey.getLockVersion(), mKey.getStartDate(), mKey.getEndDate(), mKey.getLockKey(), mKey.getLockFlagPos(), mKey.getAesKeyStr(), mKey.getTimezoneRawOffset());
+                                        } else {//to connect the lock
+
+                                            if (isDeviceNearBy(mKey.getLockMac())) {
+
+
+                                                progressView.setVisibility(View.VISIBLE);
+                                                progressView.startAnimation();
+                                                new Handler().postDelayed(
+                                                        new Runnable() {
+                                                            @Override
+                                                            public void run() {
+                                                                progressView.stopAnimation();
+                                                                progressView.setVisibility(View.GONE);
+                                                                img_lock.setVisibility(View.GONE);
+                                                                mIvUnLock.setVisibility(View.VISIBLE);
+                                                            }
+                                                        }, 5000);
+
+                                                new Handler().postDelayed(
+                                                        new Runnable() {
+                                                            @Override
+                                                            public void run() {
+                                                                img_lock.setVisibility(View.VISIBLE);
+                                                                mIvUnLock.setVisibility(View.GONE);
+                                                            }
+                                                        }, 8000);
+
+
+                                                progressView.setVisibility(View.VISIBLE);
+                                                progressView.startAnimation();
+                                                mTTLockAPI.connect(mKey.getLockMac());
+                                                bleSession.setOperation(Operation.CLICK_UNLOCK);
+                                                bleSession.setLockmac(mKey.getLockMac());
+                                            } else {
+                                                Log.d("operation failed", "operation  756");
+                                                showMessageDialog(mContext.getString(R.string.operation_failed), getContext().getDrawable(R.drawable.ic_iconfinder_ic_cancel_48px_352263));
+                                            }
+                                        }
+                                    }
+                                } else {
+                                    getRequestCheckChecked();
+                                }
+                            }
+                        }
+                    }
+                }
             }
         }
     }

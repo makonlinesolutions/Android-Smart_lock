@@ -349,7 +349,7 @@ public class SettingsActivity extends AppCompatActivity {
 
                             for (int i = 0; i < keys.size(); i++) {
                                 if (jsonObject.getString("lockMac").equals(keys.get(i).getLockMac())) {
-                                    SharePreferenceUtility.saveObjectPreferences(mContext, KEY_VALUE, keys.get(i)k);
+                                    SharePreferenceUtility.saveObjectPreferences(mContext, KEY_VALUE, keys.get(i));
                                 }
                             }
 
