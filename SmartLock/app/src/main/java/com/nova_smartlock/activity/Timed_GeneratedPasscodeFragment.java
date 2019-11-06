@@ -172,7 +172,7 @@ public class Timed_GeneratedPasscodeFragment extends Fragment {
                                 DisplayUtil.showMessageDialog(getContext(), msg, getActivity().getDrawable(R.drawable.ic_iconfinder_143_attention_183267)); //ToDo change mesage
                                 //Toast.makeText(mContext, "Now you can the credentials", Toast.LENGTH_SHORT).show();
                             } else {
-                                DisplayUtil.showMessageDialog(getContext(), msg, getActivity().getDrawable(R.drawable.ic_iconfinder_143_attention_183267)); //ToDo change mesage
+                                DisplayUtil.showMessageDialog(getContext(), jsonObject.getString("description"), getActivity().getDrawable(R.drawable.ic_iconfinder_143_attention_183267)); //ToDo change mesage
                                 //Toast.makeText(mContext, "Now you can the credentials", Toast.LENGTH_SHORT).show();
                             }
                         } else {

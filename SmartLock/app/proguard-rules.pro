@@ -61,3 +61,36 @@
 
 # keep everything in this package from being renamed only
 -keepnames class java.** { *; }
+
+# Add *one* of the following rules to your Proguard configuration file.
+# Alternatively, you can annotate classes and class members with @android.support.annotation.Keep
+
+# keep everything in this package from being removed or renamed
+-keep class com.nova_smartlock.activity.** { *; }
+
+# keep everything in this package from being renamed only
+-keepnames class com.nova_smartlock.activity.** { *; }
+
+# keep everything in this package from being removed or renamed
+-keep class com.nova_smartlock.model.** { *; }
+
+# keep everything in this package from being renamed only
+-keepnames class com.nova_smartlock.model.** { *; }
+
+# keep everything in this package from being removed or renamed
+-keep class com.nova_smartlock.app.** { *; }
+
+# keep everything in this package from being renamed only
+-keepnames class com.nova_smartlock.app.** { *; }
+
+# keep everything in this package from being removed or renamed
+-keep class com.nova_smartlock.utils.** { *; }
+
+# keep everything in this package from being renamed only
+-keepnames class com.nova_smartlock.utils.** { *; }
+
+# keep everything in this package from being removed or renamed
+-keep class com.nova_smartlock.constant.** { *; }
+
+# keep everything in this package from being renamed only
+-keepnames class com.nova_smartlock.constant.** { *; }
