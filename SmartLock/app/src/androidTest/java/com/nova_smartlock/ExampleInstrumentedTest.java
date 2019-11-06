@@ -1,4 +1,4 @@
-package com.smartlock;
+package com.nova_smartlock;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
