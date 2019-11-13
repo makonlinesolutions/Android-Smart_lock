@@ -28,7 +28,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 style="@style/settings_text"
-                android:text="Start Time"
+                android:text="Start Date"
                 android:layout_marginLeft="5dp"
                 android:layout_centerVertical="true"
                 />
@@ -62,7 +62,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 style="@style/settings_text"
-                android:text="End Time"
+                android:text="End Date"
                 android:layout_marginLeft="5dp"
                 android:layout_centerVertical="true"
                 />

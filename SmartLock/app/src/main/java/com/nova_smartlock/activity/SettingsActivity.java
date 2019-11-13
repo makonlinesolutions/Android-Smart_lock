@@ -23,8 +23,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.dd.processbutton.FlatButton;
+import com.google.gson.reflect.TypeToken;
 import com.nova_smartlock.R;
+import com.nova_smartlock.dao.DbService;
 import com.nova_smartlock.model.Key;
+import com.nova_smartlock.model.KeyObj;
 import com.nova_smartlock.model.UnlockKeyNameResponse;
 import com.nova_smartlock.net.ResponseService;
 import com.nova_smartlock.retrofit.ApiServiceProvider;
@@ -32,9 +35,14 @@ import com.nova_smartlock.retrofit.ApiServices;
 import com.nova_smartlock.sp.MyPreference;
 import com.nova_smartlock.utils.DisplayUtil;
 import com.nova_smartlock.utils.NetworkUtils;
+import com.nova_smartlock.utils.SharePreferenceUtility;
+import com.ttlock.bl.sdk.util.GsonUtil;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import dmax.dialog.SpotsDialog;
 import retrofit2.Call;
@@ -42,6 +50,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 import static com.nova_smartlock.activity.NearbyLockActivity.curKey;
+import static com.nova_smartlock.utils.Const.KEY_VALUE;
 
 public class SettingsActivity extends AppCompatActivity {
     Toolbar toolbar;
@@ -52,6 +61,8 @@ public class SettingsActivity extends AppCompatActivity {
     private Button mBtLock;
     private ApiServices services;
     private android.app.AlertDialog alertDialog;
+    private List<Key> keys;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -140,6 +151,14 @@ public class SettingsActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
+
+        if (NetworkUtils.isNetworkConnected(mContext)) {
+            syncData();
+        } else {
+            DisplayUtil.showMessageDialog(mContext, "Please check Mobile network connection", getDrawable(R.drawable.ic_no_internet));
+        }
+
     }
 
     private void initUi() {
@@ -166,6 +185,7 @@ public class SettingsActivity extends AppCompatActivity {
         mTvLockName = findViewById(R.id.tv_lock_name);
         mTvLockGroup = findViewById(R.id.tv_lock_group);
         alertDialog = new SpotsDialog.Builder().setContext(mContext).setMessage("Loading").build();
+        keys = new ArrayList<>();
 
 
         mBtLock.setOnClickListener(new View.OnClickListener() {
@@ -319,12 +339,19 @@ public class SettingsActivity extends AppCompatActivity {
                             DisplayUtil.showMessageDialog(SettingsActivity.this, msg, getDrawable(R.drawable.ic_iconfinder_ic_cancel_48px_352263));
                             //Toast.makeText(mContext, msg, Toast.LENGTH_SHORT).show();
                         } else {
+
                             mTvLockNumber.setText(jsonObject.getString("lockName"));
                             mTvMacId.setText(jsonObject.getString("lockMac"));
                             mTvBattery.setText(jsonObject.getString("electricQuantity") + "%");
                             mTvLockName.setText(jsonObject.getString("lockAlias"));
                             JSONObject lockGroupDetails = jsonObject.getJSONObject("lockVersion");
                             mTvLockGroup.setText(lockGroupDetails.getString("groupId"));
+
+                            for (int i = 0; i < keys.size(); i++) {
+                                if (jsonObject.getString("lockMac").equals(keys.get(i).getLockMac())) {
+                                    SharePreferenceUtility.saveObjectPreferences(mContext, KEY_VALUE, keys.get(i));
+                                }
+                            }
 
 //                        mTvLockNumber.setText(jsonObject.getString("lockName"));
 //                        mTvLockNumber.setText(jsonObject.getString("lockName"));
@@ -368,4 +395,82 @@ public class SettingsActivity extends AppCompatActivity {
         }.execute();
 
     }
+
+
+    /**
+     * synchronizes the data of key
+     */
+    private void syncData() {
+        new AsyncTask<Void, String, String>() {
+
+            @Override
+            protected String doInBackground(Void... params) {
+                //you can synchronizes all key datas when lastUpdateDate is 0
+                String json = ResponseService.syncData(0);
+                try {
+                    JSONObject jsonObject = new JSONObject(json);
+
+                    //use lastUpdateDate you can get the newly added key and data after the time
+                    long lastUpdateDate = jsonObject.getLong("lastUpdateDate");
+                    String keyList = jsonObject.getString("keyList");
+//                    JSONArray jsonArray = jsonObject.getJSONArray("keyList");
+                    keys.clear();
+                    ArrayList<KeyObj> list = GsonUtil.toObject(keyList, new TypeToken<ArrayList<KeyObj>>() {
+                    });
+
+                    keys.addAll(convert2DbModel(list));
+                    DbService.deleteAllKey();
+                    DbService.saveKeyList(keys);
+
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                return json;
+            }
+
+            @Override
+            protected void onPostExecute(String s) {
+                super.onPostExecute(s);
+            }
+        }.execute();
+    }
+
+    private static ArrayList<Key> convert2DbModel(ArrayList<KeyObj> list) {
+        ArrayList<Key> keyList = new ArrayList<>();
+        if (list != null && list.size() > 0) {
+            for (KeyObj key : list) {
+                Key DbKey = new Key();
+                DbKey.setUserType(key.userType);
+                DbKey.setKeyStatus(key.keyStatus);
+                DbKey.setLockId(key.lockId);
+                DbKey.setKeyId(key.keyId);
+                DbKey.setLockVersion(GsonUtil.toJson(key.lockVersion));
+                DbKey.setLockName(key.lockName);
+                DbKey.setLockAlias(key.lockAlias);
+                DbKey.setLockMac(key.lockMac);
+                DbKey.setElectricQuantity(key.electricQuantity);
+                DbKey.setLockFlagPos(key.lockFlagPos);
+                DbKey.setAdminPwd(key.adminPwd);
+                DbKey.setLockKey(key.lockKey);
+                DbKey.setNoKeyPwd(key.noKeyPwd);
+                DbKey.setDeletePwd(key.deletePwd);
+                DbKey.setPwdInfo(key.pwdInfo);
+                DbKey.setTimestamp(key.timestamp);
+                DbKey.setAesKeyStr(key.aesKeyStr);
+                DbKey.setStartDate(key.startDate);
+                DbKey.setEndDate(key.endDate);
+                DbKey.setSpecialValue(key.specialValue);
+                DbKey.setTimezoneRawOffset(key.timezoneRawOffset);
+                DbKey.setKeyRight(key.keyRight);
+                DbKey.setKeyboardPwdVersion(key.keyboardPwdVersion);
+                DbKey.setRemoteEnable(key.remoteEnable);
+                DbKey.setRemarks(key.remarks);
+
+                keyList.add(DbKey);
+            }
+        }
+        return keyList;
+    }
+
 }

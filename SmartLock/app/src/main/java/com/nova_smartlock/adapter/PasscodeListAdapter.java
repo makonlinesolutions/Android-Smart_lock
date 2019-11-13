@@ -1,7 +1,11 @@
 package com.nova_smartlock.adapter;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
@@ -14,10 +18,12 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.nova_smartlock.R;
+import com.nova_smartlock.interfaces.ShowCustomDialog;
 import com.nova_smartlock.model.Key;
 import com.nova_smartlock.model.PasscodeListItem;
 import com.nova_smartlock.net.ResponseService;
 import com.nova_smartlock.utils.DisplayUtil;
+import com.nova_smartlock.utils.NetworkUtils;
 import com.nova_smartlock.utils.SharePreferenceUtility;
 
 import org.json.JSONException;
@@ -63,14 +69,37 @@ public class PasscodeListAdapter extends RecyclerView.Adapter<PasscodeListAdapte
         passCodeViewHolder.createDate.setTextSize(13);
         passCodeViewHolder.passcode_value.setText(mContext.getString(R.string.passcode) + " " + arrPasscodeListItems.get(i).getKeyboardPwd());
         passCodeViewHolder.start_date.setText(mContext.getString(R.string.passcode_start_date) + " " + getDate(arrPasscodeListItems.get(i).getStartDate()));
-        passCodeViewHolder.end_date.setText(mContext.getString(R.string.passcode_expire_date) + " " + getDate(arrPasscodeListItems.get(i).getStartDate()));
+        passCodeViewHolder.end_date.setText(mContext.getString(R.string.passcode_expire_date) + " " + getDate(arrPasscodeListItems.get(i).getEndDate()));
         passCodeViewHolder.passcode_code_type.setText(mContext.getString(R.string.passcode_type) + " " + getPasscodeVersion(arrPasscodeListItems.get(i).keyboardPwdType));
 
         passCodeViewHolder.passcode_delete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 //                Toast.makeText(mContext, arrPasscodeListItems.get(i).keyboardPwd.toString(), Toast.LENGTH_SHORT).show();
-                getRequestDeletePasscode(arrPasscodeListItems.get(i).keyboardPwdId, i, 1);
+                AlertDialog.Builder confirm_delete = new AlertDialog.Builder(mContext);
+                confirm_delete.setCancelable(false);
+                confirm_delete.setTitle("Confirm Delete");
+                confirm_delete.setMessage("Are you sure you want to delete this passcode ?");
+                confirm_delete.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                        if(NetworkUtils.isNetworkConnected(mContext)){
+                            getRequestDeletePasscode(arrPasscodeListItems.get(i).keyboardPwdId, i, 1);
+                        }else {
+                            DisplayUtil.showMessageDialog(mContext, "Please check Mobile network connection",
+                                    mContext.getResources().getDrawable(R.drawable.ic_no_internet));
+                        }
+                    }
+                });
+                confirm_delete.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+                Dialog dialog = confirm_delete.create();
+                dialog.show();
             }
         });
     }
@@ -106,7 +135,7 @@ public class PasscodeListAdapter extends RecyclerView.Adapter<PasscodeListAdapte
     }
 
     public String getDate(long milliSeconds) {
-//        SimpleDateFormat sdf = new SimpleDateFormat("EEE MMM  dd HH:mm:ss z yyyy");
+//        SimpleDateFormat sdf = new SimpleDateFormat("EEE MMM  dd HH:MM:SS z yyyy");
         SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss dd MMM, yyyy");
         Log.d("time :", sdf.format(new Date(milliSeconds)));
         return sdf.format(new Date(milliSeconds));
@@ -166,7 +195,7 @@ public class PasscodeListAdapter extends RecyclerView.Adapter<PasscodeListAdapte
             case 2:
                 return "Permanent";
             case 3:
-                return "Period";
+                return "Timed";
             case 4:
                 return "Delete";
             case 5:
