@@ -21,6 +21,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import com.nova_smartlock.BuildConfig;
 import com.nova_smartlock.R;
 import com.nova_smartlock.db.DatabaseHelper;
@@ -36,13 +37,17 @@ import com.nova_smartlock.utils.Const;
 import com.nova_smartlock.utils.DisplayUtil;
 import com.nova_smartlock.utils.NetworkUtils;
 import com.nova_smartlock.utils.SharePreferenceUtility;
+
 import org.json.JSONException;
 import org.json.JSONObject;
+
 import java.util.List;
+
 import dmax.dialog.SpotsDialog;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+
 import static com.nova_smartlock.constant.Config.IS_ADMIN_LOGIN;
 import static com.nova_smartlock.utils.Constants.AppConst.ADULTS;
 import static com.nova_smartlock.utils.Constants.AppConst.ARRIVE_TIME;
